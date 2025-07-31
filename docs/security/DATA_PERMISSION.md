@@ -273,7 +273,7 @@ public void debugPermission(Long userId, String resourceType) {
 
 ## 8. 版本历史
 
-- v1.0.0 (2024-01-09)
+- v1.0.0 (2025-07-31)
   - 初始版本
   - 基本的数据权限控制功能
   - 支持注解驱动的权限检查 

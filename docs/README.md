@@ -37,8 +37,16 @@ SynapseMOM 平台的核心框架集合，提供了一套完整的微服务开发
 - [缓存框架](./cache/README.md) - 多级缓存、分布式锁、限流等
 - [安全框架](./security/README.md) - 认证、授权、权限管理等
 - [事件框架](./events/README.md) - 事件驱动架构支持
-- [数据库框架](./databases/README.md) - 动态数据源、负载均衡等
+- [数据库框架](./databases/README.md) - **🆕 动态数据源、SQL注解框架、统一分页查询**
 - [依赖管理](./bom/README.md) - 统一版本管理和依赖管理
+
+### 🆕 最新更新亮点
+
+#### 🎯 数据库框架重大改进 (v1.0.0) - 2025-07-31
+- **统一分页查询**: 基于PageDTO的统一分页查询，支持自动查询条件构建
+- **SQL注解框架**: 无ServiceImpl，接口+注解即可使用，支持复杂多表查询
+- **类型安全**: 编译时类型检查，避免运行时错误
+- **性能优化**: 数据库层面排序，避免内存分页问题
 
 ### 🔐 [身份认证与访问管理](./iam/README.md)
 
@@ -82,12 +90,22 @@ SynapseMOM 平台的核心框架集合，提供了一套完整的微服务开发
 
 ### 1. 环境要求
 
+#### 基础环境
 - **JDK**: 17+
 - **Maven**: 3.6+
-- **Spring Boot**: 2.7+
-- **Redis**: 6.0+
-- **RocketMQ**: 4.9+
-- **MySQL**: 8.0+
+- **Spring Boot**: 3.2.3
+- **Spring Cloud**: 2023.0.0
+- **Spring Cloud Alibaba**: 2023.0.1.0
+
+#### 中间件要求
+- **MySQL**: 8.0+ (主数据库)
+- **Redis**: 6.0+ (缓存和会话存储)
+- **Nacos**: 2.0+ (服务发现和配置中心)
+- **Seata**: 2.0+ (分布式事务管理)
+
+#### 可选中间件
+- **RocketMQ**: 4.9+ (消息队列，用于事件驱动)
+- **PostgreSQL**: 12+ (可选数据库支持)
 
 ### 2. 项目结构
 
@@ -150,12 +168,62 @@ SynapseMOM/
         <artifactId>synapse-events</artifactId>
     </dependency>
     
-    <!-- 数据库框架（可选） -->
+    <!-- 数据库框架（推荐） -->
     <dependency>
         <groupId>com.indigo</groupId>
         <artifactId>synapse-databases</artifactId>
     </dependency>
 </dependencies>
+```
+
+#### 🆕 数据库框架快速使用示例
+
+##### 1. 定义Repository接口（无需实现类）
+
+```java
+@AutoRepository
+public interface TenantsRepository extends BaseRepository<IamTenant, TenantMapper> {
+    // 框架自动提供所有MyBatis-Plus方法
+    // 无需手写任何实现代码
+}
+```
+
+##### 2. 使用统一分页查询
+
+```java
+@Service
+public class TenantService {
+    
+    @Autowired
+    private TenantsRepository tenantsRepository;
+    
+    // 一行代码完成分页查询
+    public PageResult<IamTenant> getTenantsPage(TenantsPageDTO params) {
+        return tenantsRepository.pageWithCondition(params);
+    }
+}
+```
+
+##### 3. 使用SQL注解
+
+```java
+@AutoRepository
+public interface UserRepository extends BaseRepository<User, UserMapper> {
+    
+    // 自定义SQL查询
+    @SqlQuery("SELECT * FROM iam_user WHERE username = #{username}")
+    User findByUsername(@Param("username") String username);
+    
+    // 复杂多表查询
+    @SqlQuery("""
+        SELECT u.*, r.role_name 
+        FROM iam_user u 
+        LEFT JOIN iam_user_role ur ON u.id = ur.user_id 
+        LEFT JOIN iam_role r ON ur.role_id = r.id 
+        WHERE u.id = #{userId}
+    """)
+    UserWithRoleDTO findUserWithRoles(@Param("userId") Long userId);
+}
 ```
 
 #### 基础配置
@@ -188,58 +256,145 @@ synapse:
 
 - **synapse-core**: 所有服务都必须引入，提供基础工具类和异常处理
 
+### 推荐模块
+
+- **synapse-databases**: **强烈推荐**，提供无ServiceImpl的数据库操作，大幅提升开发效率
+  - 自动生成Repository实现
+  - 统一分页查询
+  - SQL注解框架
+  - 动态数据源支持
+
 ### 可选模块
 
 - **synapse-cache**: 需要缓存功能时引入
 - **synapse-security**: 需要认证授权时引入
 - **synapse-events**: 需要事件驱动时引入
-- **synapse-databases**: 需要多数据源时引入
 
 ## 🔧 配置说明
+
+### Nacos 配置
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:123456}
+      config:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:123456}
+```
 
 ### Redis 配置
 
 ```yaml
 spring:
-  redis:
-    host: localhost
-    port: 6379
-    database: 0
-    timeout: 2000ms
-    lettuce:
-      pool:
-        max-active: 8
-        max-idle: 8
-        min-idle: 0
-```
-
-### RocketMQ 配置
-
-```yaml
-synapse:
-  events:
-    rocketmq:
-      name-server: localhost:9876
-      producer-group: synapse-producer
-      consumer-group: synapse-consumer
-      topic-prefix: synapse-events
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
 ```
 
 ### 数据库配置
 
 ```yaml
+spring:
+  datasource:
+    dynamic:
+      primary: master1
+      strict: false
+      datasource:
+        master1:
+          type: MYSQL
+          host: localhost
+          port: 3306
+          database: synapse_iam
+          username: root
+          password: password
+          params:
+            useUnicode: "true"
+            characterEncoding: "utf8"
+            useSSL: "false"
+            serverTimezone: "Asia/Shanghai"
+          hikari:
+            minimumIdle: 5
+            maximumPoolSize: 15
+            idleTimeout: 30000
+            maxLifetime: 1800000
+            connectionTimeout: 30000
+            connectionTestQuery: "SELECT 1"
+```
+
+### Seata 分布式事务配置
+
+```yaml
+seata:
+  application-id: ${spring.application.name}
+  tx-service-group: default_tx_group
+  data-source-proxy-mode: AT
+  service:
+    vgroup-mapping:
+      default_tx_group: default
+    grouplist:
+      default: 127.0.0.1:8091
+  registry:
+    type: file
+  config:
+    type: file
+  enable-auto-data-source-proxy: false
+```
+
+### Synapse 框架配置
+
+```yaml
 synapse:
-  databases:
-    primary:
-      url: jdbc:mysql://localhost:3306/primary_db
-      username: root
-      password: password
-      driver-class-name: com.mysql.cj.jdbc.Driver
-    secondary:
-      url: jdbc:mysql://localhost:3306/secondary_db
-      username: root
-      password: password
-      driver-class-name: com.mysql.cj.jdbc.Driver
+  events:
+    enabled: true
+  jwt:
+    enabled: true
+    secret: SynapseMOM@2024!SecureJWTKey#256
+    expiration: 1800
+  security:
+    auth:
+      default-strategy: satoken
+      allow-concurrent-login: true
+      share-token: false
+    token:
+      name: user_token
+      timeout: 7200
+      active-timeout: 1800
+      renewal:
+        enabled: true
+        threshold: 1800
+        duration: 7200
+      style: uuid
+      prefix: Bearer
+    session:
+      store-type: redis
+      redis-prefix: "session:"
+      timeout: 7200
+    permission:
+      enabled: true
+      admin-role: admin
+      default-roles:
+        - user
+      default-permissions:
+        - user:read
 ```
 
 ## 🧪 测试指南
@@ -308,11 +463,18 @@ logging:
 
 ## 🔄 版本兼容性
 
-| 版本 | Spring Boot | Java | 说明 |
-|------|-------------|------|------|
-| 1.0.0 | 2.7.x | 17+ | 初始版本 |
-| 1.1.0 | 2.7.x | 17+ | 功能增强 |
-| 2.0.0 | 3.0.x | 17+ | 重大升级 |
+| 版本 | Spring Boot | Spring Cloud | Java | 说明 |
+|------|-------------|--------------|------|------|
+| 1.0.0 | 3.2.3 | 2023.0.0 | 17+ | **🆕 数据库框架重大改进** |
+
+### 🆕 v1.0.0 主要改进 (2025-07-31)
+
+- **统一分页查询**: 基于PageDTO的统一分页查询，支持自动查询条件构建
+- **SQL注解框架**: 无ServiceImpl，接口+注解即可使用，支持复杂多表查询
+- **类型安全**: 编译时类型检查，避免运行时错误
+- **性能优化**: 数据库层面排序，避免内存分页问题
+- **文档完善**: 提供完整的使用指南和最佳实践
+- **技术栈升级**: 升级到Spring Boot 3.2.3 + Spring Cloud 2023.0.0
 
 ## 🚀 最佳实践
 
@@ -328,13 +490,32 @@ logging:
 - 按需启用模块功能
 - 合理配置缓存和连接池参数
 
-### 3. 异常处理
+### 3. 数据库操作最佳实践
+
+#### Repository层设计
+- 使用 `@AutoRepository` 自动生成实现，避免手写ServiceImpl
+- 单表操作使用MyBatis-Plus方法，复杂查询使用SQL注解
+- 统一使用 `PageDTO` 作为分页参数，`PageResult` 作为返回类型
+
+#### SQL注解使用
+- 使用文本块（"""）编写多行SQL，提高可读性
+- 合理使用参数绑定，避免SQL注入
+- 复杂查询添加适当的注释
+- 使用 `@QueryCondition` 注解自动构建查询条件
+
+#### 性能优化
+- 合理使用分页查询，避免全表扫描
+- 使用索引优化查询性能
+- 避免N+1查询问题
+- 数据库层面排序，避免内存分页
+
+### 4. 异常处理
 
 - 使用 `Result<T>` 统一返回格式
 - 合理使用业务异常和系统异常
 - 记录详细的错误日志
 
-### 4. 性能优化
+### 5. 性能优化
 
 - 合理使用缓存
 - 配置合适的连接池大小
@@ -359,11 +540,15 @@ logging:
 
 ### 开发环境
 
-- JDK 17+
-- Maven 3.6+
-- Spring Boot 2.7+
-- Redis 6.0+
-- RocketMQ 4.9+
+- **JDK**: 17+
+- **Maven**: 3.6+
+- **Spring Boot**: 3.2.3
+- **Spring Cloud**: 2023.0.0
+- **Spring Cloud Alibaba**: 2023.0.1.0
+- **MySQL**: 8.0+
+- **Redis**: 6.0+
+- **Nacos**: 2.0+
+- **Seata**: 2.0+
 
 ## 📞 联系方式
 
@@ -377,6 +562,16 @@ logging:
 
 ---
 
-**最后更新**: 2025-07-20  
+**最后更新**: 2025-07-31  
 **版本**: 1.0.0  
-**维护者**: 史偕成 
+**维护者**: 史偕成
+
+### 📝 更新日志
+
+#### v1.0.0 (2025-07-31)
+- 🎉 **数据库框架重大改进**: 统一分页查询、SQL注解框架
+- ✅ **无ServiceImpl**: 接口+注解即可使用，大幅提升开发效率
+- 🔧 **性能优化**: 数据库层面排序，避免内存分页问题
+- 📚 **文档完善**: 提供完整的使用指南和最佳实践
+- 🚀 **技术栈升级**: Spring Boot 3.2.3 + Spring Cloud 2023.0.0
+- 🔧 **中间件支持**: Nacos 2.0+ + Seata 2.0+ + Redis 6.0+ 
