@@ -1,0 +1,654 @@
+2025-07-31 00:18:32.218 [main] INFO  [NacosLogging] - Nacos Logging Adapter Builder: com.alibaba.nacos.logger.adapter.logback12.LogbackNacosLoggingAdapterBuilder
+2025-07-31 00:18:32.220 [main] INFO  [NacosLogging] - Nacos Logging Adapter Builder: com.alibaba.nacos.logger.adapter.logback14.LogbackNacosLoggingAdapterBuilder
+2025-07-31 00:18:32.220 [main] INFO  [NacosLogging] - Nacos Logging Adapter: com.alibaba.nacos.logger.adapter.logback14.LogbackNacosLoggingAdapter match ch.qos.logback.classic.Logger success.
+2025-07-31 00:18:32.223 [main] INFO  [NacosLogging] - Nacos Logging Adapter Builder: com.alibaba.nacos.logger.adapter.log4j2.Log4j2NacosLoggingAdapterBuilder
+2025-07-31 00:18:32.225 [background-preinit] INFO  [Version] - HV000001: Hibernate Validator 8.0.1.Final
+2025-07-31 00:18:32.455 [main] INFO  [IAMApplication] - No active profile set, falling back to 1 default profile: "default"
+2025-07-31 00:18:32.945 [main] INFO  [RepositoryConfigurationDelegate] - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-07-31 00:18:32.946 [main] INFO  [RepositoryConfigurationDelegate] - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-07-31 00:18:32.960 [main] INFO  [RepositoryConfigurationDelegate] - Finished Spring Data repository scanning in 5 ms. Found 0 Redis repository interfaces.
+2025-07-31 00:18:33.085 [main] INFO  [GenericScope] - BeanFactory id=87e139d7-6f46-3cfc-84e5-79604ed548c4
+2025-07-31 00:18:33.159 [main] INFO  [SqlAnnotationAutoConfiguration] - 开始扫描@AutoRepository注解的接口...
+2025-07-31 00:18:33.194 [main] INFO  [Reflections] - Reflections took 30 ms to scan 7 urls, producing 87 keys and 298 values
+2025-07-31 00:18:33.200 [main] INFO  [SqlAnnotationAutoConfiguration] - 找到1个带有@AutoRepository注解的接口
+2025-07-31 00:18:33.200 [main] INFO  [SqlAnnotationAutoConfiguration] - 发现Repository接口: com.indigo.iam.repository.service.TenantsRepository
+2025-07-31 00:18:33.205 [main] INFO  [SqlAnnotationAutoConfiguration] - Registered AutoRepository proxy: TenantsRepository as com.indigo.iam.repository.service.TenantsRepository
+2025-07-31 00:18:33.209 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'TenantsRepository' of type [com.indigo.databases.config.ProxyFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [methodValidationPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.227 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'org.apache.seata.spring.boot.autoconfigure.SeataCoreAutoConfiguration' of type [org.apache.seata.spring.boot.autoconfigure.SeataCoreAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor []? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.227 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'springApplicationContextProvider' of type [org.apache.seata.spring.boot.autoconfigure.provider.SpringApplicationContextProvider] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor []? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.227 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'org.apache.seata.spring.boot.autoconfigure.SeataAutoConfiguration' of type [org.apache.seata.spring.boot.autoconfigure.SeataAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor []? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.252 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'failureHandler' of type [org.apache.seata.tm.api.DefaultFailureHandlerImpl] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor []? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.254 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'org.springframework.cloud.commons.config.CommonsConfigAutoConfiguration' of type [org.springframework.cloud.commons.config.CommonsConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [globalTransactionScanner]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.255 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [globalTransactionScanner]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.255 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'loadBalancerClientsDefaultsMappingsProvider' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration$$Lambda$749/0x00000008010dfd70] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [globalTransactionScanner]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.255 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'defaultsBindHandlerAdvisor' of type [org.springframework.cloud.commons.config.DefaultsBindHandlerAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [globalTransactionScanner]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.257 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'springCloudAlibabaConfiguration' of type [org.apache.seata.spring.boot.autoconfigure.properties.SpringCloudAlibabaConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [globalTransactionScanner]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.258 [main] WARN  [PostProcessorRegistrationDelegate$BeanPostProcessorChecker] - Bean 'seataProperties' of type [org.apache.seata.spring.boot.autoconfigure.properties.SeataProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [globalTransactionScanner]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-07-31 00:18:33.260 [main] INFO  [SeataAutoConfiguration] - Automatically configure Seata
+2025-07-31 00:18:33.269 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.spring.annotation.ScannerChecker
+2025-07-31 00:18:33.289 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Ignore load compatible class io.seata.config.ExtConfigurationProvider, because is not assignable from origin type org.apache.seata.config.ExtConfigurationProvider
+2025-07-31 00:18:33.294 [main] INFO  [ConfigurationFactory] - load Configuration from :Spring Configuration
+2025-07-31 00:18:33.303 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.integration.tx.api.remoting.RemotingParser
+2025-07-31 00:18:33.304 [main] INFO  [GlobalTransactionScanner] - Initializing Global Transaction Clients ... 
+2025-07-31 00:18:33.338 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.core.auth.AuthSigner
+2025-07-31 00:18:33.344 [main] INFO  [NettyClientBootstrap] - NettyClientBootstrap has started
+2025-07-31 00:18:33.348 [main] INFO  [RegistryFactory] - use registry center type: file
+2025-07-31 00:18:33.351 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.discovery.registry.RegistryProvider
+2025-07-31 00:18:33.352 [main] INFO  [NettyClientChannelManager] - will connect to 127.0.0.1:8091
+2025-07-31 00:18:33.355 [main] INFO  [NettyPoolableFactory] - NettyPool create channel to transactionRole:TMROLE,address:127.0.0.1:8091,msg:< RegisterTMRequest{version='2.1.0', applicationId='iam-service', transactionServiceGroup='default_tx_group', extraData='ak=null
+digest=default_tx_group,192.168.64.1,1753892313354
+timestamp=1753892313354
+authVersion=V4
+vgroup=default_tx_group
+ip=192.168.64.1
+'} >
+2025-07-31 00:18:33.407 [NettyClientSelector_TMROLE_1_1] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.core.serializer.Serializer
+2025-07-31 00:18:33.420 [main] INFO  [TmNettyRemotingClient] - register TM success. client version:2.1.0, server version:2.0.0,channel:[id: 0xb5e192f7, L:/127.0.0.1:60483 - R:/127.0.0.1:8091]
+2025-07-31 00:18:33.423 [main] INFO  [NettyPoolableFactory] - register success, cost 26 ms, version:2.0.0,role:TMROLE,channel:[id: 0xb5e192f7, L:/127.0.0.1:60483 - R:/127.0.0.1:8091]
+2025-07-31 00:18:33.423 [main] INFO  [GlobalTransactionScanner] - Transaction Manager Client is initialized. applicationId[iam-service] txServiceGroup[default_tx_group]
+2025-07-31 00:18:33.429 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.core.model.ResourceManager
+2025-07-31 00:18:33.430 [main] INFO  [AsyncWorker] - Async Commit Buffer Limit: 10000
+2025-07-31 00:18:33.431 [main] INFO  [ResourceManagerXA] - ResourceManagerXA init ...
+2025-07-31 00:18:33.433 [main] INFO  [NettyClientBootstrap] - NettyClientBootstrap has started
+2025-07-31 00:18:33.433 [main] INFO  [GlobalTransactionScanner] - Resource Manager is initialized. applicationId[iam-service] txServiceGroup[default_tx_group]
+2025-07-31 00:18:33.433 [main] INFO  [GlobalTransactionScanner] - Global Transaction Clients are initialized. 
+2025-07-31 00:18:33.474 [main] INFO  [GlobalTransactionScanner] - The needed enhancement business beans are : []
+2025-07-31 00:18:33.762 [main] INFO  [TomcatWebServer] - Tomcat initialized with port 8081 (http)
+2025-07-31 00:18:33.768 [main] INFO  [Http11NioProtocol] - Initializing ProtocolHandler ["http-nio-8081"]
+2025-07-31 00:18:33.769 [main] INFO  [StandardService] - Starting service [Tomcat]
+2025-07-31 00:18:33.769 [main] INFO  [StandardEngine] - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-07-31 00:18:33.803 [main] INFO  [[/]] - Initializing Spring embedded WebApplicationContext
+2025-07-31 00:18:33.803 [main] INFO  [ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 1340 ms
+2025-07-31 00:18:34.764 [main] INFO  [CacheAutoConfiguration] - 创建RedisService Bean，RedisTemplate: RedisTemplate, StringRedisTemplate: StringRedisTemplate
+2025-07-31 00:18:34.769 [main] INFO  [CacheAutoConfiguration] - 创建UserSessionService Bean - 使用新的session包架构
+2025-07-31 00:18:34.772 [main] INFO  [SecurityAutoConfiguration] - 初始化Sa-Token认证策略
+2025-07-31 00:18:34.773 [main] INFO  [SecurityAutoConfiguration] - 初始化OAuth2.0认证策略
+2025-07-31 00:18:34.773 [main] INFO  [AuthenticationStrategyFactory] - 注册认证策略: type=satoken, class=SaTokenAuthenticationStrategy
+2025-07-31 00:18:34.773 [main] INFO  [AuthenticationStrategyFactory] - 注册认证策略: type=oauth2, class=OAuth2AuthenticationStrategy
+2025-07-31 00:18:34.810 [main] INFO  [DynamicDataSourceAutoConfiguration] - DynamicDataSourceProperties loaded: DynamicDataSourceProperties(primary=master1, strict=false, seata=false, p6spy=false, datasource={master1=DynamicDataSourceProperties.DataSourceProperties(type=MYSQL, poolType=HIKARI, host=localhost, port=3306, database=synapse_iam, username=root, password=mamnan920130., params={useUnicode=true, characterEncoding=utf8, useSSL=false, serverTimezone=Asia/Shanghai}, hikari=DynamicDataSourceProperties.HikariPoolProperties(minimumIdle=5, maximumPoolSize=15, idleTimeout=30000, maxLifetime=1800000, connectionTimeout=30000, connectionTestQuery=SELECT 1), druid=DynamicDataSourceProperties.DruidPoolProperties(initialSize=5, minIdle=5, maxActive=20, maxWait=60000, timeBetweenEvictionRunsMillis=60000, minEvictableIdleTimeMillis=300000, maxEvictableIdleTimeMillis=900000, validationQuery=SELECT 1, testWhileIdle=true, testOnBorrow=false, testOnReturn=false, poolPreparedStatements=true, maxPoolPreparedStatementPerConnectionSize=20, filters=stat,wall))})
+2025-07-31 00:18:34.820 [main] INFO  [DynamicDataSourceAutoConfiguration] - Initialized datasource [master1] with type [MYSQL] and pool [HIKARI]
+2025-07-31 00:18:34.820 [main] INFO  [DynamicDataSourceAutoConfiguration] - Setting default data source: master1
+2025-07-31 00:18:34.828 [main] INFO  [HikariDataSource] - HikariPool-1 - Starting...
+2025-07-31 00:18:34.934 [main] INFO  [HikariPool] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@f0deba2
+2025-07-31 00:18:34.935 [main] INFO  [HikariDataSource] - HikariPool-1 - Start completed.
+2025-07-31 00:18:34.946 [main] INFO  [MybatisPlusConfig] - MybatisPlusConfig 已加载
+2025-07-31 00:18:34.956 [main] INFO  [DynamicRoutingDataSource] - 使用默认数据源: [master1]
+2025-07-31 00:18:34.956 [main] INFO  [DynamicRoutingDataSource] - 查找数据源，key: [master1], 可用keys: [master1]
+2025-07-31 00:18:34.956 [main] INFO  [DynamicRoutingDataSource] - 数据源查找成功，key: [master1], 数据源类型: HikariDataSource
+2025-07-31 00:18:35.000 [main] INFO  [NettyClientChannelManager] - will connect to 127.0.0.1:8091
+2025-07-31 00:18:35.001 [main] INFO  [RmNettyRemotingClient] - RM will register :jdbc:mysql://localhost:3306/synapse_iam
+2025-07-31 00:18:35.001 [main] INFO  [NettyPoolableFactory] - NettyPool create channel to transactionRole:RMROLE,address:127.0.0.1:8091,msg:< RegisterRMRequest{resourceIds='jdbc:mysql://localhost:3306/synapse_iam', version='2.1.0', applicationId='iam-service', transactionServiceGroup='default_tx_group', extraData='null'} >
+2025-07-31 00:18:35.007 [main] INFO  [RmNettyRemotingClient] - register RM success. client version:2.1.0, server version:2.0.0,channel:[id: 0xc2cfd32d, L:/127.0.0.1:60486 - R:/127.0.0.1:8091]
+2025-07-31 00:18:35.007 [main] INFO  [NettyPoolableFactory] - register success, cost 6 ms, version:2.0.0,role:RMROLE,channel:[id: 0xc2cfd32d, L:/127.0.0.1:60486 - R:/127.0.0.1:8091]
+2025-07-31 00:18:35.009 [main] INFO  [EnhancedServiceLoader$InnerEnhancedServiceLoader] - Load compatible class io.seata.core.context.ContextCore
+2025-07-31 00:18:35.033 [main] INFO  [MybatisPlusConfig] - 手动注册 MetaObjectHandler Bean
+2025-07-31 00:18:35.033 [main] INFO  [MyMetaObjectHandler] - MyMetaObjectHandler Bean 已创建
+2025-07-31 00:18:35.148 [main] INFO  [CacheAutoConfiguration] - 创建RateLimitService Bean
+2025-07-31 00:18:35.178 [main] INFO  [JWTStpLogic] - JWT认证逻辑初始化完成 - 基于Sa-Token框架，支持微服务间JWT调用
+2025-07-31 00:18:35.185 [main] INFO  [PermissionManager] - 权限管理服务初始化完成
+2025-07-31 00:18:35.250 [main] INFO  [SecurityAutoConfiguration] - WebMVC安全配置已加载
+2025-07-31 00:18:35.251 [main] INFO  [SecurityAutoConfiguration] - 创建用户上下文拦截器
+2025-07-31 00:18:35.251 [main] INFO  [SecurityAutoConfiguration] - 创建JWT Sa-Token配置Bean for WebMVC
+2025-07-31 00:18:35.252 [main] INFO  [JWTSaTokenConfiguration] - JWTSaTokenConfiguration 已加载 - 基于Sa-Token框架，支持JWT token生成
+2025-07-31 00:18:35.280 [main] INFO  [JWTSaTokenConfiguration] - 用户上下文拦截器已注册
+2025-07-31 00:18:35.427 [main] INFO  [SecurityAutoConfiguration] - 初始化OAuth2.0模板
+2025-07-31 00:18:35.453 [main] INFO  [ClientAuthPluginManager] - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2025-07-31 00:18:35.453 [main] INFO  [ClientAuthPluginManager] - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2025-07-31 00:18:35.505 [main] INFO  [CacheAutoConfiguration] - 创建DistributedLockService Bean
+2025-07-31 00:18:35.512 [main] WARN  [EventHandlerRegistry] - No event handlers found
+2025-07-31 00:18:35.514 [main] INFO  [EventsAutoConfiguration] - Initializing UnifiedRocketMQEventPublisher with properties: EventsProperties(enabled=true, autoGenerateTransactionId=true, duplicateCheck=EventsProperties.DuplicateCheck(enabled=true, useRedis=true, localCacheSize=1000, expireMinutes=5, redisKeyPrefix=synapse:events:duplicate:), rocketmq=EventsProperties.RocketMQ(nameServer=localhost:9876, producerGroup=synapse-events-producer, consumerGroup=synapse-events-consumer, topicPrefix=synapse-events, sendTimeout=3000, pullTimeout=3000, pullBatchSize=32, consumerThreadPoolSize=20, enableRetry=true, maxRetryTimes=3, retryInterval=1000, enableCompression=true, compressionLevel=5), reliable=EventsProperties.ReliableConsumer(heartbeatInterval=30, failureTimeout=90, dedupExpireSeconds=3600, lockTimeout=30, batchSize=10, concurrency=4, retryInterval=1000, maxRetryCount=3, errorRateThreshold=5.0, latencyThreshold=5000, queueBacklogThreshold=1000), monitoring=EventsProperties.Monitoring(enabled=true, metricsInterval=60, detailedLogging=false, dataRetentionHours=24, alert=EventsProperties.Monitoring.Alert(enabled=true, notificationType=log, thresholds=EventsProperties.Monitoring.Alert.Thresholds(errorRate=5.0, latency=5000, queueBacklog=1000))))
+2025-07-31 00:18:35.669 [main] INFO  [UnifiedRocketMQEventPublisher] - Unified RocketMQ producer started: group=synapse-events-producer, nameServer=localhost:9876
+2025-07-31 00:18:35.669 [main] INFO  [UnifiedRocketMQEventPublisher] - Duplicate check enabled: true, use Redis: true
+2025-07-31 00:18:35.672 [main] INFO  [EventsAutoConfiguration] - Initializing ReliableRocketMQEventConsumer with properties: EventsProperties(enabled=true, autoGenerateTransactionId=true, duplicateCheck=EventsProperties.DuplicateCheck(enabled=true, useRedis=true, localCacheSize=1000, expireMinutes=5, redisKeyPrefix=synapse:events:duplicate:), rocketmq=EventsProperties.RocketMQ(nameServer=localhost:9876, producerGroup=synapse-events-producer, consumerGroup=synapse-events-consumer, topicPrefix=synapse-events, sendTimeout=3000, pullTimeout=3000, pullBatchSize=32, consumerThreadPoolSize=20, enableRetry=true, maxRetryTimes=3, retryInterval=1000, enableCompression=true, compressionLevel=5), reliable=EventsProperties.ReliableConsumer(heartbeatInterval=30, failureTimeout=90, dedupExpireSeconds=3600, lockTimeout=30, batchSize=10, concurrency=4, retryInterval=1000, maxRetryCount=3, errorRateThreshold=5.0, latencyThreshold=5000, queueBacklogThreshold=1000), monitoring=EventsProperties.Monitoring(enabled=true, metricsInterval=60, detailedLogging=false, dataRetentionHours=24, alert=EventsProperties.Monitoring.Alert(enabled=true, notificationType=log, thresholds=EventsProperties.Monitoring.Alert.Thresholds(errorRate=5.0, latency=5000, queueBacklog=1000))))
+2025-07-31 00:18:35.837 [main] INFO  [ReliableRocketMQEventConsumer] - Reliable RocketMQ consumer initialized: instance=iam-service-shixiechengdeMacBook-Pro.local-8081-1753892315675, group=synapse-events-consumer, nameServer=localhost:9876, topicPattern=synapse-events-*
+2025-07-31 00:18:36.117 [main] INFO  [EndpointLinksResolver] - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-07-31 00:18:36.158 [main] INFO  [DynamicRoutingDataSource] - 使用默认数据源: [master1]
+2025-07-31 00:18:36.158 [main] INFO  [DynamicRoutingDataSource] - 查找数据源，key: [master1], 可用keys: [master1]
+2025-07-31 00:18:36.158 [main] INFO  [DynamicRoutingDataSource] - 数据源查找成功，key: [master1], 数据源类型: HikariDataSource
+2025-07-31 00:18:36.158 [main] INFO  [DynamicRoutingDataSource] - 使用默认数据源: [master1]
+2025-07-31 00:18:36.158 [main] INFO  [DynamicRoutingDataSource] - 查找数据源，key: [master1], 可用keys: [master1]
+2025-07-31 00:18:36.158 [main] INFO  [DynamicRoutingDataSource] - 数据源查找成功，key: [master1], 数据源类型: HikariDataSource
+2025-07-31 00:18:36.159 [main] INFO  [DynamicRoutingDataSource] - 使用默认数据源: [master1]
+2025-07-31 00:18:36.159 [main] INFO  [DynamicRoutingDataSource] - 查找数据源，key: [master1], 可用keys: [master1]
+2025-07-31 00:18:36.159 [main] INFO  [DynamicRoutingDataSource] - 数据源查找成功，key: [master1], 数据源类型: HikariDataSource
+2025-07-31 00:18:36.159 [main] INFO  [DynamicRoutingDataSource] - 使用默认数据源: [master1]
+2025-07-31 00:18:36.159 [main] INFO  [DynamicRoutingDataSource] - 查找数据源，key: [master1], 可用keys: [master1]
+2025-07-31 00:18:36.159 [main] INFO  [DynamicRoutingDataSource] - 数据源查找成功，key: [master1], 数据源类型: HikariDataSource
+2025-07-31 00:18:36.162 [main] INFO  [Http11NioProtocol] - Starting ProtocolHandler ["http-nio-8081"]
+2025-07-31 00:18:36.167 [main] INFO  [TomcatWebServer] - Tomcat started on port 8081 (http) with context path ''
+2025-07-31 00:18:36.176 [main] INFO  [ClientAuthPluginManager] - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2025-07-31 00:18:36.176 [main] INFO  [ClientAuthPluginManager] - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2025-07-31 00:18:36.577 [main] INFO  [AbstractAbilityControlManager] - Ready to get current node abilities...
+2025-07-31 00:18:36.578 [main] INFO  [AbstractAbilityControlManager] - Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+2025-07-31 00:18:36.578 [main] INFO  [AbstractAbilityControlManager] - Initialize current abilities finish...
+2025-07-31 00:18:36.578 [main] INFO  [NacosAbilityManagerHolder] - [AbilityControlManager] Successfully initialize AbilityControlManager
+2025-07-31 00:18:36.602 [main] INFO  [NacosServiceRegistry] - nacos registry, DEFAULT_GROUP iam-service 192.168.2.81:8081 register finished
+2025-07-31 00:18:36.615 [main] INFO  [IAMApplication] - Started IAMApplication in 4.579 seconds (process running for 4.836)
+2025-07-31 00:18:47.112 [http-nio-8081-exec-1] INFO  [[/]] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-31 00:18:47.213 [http-nio-8081-exec-1] INFO  [DispatcherServlet] - Initializing Servlet 'dispatcherServlet'
+2025-07-31 00:18:47.219 [http-nio-8081-exec-1] INFO  [DispatcherServlet] - Completed initialization in 6 ms
+2025-07-31 00:18:47.279 [http-nio-8081-exec-1] INFO  [UserContextInterceptor] - 用户上下文已设置: userId=null, username=admin, tenantId=null
+2025-07-31 00:18:47.322 [http-nio-8081-exec-1] INFO  [TenantService] - 分页查询租户，页码: 1, 查询条件: TenantsPageDTO(status=null, code=null, description=2)
+2025-07-31 00:18:47.322 [http-nio-8081-exec-1] INFO  [SqlMethodInterceptor] - Calling default method: pageWithCondition with args: [TenantsPageDTO(status=null, code=null, description=2)]
+2025-07-31 00:18:47.337 [http-nio-8081-exec-1] ERROR [SqlMethodInterceptor] - Failed to page query
+java.lang.NoSuchMethodException: com.indigo.iam.repository.mapper.TenantMapper.selectPage(com.baomidou.mybatisplus.extension.plugins.pagination.Page,com.baomidou.mybatisplus.core.conditions.Wrapper)
+	at java.base/java.lang.Class.getMethod(Class.java:2227)
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:164)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.callIServiceMethod(SqlMethodInterceptor.java:409)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.executeDefaultMethod(SqlMethodInterceptor.java:351)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.handleBaseRepositoryMethod(SqlMethodInterceptor.java:279)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.invoke(SqlMethodInterceptor.java:77)
+	at jdk.proxy2/jdk.proxy2.$Proxy105.pageWithCondition(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:213)
+	at jdk.proxy2/jdk.proxy2.$Proxy133.pageWithCondition(Unknown Source)
+	at com.indigo.iam.service.TenantService.getTenantsPage(TenantService.java:77)
+	at com.indigo.iam.controller.TenantController.getTenantsPage(TenantController.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:547)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at cn.dev33.satoken.filter.SaPathCheckFilterForJakartaServlet.doFilter(SaPathCheckFilterForJakartaServlet.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2025-07-31 00:18:47.343 [http-nio-8081-exec-1] ERROR [SqlMethodInterceptor] - Error invoking method: pageWithCondition
+java.lang.reflect.InvocationTargetException: null
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.callIServiceMethod(SqlMethodInterceptor.java:409)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.executeDefaultMethod(SqlMethodInterceptor.java:351)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.handleBaseRepositoryMethod(SqlMethodInterceptor.java:279)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.invoke(SqlMethodInterceptor.java:77)
+	at jdk.proxy2/jdk.proxy2.$Proxy105.pageWithCondition(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:213)
+	at jdk.proxy2/jdk.proxy2.$Proxy133.pageWithCondition(Unknown Source)
+	at com.indigo.iam.service.TenantService.getTenantsPage(TenantService.java:77)
+	at com.indigo.iam.controller.TenantController.getTenantsPage(TenantController.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:547)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at cn.dev33.satoken.filter.SaPathCheckFilterForJakartaServlet.doFilter(SaPathCheckFilterForJakartaServlet.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.RuntimeException: Failed to page query
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:168)
+	... 75 common frames omitted
+Caused by: java.lang.NoSuchMethodException: com.indigo.iam.repository.mapper.TenantMapper.selectPage(com.baomidou.mybatisplus.extension.plugins.pagination.Page,com.baomidou.mybatisplus.core.conditions.Wrapper)
+	at java.base/java.lang.Class.getMethod(Class.java:2227)
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:164)
+	... 75 common frames omitted
+2025-07-31 00:18:47.345 [http-nio-8081-exec-1] ERROR [WebMvcGlobalExceptionHandler] - Unexpected error occurred
+java.lang.reflect.UndeclaredThrowableException: null
+	at jdk.proxy2/jdk.proxy2.$Proxy105.pageWithCondition(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:213)
+	at jdk.proxy2/jdk.proxy2.$Proxy133.pageWithCondition(Unknown Source)
+	at com.indigo.iam.service.TenantService.getTenantsPage(TenantService.java:77)
+	at com.indigo.iam.controller.TenantController.getTenantsPage(TenantController.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:547)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at cn.dev33.satoken.filter.SaPathCheckFilterForJakartaServlet.doFilter(SaPathCheckFilterForJakartaServlet.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.callIServiceMethod(SqlMethodInterceptor.java:409)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.executeDefaultMethod(SqlMethodInterceptor.java:351)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.handleBaseRepositoryMethod(SqlMethodInterceptor.java:279)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.invoke(SqlMethodInterceptor.java:77)
+	... 67 common frames omitted
+Caused by: java.lang.RuntimeException: Failed to page query
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:168)
+	... 75 common frames omitted
+Caused by: java.lang.NoSuchMethodException: com.indigo.iam.repository.mapper.TenantMapper.selectPage(com.baomidou.mybatisplus.extension.plugins.pagination.Page,com.baomidou.mybatisplus.core.conditions.Wrapper)
+	at java.base/java.lang.Class.getMethod(Class.java:2227)
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:164)
+	... 75 common frames omitted
+2025-07-31 00:20:03.296 [Thread-2] WARN  [ThreadPoolManager] - [ThreadPoolManager] Start destroying ThreadPool
+2025-07-31 00:20:03.292 [Thread-27] WARN  [HttpClientBeanHolder] - [HttpClientBeanHolder] Start destroying common HttpClient
+2025-07-31 00:20:03.319 [Thread-33] WARN  [NotifyCenter] - [NotifyCenter] Start destroying Publisher
+2025-07-31 00:20:03.424 [Thread-33] WARN  [NotifyCenter] - [NotifyCenter] Destruction of the end
+2025-07-31 00:20:03.445 [Thread-2] WARN  [ThreadPoolManager] - [ThreadPoolManager] Destruction of the end
+2025-07-31 00:20:03.453 [Thread-27] WARN  [HttpClientBeanHolder] - [HttpClientBeanHolder] Destruction of the end
+2025-07-31 00:20:03.456 [SpringContextShutdownHook] INFO  [NacosServiceRegistry] - De-registering from Nacos Server now...
+2025-07-31 00:20:03.868 [SpringContextShutdownHook] INFO  [NacosServiceRegistry] - De-registration finished.
+2025-07-31 00:20:08.759 [http-nio-8081-exec-2] INFO  [TenantService] - 分页查询租户，页码: 1, 查询条件: TenantsPageDTO(status=null, code=null, description=2)
+2025-07-31 00:20:08.822 [http-nio-8081-exec-2] INFO  [SqlMethodInterceptor] - Calling default method: pageWithCondition with args: [TenantsPageDTO(status=null, code=null, description=2)]
+2025-07-31 00:20:08.829 [http-nio-8081-exec-2] ERROR [SqlMethodInterceptor] - Failed to page query
+java.lang.NoSuchMethodException: com.indigo.iam.repository.mapper.TenantMapper.selectPage(com.baomidou.mybatisplus.extension.plugins.pagination.Page,com.baomidou.mybatisplus.core.conditions.Wrapper)
+	at java.base/java.lang.Class.getMethod(Class.java:2227)
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:164)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.callIServiceMethod(SqlMethodInterceptor.java:409)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.executeDefaultMethod(SqlMethodInterceptor.java:351)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.handleBaseRepositoryMethod(SqlMethodInterceptor.java:279)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.invoke(SqlMethodInterceptor.java:77)
+	at jdk.proxy2/jdk.proxy2.$Proxy105.pageWithCondition(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:213)
+	at jdk.proxy2/jdk.proxy2.$Proxy133.pageWithCondition(Unknown Source)
+	at com.indigo.iam.service.TenantService.getTenantsPage(TenantService.java:77)
+	at com.indigo.iam.controller.TenantController.getTenantsPage(TenantController.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:547)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at cn.dev33.satoken.filter.SaPathCheckFilterForJakartaServlet.doFilter(SaPathCheckFilterForJakartaServlet.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2025-07-31 00:20:08.835 [http-nio-8081-exec-2] ERROR [SqlMethodInterceptor] - Error invoking method: pageWithCondition
+java.lang.reflect.InvocationTargetException: null
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.callIServiceMethod(SqlMethodInterceptor.java:409)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.executeDefaultMethod(SqlMethodInterceptor.java:351)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.handleBaseRepositoryMethod(SqlMethodInterceptor.java:279)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.invoke(SqlMethodInterceptor.java:77)
+	at jdk.proxy2/jdk.proxy2.$Proxy105.pageWithCondition(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:213)
+	at jdk.proxy2/jdk.proxy2.$Proxy133.pageWithCondition(Unknown Source)
+	at com.indigo.iam.service.TenantService.getTenantsPage(TenantService.java:77)
+	at com.indigo.iam.controller.TenantController.getTenantsPage(TenantController.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:547)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at cn.dev33.satoken.filter.SaPathCheckFilterForJakartaServlet.doFilter(SaPathCheckFilterForJakartaServlet.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.RuntimeException: Failed to page query
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:168)
+	... 75 common frames omitted
+Caused by: java.lang.NoSuchMethodException: com.indigo.iam.repository.mapper.TenantMapper.selectPage(com.baomidou.mybatisplus.extension.plugins.pagination.Page,com.baomidou.mybatisplus.core.conditions.Wrapper)
+	at java.base/java.lang.Class.getMethod(Class.java:2227)
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:164)
+	... 75 common frames omitted
+2025-07-31 00:20:08.837 [http-nio-8081-exec-2] ERROR [WebMvcGlobalExceptionHandler] - Unexpected error occurred
+java.lang.reflect.UndeclaredThrowableException: null
+	at jdk.proxy2/jdk.proxy2.$Proxy105.pageWithCondition(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:213)
+	at jdk.proxy2/jdk.proxy2.$Proxy133.pageWithCondition(Unknown Source)
+	at com.indigo.iam.service.TenantService.getTenantsPage(TenantService.java:77)
+	at com.indigo.iam.controller.TenantController.getTenantsPage(TenantController.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:547)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:614)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at cn.dev33.satoken.filter.SaPathCheckFilterForJakartaServlet.doFilter(SaPathCheckFilterForJakartaServlet.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.callIServiceMethod(SqlMethodInterceptor.java:409)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.executeDefaultMethod(SqlMethodInterceptor.java:351)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.handleBaseRepositoryMethod(SqlMethodInterceptor.java:279)
+	at com.indigo.databases.proxy.SqlMethodInterceptor.invoke(SqlMethodInterceptor.java:77)
+	... 67 common frames omitted
+Caused by: java.lang.RuntimeException: Failed to page query
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:168)
+	... 75 common frames omitted
+Caused by: java.lang.NoSuchMethodException: com.indigo.iam.repository.mapper.TenantMapper.selectPage(com.baomidou.mybatisplus.extension.plugins.pagination.Page,com.baomidou.mybatisplus.core.conditions.Wrapper)
+	at java.base/java.lang.Class.getMethod(Class.java:2227)
+	at com.indigo.databases.proxy.SqlMethodInterceptor$1.page(SqlMethodInterceptor.java:164)
+	... 75 common frames omitted
+2025-07-31 00:20:25.050 [SpringContextShutdownHook] WARN  [CommonAnnotationBeanPostProcessor] - Destroy method on bean with name 'eventConsumer' threw an exception: java.lang.IllegalStateException: LettuceConnectionFactory has been STOPPED. Use start() to initialize it
+2025-07-31 00:20:26.822 [SpringContextShutdownHook] INFO  [UnifiedRocketMQEventPublisher] - Unified RocketMQ producer shutdown
+2025-07-31 00:20:26.834 [NettyClientSelector_TMROLE_1_1] INFO  [AbstractNettyRemotingClient] - channel inactive: [id: 0xb5e192f7, L:/127.0.0.1:60483 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.834 [NettyClientSelector_TMROLE_1_1] INFO  [NettyClientChannelManager] - return to pool, rm channel:[id: 0xb5e192f7, L:/127.0.0.1:60483 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.834 [NettyClientSelector_TMROLE_1_1] INFO  [NettyPoolableFactory] - channel valid false,channel:[id: 0xb5e192f7, L:/127.0.0.1:60483 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.835 [NettyClientSelector_TMROLE_1_1] INFO  [NettyPoolableFactory] - will destroy channel:[id: 0xb5e192f7, L:/127.0.0.1:60483 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.835 [NettyClientSelector_TMROLE_1_1] INFO  [AbstractNettyRemotingClient] - ChannelHandlerContext(AbstractNettyRemotingClient$ClientHandler#0, [id: 0xb5e192f7, L:/127.0.0.1:60483 ! R:/127.0.0.1:8091]) will closed
+2025-07-31 00:20:26.835 [NettyClientSelector_TMROLE_1_1] INFO  [AbstractNettyRemotingClient] - ChannelHandlerContext(AbstractNettyRemotingClient$ClientHandler#0, [id: 0xb5e192f7, L:/127.0.0.1:60483 ! R:/127.0.0.1:8091]) will closed
+2025-07-31 00:20:26.835 [NettyClientSelector_RMROLE_1_1] INFO  [AbstractNettyRemotingClient] - channel inactive: [id: 0xc2cfd32d, L:/127.0.0.1:60486 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.835 [NettyClientSelector_RMROLE_1_1] INFO  [NettyClientChannelManager] - return to pool, rm channel:[id: 0xc2cfd32d, L:/127.0.0.1:60486 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.835 [NettyClientSelector_RMROLE_1_1] INFO  [NettyPoolableFactory] - channel valid false,channel:[id: 0xc2cfd32d, L:/127.0.0.1:60486 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.836 [NettyClientSelector_RMROLE_1_1] INFO  [NettyPoolableFactory] - will destroy channel:[id: 0xc2cfd32d, L:/127.0.0.1:60486 ! R:/127.0.0.1:8091]
+2025-07-31 00:20:26.836 [NettyClientSelector_RMROLE_1_1] INFO  [AbstractNettyRemotingClient] - ChannelHandlerContext(AbstractNettyRemotingClient$ClientHandler#0, [id: 0xc2cfd32d, L:/127.0.0.1:60486 ! R:/127.0.0.1:8091]) will closed
+2025-07-31 00:20:26.836 [NettyClientSelector_RMROLE_1_1] INFO  [AbstractNettyRemotingClient] - ChannelHandlerContext(AbstractNettyRemotingClient$ClientHandler#0, [id: 0xc2cfd32d, L:/127.0.0.1:60486 ! R:/127.0.0.1:8091]) will closed

@@ -1,0 +1,117 @@
+{
+  "groups": [
+    {
+      "name": "spring.datasource.dynamic",
+      "type": "com.indigo.databases.config.DynamicDataSourceProperties",
+      "description": "动态数据源配置属性"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.datasource.dynamic.primary",
+      "type": "java.lang.String",
+      "description": "默认数据源",
+      "defaultValue": "master"
+    },
+    {
+      "name": "spring.datasource.dynamic.strict",
+      "type": "java.lang.Boolean",
+      "description": "是否启用严格模式，严格模式下未匹配到数据源直接报错",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.datasource.dynamic.seata",
+      "type": "java.lang.Boolean",
+      "description": "是否启用seata分布式事务",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.datasource.dynamic.p6spy",
+      "type": "java.lang.Boolean",
+      "description": "是否启用p6spy",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource",
+      "type": "java.util.Map<java.lang.String,com.indigo.databases.config.DynamicDataSourceProperties$DataSourceProperties>",
+      "description": "数据源配置"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.type",
+      "type": "com.indigo.databases.enums.DatabaseType",
+      "description": "数据库类型"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.pool-type",
+      "type": "com.indigo.databases.enums.PoolType",
+      "description": "连接池类型",
+      "defaultValue": "HIKARI"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.host",
+      "type": "java.lang.String",
+      "description": "主机地址"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.port",
+      "type": "java.lang.Integer",
+      "description": "端口号"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.database",
+      "type": "java.lang.String",
+      "description": "数据库名"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.username",
+      "type": "java.lang.String",
+      "description": "用户名"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.password",
+      "type": "java.lang.String",
+      "description": "密码"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.params",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "连接参数"
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.hikari.minimum-idle",
+      "type": "java.lang.Integer",
+      "description": "连接池最小空闲连接数",
+      "defaultValue": 5
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.hikari.maximum-pool-size",
+      "type": "java.lang.Integer",
+      "description": "连接池最大连接数",
+      "defaultValue": 15
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.hikari.idle-timeout",
+      "type": "java.lang.Long",
+      "description": "空闲连接最大存活时间，默认600000(10分钟)",
+      "defaultValue": 600000
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.hikari.max-lifetime",
+      "type": "java.lang.Long",
+      "description": "连接最大存活时间，默认1800000(30分钟)",
+      "defaultValue": 1800000
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.hikari.connection-timeout",
+      "type": "java.lang.Long",
+      "description": "连接超时时间，默认30000(30秒)",
+      "defaultValue": 30000
+    },
+    {
+      "name": "spring.datasource.dynamic.datasource.*.hikari.connection-test-query",
+      "type": "java.lang.String",
+      "description": "连接测试查询",
+      "defaultValue": "SELECT 1"
+    }
+  ]
+} 

@@ -1,0 +1,109 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    dynamic:
+      primary: master1
+      strict: true
+      datasource:
+        master1:
+          type: MYSQL
+          poolType: HIKARI
+          host: localhost
+          port: 3306
+          database: indigo
+          username: root
+          password: mamnan920130.
+          params:
+            useUnicode: "true"
+            characterEncoding: "utf8"
+            useSSL: "false"
+            serverTimezone: "Asia/Shanghai"
+          hikari:
+            minimumIdle: 5
+            maximumPoolSize: 15
+            idleTimeout: 30000
+            maxLifetime: 1800000
+            connectionTimeout: 30000
+            connectionTestQuery: "SELECT 1"
+        master2:
+          type: MYSQL
+          poolType: HIKARI
+          host: localhost
+          port: 3306
+          database: indigo
+          username: root
+          password: mamnan920130.
+          params:
+            useUnicode: "true"
+            characterEncoding: "utf8"
+            useSSL: "false"
+            serverTimezone: "Asia/Shanghai"
+          hikari:
+            minimumIdle: 5
+            maximumPoolSize: 15
+            idleTimeout: 30000
+            maxLifetime: 1800000
+            connectionTimeout: 30000
+            connectionTestQuery: "SELECT 1"
+        slave1:
+          type: MYSQL
+          poolType: DRUID
+          host: localhost
+          port: 3306
+          database: indigo
+          username: root
+          password: mamnan920130.
+          params:
+            useUnicode: "true"
+            characterEncoding: "utf8"
+            useSSL: "false"
+            serverTimezone: "Asia/Shanghai"
+          druid:
+            initialSize: 5
+            minIdle: 5
+            maxActive: 20
+            maxWait: 60000
+            timeBetweenEvictionRunsMillis: 60000
+            minEvictableIdleTimeMillis: 300000
+            maxEvictableIdleTimeMillis: 900000
+            validationQuery: "SELECT 1"
+            testWhileIdle: true
+            testOnBorrow: false
+            testOnReturn: false
+            poolPreparedStatements: true
+            maxPoolPreparedStatementPerConnectionSize: 20
+            filters: "stat,wall"
+        slave2:
+          type: MYSQL
+          poolType: DRUID
+          host: localhost
+          port: 3306
+          database: indigo
+          username: root
+          password: mamnan920130.
+          params:
+            useUnicode: "true"
+            characterEncoding: "utf8"
+            useSSL: "false"
+            serverTimezone: "Asia/Shanghai"
+          druid:
+            initialSize: 5
+            minIdle: 5
+            maxActive: 20
+            maxWait: 60000
+            timeBetweenEvictionRunsMillis: 60000
+            minEvictableIdleTimeMillis: 300000
+            maxEvictableIdleTimeMillis: 900000
+            validationQuery: "SELECT 1"
+            testWhileIdle: true
+            testOnBorrow: false
+            testOnReturn: false
+            poolPreparedStatements: true
+            maxPoolPreparedStatementPerConnectionSize: 20
+            filters: "stat,wall"
+
+logging:
+  level:
+    com.indigo.databases: DEBUG
+    org.springframework.jdbc.core: DEBUG

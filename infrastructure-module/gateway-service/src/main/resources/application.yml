@@ -1,0 +1,105 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  # Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 1000
+      lettuce:
+        shutdown-timeout: 100
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
+  cloud:
+    # 启用bootstrap
+    bootstrap:
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # Enable service discovery
+          lower-case-service-id: true  # Service IDs in lowercase
+      routes:
+        - id: iam-service
+          uri: lb://iam-service
+          predicates:
+            - Path=/api/iam/**
+          filters:
+            - StripPrefix=2
+
+        # Add more route configurations as needed
+    
+    loadbalancer:
+      ribbon:
+        enabled: false  # Disable Ribbon since we're using Spring Cloud LoadBalancer
+  # Configure logging
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.http.server.reactive: INFO
+    org.springframework.web.reactive: INFO
+    reactor.netty: INFO
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+# Synapse 配置
+synapse:
+  # JWT配置
+  jwt:
+    enabled: true
+    secret: SynapseMOM@2024!SecureJWTKey#256
+    expiration: 1800
+  # Security配置
+  security:
+    # Token续期相关配置
+    token:
+      renewal:
+        # 续期阈值（秒），当token剩余时间小于此值时自动续期，默认30分钟
+        threshold: 1800
+        # 续期时间（秒），续期后token的有效期，默认2小时
+        duration: 7200
+    oauth2:
+      enabled: true
+      clients:
+        default:
+          clientId: "synapse-client"
+          clientSecret: "synapse-secret"
+          allowUrl: "*"
+          scope: "userinfo"
+          isAutoMode: true
+      resources:
+        userinfo:
+          resourceName: "用户信息"
+          resourceCode: "userinfo"
+          description: "用户基本信息资源"
+  # Gateway配置
+  gateway:
+    # 白名单路径配置
+    white-list:
+      - /auth/**           # 认证相关接口（经过StripPrefix后的路径）
+      - /api/iam/auth/**   # 认证相关接口（原始路径，用于直接访问）
+      - /oauth2/**         # OAuth2相关接口
+      - /actuator/**       # 监控端点
+      - /swagger-ui/**     # Swagger UI
+      - /v3/api-docs/**    # API文档
+      - /webjars/**        # 静态资源
+      - /favicon.ico       # 网站图标
+      - /error             # 错误页面
+      - /test/**           # 测试接口 

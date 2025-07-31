@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.indigo</groupId>
+        <artifactId>infrastructure-module</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>audit-service</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <description>
+        审计服务
+        核心功能: 记录用户的关键操作 (登录、数据修改、删除、关键业务操作执行等)、记录系统重要事件 (如工作流状态变更、集成数据同步结果)、提供审计日志查询和分析功能、满足合规性要求。
+        重要性: 提供操作可追溯性，便于问题排查、安全审查和合规性检查。各个业务服务在执行关键操作后，需要调用此服务记录审计日志。
+    </description>
+</project>

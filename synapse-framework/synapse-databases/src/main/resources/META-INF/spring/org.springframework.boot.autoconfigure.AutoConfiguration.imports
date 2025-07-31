@@ -1,0 +1,6 @@
+com.indigo.databases.config.DynamicDataSourceAutoConfiguration
+com.indigo.databases.config.MybatisPlusConfig
+com.indigo.databases.interceptor.AutoDataSourceInterceptor
+com.indigo.databases.loadbalance.DataSourceLoadBalancer
+com.indigo.databases.health.DataSourceHealthChecker
+com.indigo.databases.config.SqlAnnotationAutoConfiguration

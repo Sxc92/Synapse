@@ -1,0 +1,116 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: iam-service
+  datasource:
+    dynamic:
+      primary: master1
+      strict: false
+      datasource:
+        master1:
+          type: MYSQL
+          host: localhost
+          port: 3306
+          database: synapse_iam
+          username: root
+          password: mamnan920130.
+          params:
+            useUnicode: "true"
+            characterEncoding: "utf8"
+            useSSL: "false"
+            serverTimezone: "Asia/Shanghai"
+          hikari:
+            minimumIdle: 5
+            maximumPoolSize: 15
+            idleTimeout: 30000
+            maxLifetime: 1800000
+            connectionTimeout: 30000
+            connectionTestQuery: "SELECT 1"
+#        master2:
+#          type: MYSQL
+#          host: 192.168.1.28
+#          port: 3306
+#          database: synapse_iam
+#          username: root
+#          password: password
+#          params:
+#            useUnicode: "true"
+#            characterEncoding: "utf8"
+#            useSSL: "false"
+#            serverTimezone: "Asia/Shanghai"
+#          hikari:
+#            minimumIdle: 5
+#            maximumPoolSize: 15
+#            idleTimeout: 30000
+#            maxLifetime: 1800000
+#            connectionTimeout: 30000
+#            connectionTestQuery: "SELECT 1"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
+
+# Synapse 配置
+synapse:
+  events:
+    enabled: true
+  jwt:
+    enabled: true
+    secret: SynapseMOM@2024!SecureJWTKey#256
+    expiration: 1800
+  security:
+    auth:
+      default-strategy: satoken
+      allow-concurrent-login: true
+      share-token: false
+    token:
+      name: user_token
+      timeout: 7200
+      active-timeout: 1800
+      renewal:
+        enabled: true
+        threshold: 1800
+        duration: 7200
+      style: uuid
+      prefix: Bearer
+    session:
+      store-type: redis
+      redis-prefix: "session:"
+      timeout: 7200
+    permission:
+      enabled: true
+      admin-role: admin
+      default-roles:
+        - user
+      default-permissions:
+        - user:read
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.indigo: INFO
+    com.indigo.security: INFO
+#
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  ## 管理端点
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: ["health", "info", "metrics"]
+#  endpoint:
+#    health:
+#      show-details: when_authorized
+

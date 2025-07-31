@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.indigo</groupId>
+    <artifactId>infrastructure-module</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <description>
+        基础服务设施
+        1、网关中心
+        2、审计中心
+        3、消息提醒服务
+        4、文件服务
+        5、日志审计服务
+        6、监控服务
+    </description>
+    <modules>
+        <module>gateway-service</module>
+        <module>workflow-service</module>
+        <module>schedule-service</module>
+        <module>audit-service</module>
+        <module>notification-service</module>
+        <module>license-service</module>
+        <module>integration-service</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.indigo</groupId>
+                <artifactId>synapse-bom</artifactId>
+                <version>1.0.0</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
