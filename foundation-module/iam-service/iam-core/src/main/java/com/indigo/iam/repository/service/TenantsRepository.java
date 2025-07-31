@@ -1,9 +1,6 @@
 package com.indigo.iam.repository.service;
 
 import com.indigo.databases.annotation.AutoRepository;
-import com.indigo.databases.annotation.SqlQuery;
-import com.indigo.databases.annotation.SqlPage;
-import com.indigo.databases.annotation.Param;
 import com.indigo.databases.repository.BaseRepository;
 import com.indigo.iam.api.model.pojo.IamTenant;
 import com.indigo.iam.repository.mapper.TenantMapper;
@@ -17,25 +14,26 @@ import java.util.List;
 @AutoRepository
 public interface TenantsRepository extends BaseRepository<IamTenant, TenantMapper> {
     
-    // ==================== SQL查询示例 ====================
+    // ==================== 业务方法示例 ====================
     
     /**
-     * 传统SQL查询 - 关联查询
+     * 查询租户及其创建者信息
      */
-    @SqlQuery("""
-        SELECT t.*, u.username as creator_name 
-        FROM iam_tenant t 
-        LEFT JOIN iam_user u ON t.creator_id = u.id 
-        WHERE t.status = #{status}
-        """)
-    List<IamTenant> findTenantsWithCreator(@Param("status") String status);
+    default List<IamTenant> findTenantsWithCreator(String status) {
+        return this.getMapper().findTenantsWithCreator(status);
+    }
     
     /**
-     * SQL分页查询 - 多表联查
+     * 分页查询租户及其创建者信息
      */
-    @SqlPage(
-        countSql = "SELECT COUNT(*) FROM iam_tenant t LEFT JOIN iam_user u ON t.creator_id = u.id WHERE t.status = #{status}",
-        dataSql = "SELECT t.*, u.username as creator_name FROM iam_tenant t LEFT JOIN iam_user u ON t.creator_id = u.id WHERE t.status = #{status} ORDER BY t.create_time DESC"
-    )
-    List<IamTenant> findTenantsWithCreatorPage(@Param("status") String status);
+    default List<IamTenant> findTenantsWithCreatorPage(String status) {
+        return this.getMapper().findTenantsWithCreatorPage(status, 10, 0);
+    }
+    
+    /**
+     * 统计租户数量
+     */
+    default Long countTenantsWithCreator(String status) {
+        return this.getMapper().countTenantsWithCreator(status);
+    }
 } 

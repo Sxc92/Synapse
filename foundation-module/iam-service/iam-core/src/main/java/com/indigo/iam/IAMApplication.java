@@ -9,15 +9,13 @@ import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 @SpringBootApplication(
-    scanBasePackages = {"com.indigo.iam", "com.indigo.databases"},
-    exclude = {
-    DataSourceAutoConfiguration.class,
-    DruidDataSourceAutoConfigure.class,
-    JacksonAutoConfiguration.class
-    }
+        exclude = {
+                DataSourceAutoConfiguration.class,
+                DruidDataSourceAutoConfigure.class,
+                JacksonAutoConfiguration.class
+        }
 )
 @EnableDiscoveryClient
-@MapperScan("com.indigo.iam.repository.mapper")
 public class IAMApplication {
     public static void main(String[] args) {
         SpringApplication.run(IAMApplication.class, args);

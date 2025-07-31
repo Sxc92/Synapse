@@ -4,12 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.indigo.databases.annotation.SqlPage;
-import com.indigo.databases.annotation.SqlQuery;
-import com.indigo.databases.annotation.SqlUpdate;
 import com.indigo.databases.dto.PageDTO;
 import com.indigo.databases.dto.PageResult;
-import com.indigo.databases.executor.SqlMethodExecutor;
 import com.indigo.databases.utils.LambdaQueryBuilder;
 import com.indigo.databases.repository.BaseRepository;
 import com.indigo.databases.utils.QueryConditionBuilder;
@@ -29,7 +25,7 @@ import java.lang.reflect.Type;
 
 /**
  * SQL方法拦截器
- * 用于动态代理处理注解SQL方法
+ * 用于动态代理处理MyBatis-Plus注解SQL方法
  *
  * @author 史偕成
  * @date 2024/12/19
@@ -37,9 +33,6 @@ import java.lang.reflect.Type;
 @Slf4j
 @Component
 public class SqlMethodInterceptor implements InvocationHandler {
-    
-    @Autowired
-    private SqlMethodExecutor sqlMethodExecutor;
     
     @Autowired
     private ApplicationContext applicationContext;
@@ -60,22 +53,14 @@ public class SqlMethodInterceptor implements InvocationHandler {
                 return method.invoke(this, args);
             }
             
-            // 检查是否有SQL注解
-            if (method.isAnnotationPresent(SqlQuery.class)) {
-                return sqlMethodExecutor.executeQuery(method, args);
-            }
-            
-            if (method.isAnnotationPresent(SqlUpdate.class)) {
-                return sqlMethodExecutor.executeUpdate(method, args);
-            }
-            
-            if (method.isAnnotationPresent(SqlPage.class)) {
-                return sqlMethodExecutor.executePage(method, args);
-            }
-            
             // 检查是否是BaseRepository的方法
             if (isBaseRepositoryMethod(method)) {
                 return handleBaseRepositoryMethod(proxy, method, args);
+            }
+            
+            // 检查是否是Mapper的方法
+            if (isMapperMethod(method)) {
+                return callMapperMethod(method, args);
             }
             
             // 如果没有SQL注解，尝试调用默认实现
@@ -85,11 +70,29 @@ public class SqlMethodInterceptor implements InvocationHandler {
             
             // 如果既没有SQL注解也不是默认方法，抛出异常
             throw new UnsupportedOperationException(
-                "Method " + method.getName() + " is not annotated with SQL annotation and has no default implementation"
+                "Method " + method.getName() + " has no default implementation"
             );
         } catch (Exception e) {
             log.error("Error invoking method: {}", method.getName(), e);
             throw e;
+        }
+    }
+    
+    /**
+     * 调用mapper方法
+     */
+    private Object callMapperMethod(Method method, Object[] args) throws Exception {
+        Object mapper = getMapperInstance(method);
+        
+        // 尝试在mapper上调用相同的方法
+        try {
+            Method mapperMethod = mapper.getClass().getMethod(method.getName(), method.getParameterTypes());
+            return mapperMethod.invoke(mapper, args);
+        } catch (NoSuchMethodException e) {
+            // 如果mapper上没有对应方法，抛出异常
+            throw new UnsupportedOperationException(
+                "Method " + method.getName() + " not found on mapper"
+            );
         }
     }
     
@@ -102,6 +105,16 @@ public class SqlMethodInterceptor implements InvocationHandler {
         return BaseRepository.class.isAssignableFrom(declaringClass) || 
                method.getDeclaringClass().getName().contains("IService") ||
                IService.class.isAssignableFrom(declaringClass);
+    }
+    
+    /**
+     * 检查是否是Mapper的方法
+     */
+    private boolean isMapperMethod(Method method) {
+        Class<?> declaringClass = method.getDeclaringClass();
+        // 检查是否是BaseMapper或其子接口的方法
+        return com.baomidou.mybatisplus.core.mapper.BaseMapper.class.isAssignableFrom(declaringClass) ||
+               declaringClass.getName().contains("Mapper");
     }
     
     /**
