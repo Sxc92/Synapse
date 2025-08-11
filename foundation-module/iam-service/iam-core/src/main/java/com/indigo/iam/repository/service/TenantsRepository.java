@@ -19,6 +19,7 @@ public interface TenantsRepository extends BaseRepository<IamTenant, TenantMappe
     /**
      * 查询租户及其创建者信息
      */
+
     default List<IamTenant> findTenantsWithCreator(String status) {
         return this.getMapper().findTenantsWithCreator(status);
     }

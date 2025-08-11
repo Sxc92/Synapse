@@ -109,7 +109,7 @@ public class TenantService {
     
     public boolean saveTenant(IamTenant tenant) {
         return tenantsRepository.save(tenant);
-    }
+        }
     
     // 查询条件构建
     public List<IamTenant> findTenants(TenantQueryDTO query) {
@@ -165,7 +165,7 @@ public class TenantQueryDTO extends PageDTO {
     
     @QueryCondition(type = QueryCondition.QueryType.BETWEEN, field = "create_time")
     private LocalDateTime[] createTime;
-}
+    }
 ```
 
 **支持的查询类型**:
@@ -253,7 +253,7 @@ public class TenantQueryDTO extends PageDTO {
 ```java
 // 分页查询
 PageResult<IamTenant> result = tenantsRepository.pageWithCondition(queryDTO);
-
+        
 // 获取分页信息
 long total = result.getTotal();
 long current = result.getCurrent();
@@ -352,14 +352,14 @@ spring:
       datasource:
         master:
           url: jdbc:mysql://localhost:3306/synapse_mom
-          username: root
-          password: password
-          driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: password
+        driver-class-name: com.mysql.cj.jdbc.Driver
         slave:
           url: jdbc:mysql://localhost:3306/synapse_mom_slave
-          username: root
-          password: password
-          driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: password
+        driver-class-name: com.mysql.cj.jdbc.Driver
 ```
 
 ### MyBatis-Plus 配置

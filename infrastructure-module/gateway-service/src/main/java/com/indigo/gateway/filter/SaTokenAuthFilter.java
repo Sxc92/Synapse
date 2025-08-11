@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.indigo.cache.session.UserSessionService;
 import com.indigo.core.context.UserContext;
 import com.indigo.core.entity.Result;
-import com.indigo.core.exception.enums.ErrorCode;
 import com.indigo.gateway.config.GatewayConfig;
 import com.indigo.security.service.TokenRenewalService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +23,10 @@ import java.util.List;
 
 /**
  * Gateway 统一认证过滤器
- * 专注于JWT token传递和权限认证
- * 
+ * 基于UserSessionService进行权限认证，避免在Gateway中直接使用Sa-Token
+ *
  * 架构设计：
- * - 使用synapse-security模块进行权限处理
+ * - 使用UserSessionService进行token验证和权限检查
  * - 使用synapse-cache模块获取用户会话
  * - 专注于token传递、权限认证和限流
  *
@@ -43,10 +42,10 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
     private final ObjectMapper objectMapper;
     private final GatewayConfig gatewayConfig;
 
-    public SaTokenAuthFilter(UserSessionService userSessionService, 
-                            @Autowired(required = false) TokenRenewalService tokenRenewalService, 
-                            @Qualifier("synapseObjectMapper") ObjectMapper objectMapper,
-                            GatewayConfig gatewayConfig) {
+    public SaTokenAuthFilter(UserSessionService userSessionService,
+                             @Autowired(required = false) TokenRenewalService tokenRenewalService,
+                             @Qualifier("synapseObjectMapper") ObjectMapper objectMapper,
+                             GatewayConfig gatewayConfig) {
         this.userSessionService = userSessionService;
         this.tokenRenewalService = tokenRenewalService;
         this.objectMapper = objectMapper;
@@ -58,11 +57,11 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();
 
-        log.info("Gateway认证过滤器: method={}, path={}", request.getMethod(), path);
+        log.debug("Gateway认证过滤器: method={}, path={}", request.getMethod(), path);
 
         // 检查白名单
         if (isWhiteListed(path)) {
-            log.info("路径在白名单中，跳过认证: path={}", path);
+            log.debug("路径在白名单中，跳过认证: path={}", path);
             return chain.filter(exchange);
         }
 
@@ -71,49 +70,37 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
             return handleThirdPartyAuth(exchange, chain);
         }
 
-        // 内部用户认证
+        // 内部用户认证 - 基于UserSessionService
         return handleInternalAuth(exchange, chain);
     }
 
     /**
-     * 处理内部用户认证
+     * 处理内部用户认证 - 基于UserSessionService
      */
     private Mono<Void> handleInternalAuth(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = extractToken(exchange.getRequest());
         if (token == null) {
             log.warn("缺少访问令牌: path={}", exchange.getRequest().getPath().value());
-            return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_MISSING, "缺少访问令牌");
+            return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, "缺少访问令牌");
         }
 
         try {
+            // 获取用户上下文 - 通过UserSessionService验证token
+            UserContext userContext = userSessionService.getUserSession(token);
+            if (userContext == null) {
+                log.warn("令牌无效或已过期: token={}, path={}", token, exchange.getRequest().getPath().value());
+                return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, "令牌无效或已过期");
+            }
+
             // 检查并续期token
             if (gatewayConfig.getTokenRenewal().isEnabled() && tokenRenewalService != null) {
                 TokenRenewalService.TokenRenewalInfo renewalInfo = tokenRenewalService.checkAndRenewToken(token);
-                if (renewalInfo == null || !renewalInfo.isValid()) {
-                    if (renewalInfo != null && renewalInfo.isExpired()) {
-                        log.warn("令牌已过期: token={}, path={}", token, exchange.getRequest().getPath().value());
-                        return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_EXPIRED, "令牌已过期");
-                    } else {
-                        log.warn("令牌无效: token={}, path={}", token, exchange.getRequest().getPath().value());
-                        return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_INVALID, "令牌无效");
-                    }
-                }
-
-                if (renewalInfo.isRenewed()) {
+                if (renewalInfo != null && renewalInfo.isRenewed()) {
                     // 添加续期信息到响应头
                     exchange.getResponse().getHeaders().add("X-Token-Renewed", "true");
                     exchange.getResponse().getHeaders().add("X-Token-Remaining", String.valueOf(renewalInfo.getRemainingSeconds()));
-                    log.info("Token已续期: token={}, remainingSeconds={}", token, renewalInfo.getRemainingSeconds());
+                    log.debug("Token已续期: token={}, remainingSeconds={}", token, renewalInfo.getRemainingSeconds());
                 }
-            } else if (gatewayConfig.getTokenRenewal().isEnabled() && tokenRenewalService == null) {
-                log.warn("Token续期功能已启用，但TokenRenewalService不可用，跳过续期检查");
-            }
-
-            // 验证token并获取用户信息
-            UserContext userContext = userSessionService.getUserSession(token);
-            if (userContext == null) {
-                log.warn("无法获取用户会话信息: token={}, path={}", token, exchange.getRequest().getPath().value());
-                return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_INVALID, "令牌无效或已过期");
             }
 
             // 获取用户权限和角色
@@ -121,31 +108,30 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
             List<String> permissions = userSessionService.getUserPermissions(token);
 
             if (roles == null || roles.isEmpty()) {
-                log.warn("用户角色列表为空: userId={}, token={}", userContext.getUserId(), token);
+                log.debug("用户角色列表为空: userId={}, token={}", userContext.getUserId(), token);
             }
             if (permissions == null || permissions.isEmpty()) {
-                log.warn("用户权限列表为空: userId={}, token={}", userContext.getUserId(), token);
+                log.debug("用户权限列表为空: userId={}, token={}", userContext.getUserId(), token);
             }
 
-            // 基本权限验证
-            if (!hasPermission(exchange.getRequest().getPath().value(), permissions)) {
-                log.warn("用户权限不足: userId={}, path={}, permissions={}", 
-                    userContext.getUserId(), exchange.getRequest().getPath().value(), permissions);
-                return writeErrorResponse(exchange, HttpStatus.FORBIDDEN, ErrorCode.PERMISSION_DENIED, "权限不足");
+            // 权限检查
+            if (!hasPermissionForPath(exchange.getRequest().getPath().value(), permissions)) {
+                log.warn("用户权限不足: userId={}, path={}, permissions={}",
+                        userContext.getUserId(), exchange.getRequest().getPath().value(), permissions);
+                return writeErrorResponse(exchange, HttpStatus.FORBIDDEN, "权限不足");
             }
 
             // 将用户信息传递给下游服务
             ServerHttpRequest modifiedRequest = buildAuthenticatedRequest(exchange.getRequest(), userContext, roles, permissions);
 
-            log.debug("用户认证成功: userId={}, username={}, path={}, roles={}, permissions={}", 
-                userContext.getUserId(), userContext.getUsername(), exchange.getRequest().getPath().value(),
-                roles, permissions);
+            log.debug("用户认证成功: userId={}, username={}, path={}",
+                    userContext.getUserId(), userContext.getUsername(), exchange.getRequest().getPath().value());
 
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
 
         } catch (Exception e) {
             log.error("内部用户认证失败: token={}, path={}", token, exchange.getRequest().getPath().value(), e);
-            return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED, "认证失败");
+            return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, "认证失败");
         }
     }
 
@@ -155,20 +141,20 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
     private Mono<Void> handleThirdPartyAuth(ServerWebExchange exchange, GatewayFilterChain chain) {
         if (!gatewayConfig.getThirdParty().isEnabled()) {
             log.warn("第三方平台认证未启用: path={}", exchange.getRequest().getPath().value());
-            return writeErrorResponse(exchange, HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN, "第三方平台认证未启用");
+            return writeErrorResponse(exchange, HttpStatus.FORBIDDEN, "第三方平台认证未启用");
         }
 
         String apiKey = exchange.getRequest().getHeaders().getFirst(gatewayConfig.getThirdParty().getApiKeyHeader());
         if (apiKey == null || apiKey.trim().isEmpty()) {
             log.warn("缺少API Key: path={}", exchange.getRequest().getPath().value());
-            return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_MISSING, "缺少API Key");
+            return writeErrorResponse(exchange, HttpStatus.UNAUTHORIZED, "缺少API Key");
         }
 
         // TODO: 实现第三方平台API Key验证逻辑
         // 这里可以调用专门的第三方平台认证服务
-        
+
         log.debug("第三方平台认证: apiKey={}, path={}", apiKey, exchange.getRequest().getPath().value());
-        
+
         // 添加第三方平台标识
         ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                 .header("X-Auth-Type", "third-party")
@@ -181,8 +167,8 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
     /**
      * 构建认证后的请求
      */
-    private ServerHttpRequest buildAuthenticatedRequest(ServerHttpRequest request, UserContext userContext, 
-                                                       List<String> roles, List<String> permissions) {
+    private ServerHttpRequest buildAuthenticatedRequest(ServerHttpRequest request, UserContext userContext,
+                                                        List<String> roles, List<String> permissions) {
         ServerHttpRequest.Builder builder = request.mutate()
                 .header("X-Auth-Type", "internal")
                 .header("X-User-Id", String.valueOf(userContext.getUserId()))
@@ -198,7 +184,7 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
 
         // 添加角色和权限信息
         builder.header("X-User-Roles", String.join(",", roles != null ? roles : List.of()))
-               .header("X-User-Permissions", String.join(",", permissions != null ? permissions : List.of()));
+                .header("X-User-Permissions", String.join(",", permissions != null ? permissions : List.of()));
 
         // 编码并添加完整的用户上下文
         String encodedContext = encodeUserContext(userContext);
@@ -213,13 +199,8 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
      * 检查路径是否在白名单中
      */
     private boolean isWhiteListed(String path) {
-        boolean isWhiteListed = gatewayConfig.getWhiteList().stream()
+        return gatewayConfig.getWhiteList().stream()
                 .anyMatch(pattern -> pathMatches(pattern, path));
-        
-        log.debug("白名单检查: path={}, whiteList={}, result={}", 
-                path, gatewayConfig.getWhiteList(), isWhiteListed);
-        
-        return isWhiteListed;
     }
 
     /**
@@ -234,16 +215,12 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
      * 路径匹配
      */
     private boolean pathMatches(String pattern, String path) {
-        boolean matches;
         if (pattern.endsWith("/**")) {
             String prefix = pattern.substring(0, pattern.length() - 3);
-            matches = path.startsWith(prefix);
+            return path.startsWith(prefix);
         } else {
-            matches = pattern.equals(path);
+            return pattern.equals(path);
         }
-        
-        log.debug("路径匹配: pattern={}, path={}, matches={}", pattern, path, matches);
-        return matches;
     }
 
     /**
@@ -275,9 +252,9 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 基本权限检查
+     * 权限检查 - 修复后的版本
      */
-    private boolean hasPermission(String path, List<String> permissions) {
+    private boolean hasPermissionForPath(String path, List<String> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             log.debug("权限检查失败: 权限列表为空, path={}", path);
             return false;
@@ -289,13 +266,35 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
             return true;
         }
 
-        // 这里可以实现更复杂的权限匹配逻辑
-        // 例如：根据路径映射到具体的权限码
-        // TODO: 实现细粒度的权限控制
+        // 根据路径映射到所需权限
+        String requiredPermission = mapPathToPermission(path);
+        if (requiredPermission != null) {
+            // 检查用户是否具有所需权限
+            boolean hasPermission = permissions.contains(requiredPermission);
+            log.debug("权限检查: path={}, requiredPermission={}, hasPermission={}, userPermissions={}",
+                    path, requiredPermission, hasPermission, permissions);
+            return hasPermission;
+        }
 
         // 默认允许（根据实际需求调整）
         log.debug("权限检查通过: 默认允许, path={}, permissions={}", path, permissions);
         return true;
+    }
+
+    /**
+     * 将路径映射到权限码
+     * 这里可以根据实际业务需求实现更复杂的映射逻辑
+     */
+    private String mapPathToPermission(String path) {
+        // 示例映射逻辑，可以根据实际需求调整
+        if (path.startsWith("/api/user")) {
+            return "user:read";
+        } else if (path.startsWith("/api/admin")) {
+            return "admin:access";
+        } else if (path.startsWith("/api/system")) {
+            return "system:manage";
+        }
+        return null; // 返回null表示不需要特殊权限检查
     }
 
     /**
@@ -314,15 +313,35 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * 写入错误响应
+     * 写入错误响应 - 使用统一的Result格式
      */
-    private Mono<Void> writeErrorResponse(ServerWebExchange exchange, HttpStatus status, ErrorCode errorCode, String message) {
+    private Mono<Void> writeErrorResponse(ServerWebExchange exchange, HttpStatus status, String message) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(status);
         response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
 
         // 使用统一的Result格式
-        Result<Object> result = Result.error(errorCode.getCode(), message);
+        Result<Object> result = Result.error(message);
+
+        try {
+            String body = objectMapper.writeValueAsString(result);
+            return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
+        } catch (Exception e) {
+            log.error("写入错误响应失败", e);
+            return response.setComplete();
+        }
+    }
+
+    /**
+     * 写入错误响应 - 使用错误码和消息
+     */
+    private Mono<Void> writeErrorResponse(ServerWebExchange exchange, HttpStatus status, String code, String message) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(status);
+        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
+
+        // 使用统一的Result格式
+        Result<Object> result = Result.error(code, message);
 
         try {
             String body = objectMapper.writeValueAsString(result);
@@ -337,4 +356,4 @@ public class SaTokenAuthFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE;
     }
-} 
+}

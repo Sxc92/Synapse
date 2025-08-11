@@ -1,9 +1,8 @@
 package com.indigo.iam.service;
 
 import com.indigo.core.entity.Result;
-import com.indigo.core.utils.PageResult;
+import com.indigo.databases.dto.PageResult;
 import com.indigo.iam.api.model.dto.TenantQueryDTO;
-import com.indigo.iam.api.model.dto.TenantQueryCondition;
 import com.indigo.iam.api.model.dto.TenantsPageDTO;
 import com.indigo.iam.api.model.pojo.IamTenant;
 import com.indigo.iam.repository.mapper.TenantMapper;
@@ -95,7 +94,7 @@ public class TenantService {
      */
     public List<IamTenant> findTenants(TenantQueryDTO query) {
         log.info("根据条件查询租户: {}", query);
-        return tenantsRepository.listWithCondition(query);
+        return tenantsRepository.listWithDTO(query);
     }
 
     /**
@@ -106,64 +105,64 @@ public class TenantService {
         return tenantsRepository.pageWithCondition(query);
     }
 
-    /**
-     * 根据状态查询租户列表 - 使用Builder模式
-     */
-    public List<IamTenant> getTenantsByStatus(Integer status) {
-        log.info("根据状态查询租户: {}", status);
-        // 方式1：使用Builder模式的静态方法
-        TenantQueryDTO query = TenantQueryDTO.byStatus(status);
-        return tenantsRepository.listWithCondition(query);
-    }
-
-    /**
-     * 关键词搜索租户 - 使用Builder模式
-     */
-    public List<IamTenant> searchTenantsByKeyword(String keyword) {
-        log.info("关键词搜索租户: {}", keyword);
-        // 方式1：使用Builder模式的静态方法
-        TenantQueryDTO query = TenantQueryDTO.byKeyword(keyword);
-        return tenantsRepository.listWithCondition(query);
-    }
+//    /**
+//     * 根据状态查询租户列表 - 使用Builder模式
+//     */
+//    public List<IamTenant> getTenantsByStatus(Integer status) {
+//        log.info("根据状态查询租户: {}", status);
+//        // 方式1：使用Builder模式的静态方法
+//        TenantQueryDTO query = TenantQueryDTO.byStatus(status);
+//        return tenantsRepository.listWithCondition(query);
+//    }
+//
+//    /**
+//     * 关键词搜索租户 - 使用Builder模式
+//     */
+//    public List<IamTenant> searchTenantsByKeyword(String keyword) {
+//        log.info("关键词搜索租户: {}", keyword);
+//        // 方式1：使用Builder模式的静态方法
+//        TenantQueryDTO query = TenantQueryDTO.byKeyword(keyword);
+//        return tenantsRepository.listWithCondition(query);
+//    }
 
     /**
      * 检查租户代码是否存在 - 使用Builder模式
      */
-    public boolean existsByCode(String code) {
-        log.info("检查租户代码是否存在: {}", code);
-        // 方式1：使用Builder模式的静态方法
-        TenantQueryDTO query = TenantQueryDTO.byCode(code);
-        return tenantsRepository.countWithCondition(query) > 0;
-    }
+//    public boolean existsByCode(String code) {
+//        log.info("检查租户代码是否存在: {}", code);
+//        // 方式1：使用Builder模式的静态方法
+//        TenantQueryDTO query = TenantQueryDTO.byCode(code);
+//        return tenantsRepository.countWithCondition(query) > 0;
+//    }
 
     // ==================== 使用查询条件对象的示例 ====================
 
     /**
      * 使用查询条件对象进行复杂查询
      */
-    public List<IamTenant> findTenantsWithCondition() {
-        log.info("使用查询条件对象进行复杂查询");
-        // 方式2：使用Lombok Builder的链式调用
-        TenantQueryCondition condition = TenantQueryCondition.builder()
-            .status(1)
-            .description("测试")
-            .build();
-        return tenantsRepository.listWithCondition(condition);
-    }
+//    public List<IamTenant> findTenantsWithCondition() {
+//        log.info("使用查询条件对象进行复杂查询");
+//        // 方式2：使用Lombok Builder的链式调用
+//        TenantQueryCondition condition = TenantQueryCondition.builder()
+//            .status(1)
+//            .description("测试")
+//            .build();
+//        return tenantsRepository.listWithCondition(condition);
+//    }
 
     /**
      * 使用查询条件对象进行时间范围查询
      */
-    public List<IamTenant> findTenantsByTimeRange(LocalDateTime start, LocalDateTime end) {
-        log.info("使用查询条件对象进行时间范围查询: {} - {}", start, end);
-        // 方式2：使用Lombok Builder
-        TenantQueryCondition condition = TenantQueryCondition.builder()
-            .createTime(new LocalDateTime[]{start, end})
-            .status(1)
-            .build();
-        
-        return tenantsRepository.listWithCondition(condition);
-    }
+//    public List<IamTenant> findTenantsByTimeRange(LocalDateTime start, LocalDateTime end) {
+//        log.info("使用查询条件对象进行时间范围查询: {} - {}", start, end);
+//        // 方式2：使用Lombok Builder
+//        TenantQueryCondition condition = TenantQueryCondition.builder()
+//            .createTime(new LocalDateTime[]{start, end})
+//            .status(1)
+//            .build();
+//
+//        return tenantsRepository.listWithCondition(condition);
+//    }
 
     // ==================== 复杂查询（使用@Select注解） ====================
 
@@ -192,25 +191,25 @@ public class TenantService {
     }
 
     // ==================== 业务方法 ====================
+//
+//    /**
+//     * 获取活跃租户
+//     */
+//    public List<IamTenant> getActiveTenants() {
+//        log.info("获取活跃租户");
+//        return getTenantsByStatus(1);
+//    }
 
-    /**
-     * 获取活跃租户
-     */
-    public List<IamTenant> getActiveTenants() {
-        log.info("获取活跃租户");
-        return getTenantsByStatus(1);
-    }
-
-    /**
-     * 分页查询租户（兼容旧接口）
-     */
-    public PageResult<IamTenant> getTenantsPage(TenantsPageDTO params) {
-        log.info("分页查询租户: {}", params);
-        TenantQueryDTO query = new TenantQueryDTO();
-        query.setPageNo(params.getPageNo());
-        query.setPageSize(params.getPageSize());
-        query.setStatus(params.getStatus());
-        query.setOrderByList(params.getOrderByList());
-        return tenantsRepository.pageWithCondition(query);
-    }
+//    /**
+//     * 分页查询租户（兼容旧接口）
+//     */
+//    public PageResult<IamTenant> getTenantsPage(TenantsPageDTO params) {
+//        log.info("分页查询租户: {}", params);
+//        TenantQueryDTO query = new TenantQueryDTO();
+//        query.setPageNo(params.getPageNo());
+//        query.setPageSize(params.getPageSize());
+//        query.setStatus(params.getStatus());
+//        query.setOrderByList(params.getOrderByList());
+//        return tenantsRepository.pageWithCondition(query);
+//    }
 }

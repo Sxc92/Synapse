@@ -12,7 +12,6 @@
         <module>foundation-module</module>
         <module>infrastructure-module</module>
         <module>business-module</module>
-        <module>synapse-framework</module>
     </modules>
 
     <properties>

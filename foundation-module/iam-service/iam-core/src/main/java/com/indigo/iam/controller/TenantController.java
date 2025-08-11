@@ -1,9 +1,8 @@
 package com.indigo.iam.controller;
 
 import com.indigo.core.entity.Result;
-import com.indigo.core.utils.PageResult;
+import com.indigo.databases.dto.PageResult;
 import com.indigo.iam.api.model.dto.TenantQueryDTO;
-import com.indigo.iam.api.model.dto.TenantQueryCondition;
 import com.indigo.iam.api.model.dto.TenantsPageDTO;
 import com.indigo.iam.api.model.pojo.IamTenant;
 import com.indigo.iam.service.TenantService;
@@ -33,7 +32,7 @@ public class TenantController {
     /**
      * 创建租户
      */
-    @PostMapping
+    @PostMapping("/createTenant")
     public Result<Boolean> createTenant(@RequestBody IamTenant tenant) {
         boolean result = tenantService.createTenant(tenant);
         return Result.success(result);
@@ -109,29 +108,29 @@ public class TenantController {
     /**
      * 根据条件分页查询租户
      */
-    @PostMapping("/page")
-    public Result<PageResult<IamTenant>> findTenantsWithPage(@RequestBody TenantQueryDTO query) {
-        PageResult<IamTenant> result = tenantService.findTenantsWithPage(query);
-        return Result.success(result);
-    }
+//    @PostMapping("/page")
+//    public Result<PageResult<IamTenant>> findTenantsWithPage(@RequestBody TenantQueryDTO query) {
+//        PageResult<IamTenant> result = tenantService.findTenantsWithPage(query);
+//        return Result.success(result);
+//    }
 
     /**
      * 根据状态查询租户列表
      */
-    @GetMapping("/status/{status}")
-    public Result<List<IamTenant>> getTenantsByStatus(@PathVariable Integer status) {
-        List<IamTenant> tenants = tenantService.getTenantsByStatus(status);
-        return Result.success(tenants);
-    }
-
-    /**
-     * 关键词搜索租户
-     */
-    @GetMapping("/search")
-    public Result<List<IamTenant>> searchTenants(@RequestParam String keyword) {
-        List<IamTenant> tenants = tenantService.searchTenantsByKeyword(keyword);
-        return Result.success(tenants);
-    }
+//    @GetMapping("/status/{status}")
+//    public Result<List<IamTenant>> getTenantsByStatus(@PathVariable Integer status) {
+//        List<IamTenant> tenants = tenantService.getTenantsByStatus(status);
+//        return Result.success(tenants);
+//    }
+//
+//    /**
+//     * 关键词搜索租户
+//     */
+//    @GetMapping("/search")
+//    public Result<List<IamTenant>> searchTenants(@RequestParam String keyword) {
+//        List<IamTenant> tenants = tenantService.searchTenantsByKeyword(keyword);
+//        return Result.success(tenants);
+//    }
 
     // ==================== 复杂查询接口 ====================
 
@@ -167,53 +166,53 @@ public class TenantController {
     /**
      * 获取活跃租户
      */
-    @GetMapping("/active")
-    public Result<List<IamTenant>> getActiveTenants() {
-        List<IamTenant> tenants = tenantService.getActiveTenants();
-        return Result.success(tenants);
-    }
+//    @GetMapping("/active")
+//    public Result<List<IamTenant>> getActiveTenants() {
+//        List<IamTenant> tenants = tenantService.getActiveTenants();
+//        return Result.success(tenants);
+//    }
 
     /**
      * 检查租户代码是否存在
      */
-    @GetMapping("/exists/{code}")
-    public Result<Boolean> existsByCode(@PathVariable String code) {
-        boolean exists = tenantService.existsByCode(code);
-        return Result.success(exists);
-    }
+//    @GetMapping("/exists/{code}")
+//    public Result<Boolean> existsByCode(@PathVariable String code) {
+//        boolean exists = tenantService.existsByCode(code);
+//        return Result.success(exists);
+//    }
 
     // ==================== 兼容性接口（保持向后兼容） ====================
 
     /**
      * 分页查询租户（兼容旧接口）
      */
-    @PostMapping("/page-old")
-    public Result<PageResult<IamTenant>> getTenantsPage(@RequestBody TenantsPageDTO request) {
-        PageResult<IamTenant> result = tenantService.getTenantsPage(request);
-        return Result.success(result);
-    }
+//    @PostMapping("/page-old")
+//    public Result<PageResult<IamTenant>> getTenantsPage(@RequestBody TenantsPageDTO request) {
+//        PageResult<IamTenant> result = tenantService.getTenantsPage(request);
+//        return Result.success(result);
+//    }
 
     // ==================== 查询条件对象示例接口 ====================
 
-    /**
-     * 使用查询条件对象进行复杂查询
-     */
-    @GetMapping("/condition-example")
-    public Result<List<IamTenant>> getTenantsWithCondition() {
-        List<IamTenant> tenants = tenantService.findTenantsWithCondition();
-        return Result.success(tenants);
-    }
-
-    /**
-     * 使用查询条件对象进行时间范围查询
-     */
-    @GetMapping("/time-range")
-    public Result<List<IamTenant>> getTenantsByTimeRange(
-            @RequestParam("start") String start,
-            @RequestParam("end") String end) {
-        LocalDateTime startTime = LocalDateTime.parse(start);
-        LocalDateTime endTime = LocalDateTime.parse(end);
-        List<IamTenant> tenants = tenantService.findTenantsByTimeRange(startTime, endTime);
-        return Result.success(tenants);
-    }
+//    /**
+//     * 使用查询条件对象进行复杂查询
+//     */
+//    @GetMapping("/condition-example")
+//    public Result<List<IamTenant>> getTenantsWithCondition() {
+//        List<IamTenant> tenants = tenantService.findTenantsWithCondition();
+//        return Result.success(tenants);
+//    }
+//
+//    /**
+//     * 使用查询条件对象进行时间范围查询
+//     */
+//    @GetMapping("/time-range")
+//    public Result<List<IamTenant>> getTenantsByTimeRange(
+//            @RequestParam("start") String start,
+//            @RequestParam("end") String end) {
+//        LocalDateTime startTime = LocalDateTime.parse(start);
+//        LocalDateTime endTime = LocalDateTime.parse(end);
+//        List<IamTenant> tenants = tenantService.findTenantsByTimeRange(startTime, endTime);
+//        return Result.success(tenants);
+//    }
 }
