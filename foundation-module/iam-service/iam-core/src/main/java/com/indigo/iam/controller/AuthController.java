@@ -2,7 +2,7 @@ package com.indigo.iam.controller;
 
 import com.indigo.core.entity.Result;
 import com.indigo.iam.service.AuthService;
-import com.indigo.security.model.LoginRequest;
+import com.indigo.security.model.AuthRequest;
 import com.indigo.security.model.AuthResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class AuthController {
      * @return 登录结果
      */
     @PostMapping("/login")
-    public Result<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+    public Result<AuthResponse> login(@RequestBody AuthRequest loginRequest) {
         log.info("用户登录请求: username={}", loginRequest.getUsername());
         return authService.login(loginRequest);
     }

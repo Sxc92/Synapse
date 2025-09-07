@@ -4,10 +4,11 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.indigo.cache.session.UserSessionService;
 import com.indigo.core.context.UserContext;
 import com.indigo.core.entity.Result;
+import com.indigo.iam.api.model.dto.LoginDTO;
+import com.indigo.iam.repository.service.IamUserService;
 import com.indigo.security.core.AuthenticationService;
 import com.indigo.security.model.AuthRequest;
 import com.indigo.security.model.AuthResponse;
-import com.indigo.security.model.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,9 @@ import java.util.List;
 public class AuthService {
 
     private final AuthenticationService authenticationService;
-    private final UserSessionService userSessionService;
+//    private final UserSessionService userSessionService;
+
+    private final IamUserService iamUserService;
 
     @Value("${synapse.security.token.timeout:7200}")
     private long tokenTimeout;
@@ -36,27 +39,27 @@ public class AuthService {
     /**
      * 用户登录
      */
-    public Result<AuthResponse> login(LoginRequest loginRequest) {
+    public Result<AuthResponse> login(AuthRequest loginRequest) {
         try {
-            log.info("用户登录开始: username={}", loginRequest.getUsername());
+
 
             // 构建认证请求
-            AuthRequest authRequest = AuthRequest.builder()
-                    .authType(AuthRequest.AuthType.USERNAME_PASSWORD)
-//                    .userId(Long.valueOf(Math.abs(loginRequest.getUsername().hashCode()))) // 简化示例，实际应从数据库获取
-                    .username(loginRequest.getUsername())
-                    .password(loginRequest.getPassword())
-                    .build();
+//            AuthRequest authRequest = AuthRequest.builder()
+//                    .authType(AuthRequest.AuthType.USERNAME_PASSWORD)
+////                    .userId(Long.valueOf(Math.abs(loginRequest.getUsername().hashCode()))) // 简化示例，实际应从数据库获取
+////                    .username(loginRequest.getUsername())
+////                    .password(loginRequest.getPassword())
+//                    .build();
 
             // 使用认证服务进行登录
-            Result<AuthResponse> result = authenticationService.authenticate(authRequest);
-            
+            Result<AuthResponse> result = authenticationService.authenticate(loginRequest);
+
             if (result.isSuccess()) {
-                log.info("用户登录成功: username={}, token={}", 
-                    loginRequest.getUsername(), result.getData().getAccessToken());
+                log.info("用户登录成功: username={}, token={}",
+                        loginRequest.getUsername(), result.getData().getAccessToken());
             } else {
-                log.warn("用户登录失败: username={}, error={}", 
-                    loginRequest.getUsername(), result.getMsg());
+                log.warn("用户登录失败: username={}, error={}",
+                        loginRequest.getUsername(), result.getMsg());
             }
 
             return result;
@@ -77,13 +80,13 @@ public class AuthService {
             }
 
             // 获取用户信息用于日志记录
-            UserContext userContext = userSessionService.getUserSession(token);
-            String username = userContext != null ? userContext.getUsername() : "unknown";
+//            UserContext userContext = userSessionService.getUserSession(token);
+//            String username = userContext != null ? userContext.getUsername() : "unknown";
 
             // 执行登出
             StpUtil.logoutByTokenValue(token);
 
-            log.info("用户登出成功: username={}, token={}", username, token);
+//            log.info("用户登出成功: username={}, token={}", username, token);
             return Result.success();
 
         } catch (Exception e) {
@@ -105,11 +108,11 @@ public class AuthService {
             Result<AuthResponse> result = authenticationService.renewToken(token);
 
             if (result.isSuccess()) {
-                log.info("Token刷新成功: oldToken={}, newToken={}", 
-                    token, result.getData().getAccessToken());
+                log.info("Token刷新成功: oldToken={}, newToken={}",
+                        token, result.getData().getAccessToken());
             } else {
-                log.warn("Token刷新失败: token={}, error={}", 
-                    token, result.getMsg());
+                log.warn("Token刷新失败: token={}, error={}",
+                        token, result.getMsg());
             }
 
             return result;

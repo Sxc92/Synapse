@@ -1,51 +1,3 @@
-
-
-
-#  datasource:
-#    dynamic:
-#      primary: master1
-#      strict: false
-#      datasource:
-#        master1:
-#          type: MYSQL
-#          host: localhost
-#          port: 3306
-#          database: synapse_iam
-#          username: root
-#          password: mamnan920130.
-#          pool-type: HIKARI
-#          params:
-#            useUnicode: "true"
-#            characterEncoding: "utf8"
-#            useSSL: "false"
-#            serverTimezone: "Asia/Shanghai"
-#          hikari:
-#            minimum-idle: 5
-#            maximum-pool-size: 15
-#            idle-timeout: 30000
-#            max-lifetime: 1800000
-#            connection-timeout: 30000
-#            connection-test-query: "SELECT 1"
-##        master2:
-#          type: MYSQL
-#          host: 192.168.1.28
-#          port: 3306
-#          database: synapse_iam
-#          username: root
-#          password: password
-#          params:
-#            useUnicode: "true"
-#            characterEncoding: "utf8"
-#            useSSL: "false"
-#            serverTimezone: "Asia/Shanghai"
-#          hikari:
-#            minimumIdle: 5
-#            maximumPoolSize: 15
-#            idleTimeout: 30000
-#            maxLifetime: 1800000
-#            connectionTimeout: 30000
-#            connectionTestQuery: "SELECT 1"
-
 # Synapse 配置
 synapse:
   datasource:
@@ -56,28 +8,27 @@ synapse:
       global-config:
         banner: false
     primary: master1
-    dynamic-data-source:
-      datasource:
-        master1:
-          type: MYSQL
-          host: localhost
-          port: 3306
-          database: synapse_iam
-          username: root
-          password: mamnan920130.
-          pool-type: HIKARI
-          params:
-            useUnicode: "true"
-            characterEncoding: "utf8"
-            useSSL: "false"
-            serverTimezone: "Asia/Shanghai"
-          hikari:
-            minimum-idle: 5
-            maximum-pool-size: 15
-            idle-timeout: 30000
-            max-lifetime: 1800000
-            connection-timeout: 30000
-            connection-test-query: "SELECT 1"
+    datasources:
+      master1:
+        type: MYSQL
+        host: localhost
+        port: 3306
+        database: synapse_iam
+        username: root
+        password: mamnan920130.
+        pool-type: HIKARI
+        params:
+          useUnicode: "true"
+          characterEncoding: "utf8"
+          useSSL: "false"
+          serverTimezone: "Asia/Shanghai"
+        hikari:
+          minimum-idle: 5
+          maximum-pool-size: 15
+          idle-timeout: 30000
+          max-lifetime: 1800000
+          connection-timeout: 30000
+          connection-test-query: "SELECT 1"
   security:
     enabled: true
     jwt:

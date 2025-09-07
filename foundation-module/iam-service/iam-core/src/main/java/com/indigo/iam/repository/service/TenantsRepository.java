@@ -16,25 +16,25 @@ public interface TenantsRepository extends BaseRepository<IamTenant, TenantMappe
     
     // ==================== 业务方法示例 ====================
     
-    /**
-     * 查询租户及其创建者信息
-     */
-
-    default List<IamTenant> findTenantsWithCreator(String status) {
-        return this.getMapper().findTenantsWithCreator(status);
-    }
-    
-    /**
-     * 分页查询租户及其创建者信息
-     */
-    default List<IamTenant> findTenantsWithCreatorPage(String status) {
-        return this.getMapper().findTenantsWithCreatorPage(status, 10, 0);
-    }
-    
-    /**
-     * 统计租户数量
-     */
-    default Long countTenantsWithCreator(String status) {
-        return this.getMapper().countTenantsWithCreator(status);
-    }
+//    /**
+//     * 查询租户及其创建者信息
+//     */
+//
+//    default List<IamTenant> findTenantsWithCreator(String status) {
+//        return this.getMapper().findTenantsWithCreator(status);
+//    }
+//
+//    /**
+//     * 分页查询租户及其创建者信息
+//     */
+//    default List<IamTenant> findTenantsWithCreatorPage(String status) {
+//        return this.getMapper().findTenantsWithCreatorPage(status, 10, 0);
+//    }
+//
+//    /**
+//     * 统计租户数量
+//     */
+//    default Long countTenantsWithCreator(String status) {
+//        return this.getMapper().countTenantsWithCreator(status);
+//    }
 } 

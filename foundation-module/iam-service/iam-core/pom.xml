@@ -66,6 +66,22 @@
             </exclusions>
         </dependency>
 
+        <!-- Synapse Databases -->
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>synapse-databases</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Synapse Cache -->
         <dependency>
             <groupId>com.indigo</groupId>
