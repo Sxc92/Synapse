@@ -2,9 +2,7 @@ package com.indigo.iam.api.model.dto;
 
 import com.indigo.databases.annotation.QueryCondition;
 import com.indigo.databases.dto.PageDTO;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +16,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class TenantQueryDTO extends PageDTO {
 
     @QueryCondition(type = QueryCondition.QueryType.LIKE)
@@ -34,60 +34,4 @@ public class TenantQueryDTO extends PageDTO {
 
     @QueryCondition(type = QueryCondition.QueryType.BETWEEN, field = "expire_time")
     private LocalDateTime[] expireTime;
-
-    // ==================== 静态工厂方法（使用Lombok Builder） ====================
-    
-    /**
-     * 创建状态查询条件
-     */
-    public static TenantQueryDTO byStatus(Integer status) {
-        return TenantQueryDTO.builder()
-            .status(status)
-            .build();
-    }
-
-    /**
-     * 创建关键词搜索条件
-     */
-    public static TenantQueryDTO byKeyword(String keyword) {
-        return TenantQueryDTO.builder()
-            .code(keyword)
-            .build();
-    }
-
-    /**
-     * 创建代码查询条件
-     */
-    public static TenantQueryDTO byCode(String code) {
-        return TenantQueryDTO.builder()
-            .code(code)
-            .build();
-    }
-
-    /**
-     * 创建时间范围查询条件
-     */
-    public static TenantQueryDTO byCreateTimeRange(LocalDateTime start, LocalDateTime end) {
-        return TenantQueryDTO.builder()
-            .createTime(new LocalDateTime[]{start, end})
-            .build();
-    }
-
-    /**
-     * 创建过期时间范围查询条件
-     */
-    public static TenantQueryDTO byExpireTimeRange(LocalDateTime start, LocalDateTime end) {
-        return TenantQueryDTO.builder()
-            .expireTime(new LocalDateTime[]{start, end})
-            .build();
-    }
-
-    /**
-     * 创建描述模糊查询条件
-     */
-    public static TenantQueryDTO byDescription(String description) {
-        return TenantQueryDTO.builder()
-            .description(description)
-            .build();
-    }
-} 
+}

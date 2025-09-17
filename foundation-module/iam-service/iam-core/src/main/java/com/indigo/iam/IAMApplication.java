@@ -12,7 +12,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
                 DataSourceAutoConfiguration.class,
                 DruidDataSourceAutoConfigure.class,
                 JacksonAutoConfiguration.class
-        }
+        },
+        scanBasePackages = "com.indigo.iam"
 )
 @EnableDiscoveryClient
 public class IAMApplication {

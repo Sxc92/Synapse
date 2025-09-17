@@ -10,11 +10,15 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Gateway Service Application
  * 排除LocalResponseCacheAutoConfiguration避免cacheKeyGenerator Bean冲突
+ * 排除Web MVC相关配置，Gateway使用WebFlux
  * 
  * @author 史偕成
  * @date 2025/04/24 21:57
  **/
-@SpringBootApplication(exclude = {LocalResponseCacheAutoConfiguration.class, JacksonAutoConfiguration.class})
+@SpringBootApplication(exclude = {
+        LocalResponseCacheAutoConfiguration.class, 
+        JacksonAutoConfiguration.class
+})
 @EnableDiscoveryClient
 @ComponentScan(basePackages = "com.indigo")
 public class GatewayApplication {

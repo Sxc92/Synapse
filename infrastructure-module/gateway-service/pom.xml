@@ -113,11 +113,11 @@
         </dependency>
         
         <!-- 安全模块 - 用于权限处理 -->
+        <!-- Gateway使用WebFlux，暂时排除synapse-security模块 -->
         <dependency>
             <groupId>com.indigo</groupId>
             <artifactId>synapse-security</artifactId>
             <exclusions>
-                <!-- 排除Spring MVC相关依赖，Gateway使用WebFlux -->
                 <exclusion>
                     <groupId>cn.dev33</groupId>
                     <artifactId>sa-token-spring-boot3-starter</artifactId>

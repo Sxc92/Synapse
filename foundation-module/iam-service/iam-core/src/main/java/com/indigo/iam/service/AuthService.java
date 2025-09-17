@@ -42,15 +42,6 @@ public class AuthService {
     public Result<AuthResponse> login(AuthRequest loginRequest) {
         try {
 
-
-            // 构建认证请求
-//            AuthRequest authRequest = AuthRequest.builder()
-//                    .authType(AuthRequest.AuthType.USERNAME_PASSWORD)
-////                    .userId(Long.valueOf(Math.abs(loginRequest.getUsername().hashCode()))) // 简化示例，实际应从数据库获取
-////                    .username(loginRequest.getUsername())
-////                    .password(loginRequest.getPassword())
-//                    .build();
-
             // 使用认证服务进行登录
             Result<AuthResponse> result = authenticationService.authenticate(loginRequest);
 
