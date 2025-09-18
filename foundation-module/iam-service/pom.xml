@@ -13,12 +13,12 @@
     <packaging>pom</packaging>
     <description>
         用户管理、角色管理、权限管理 (基于RBAC/ABAC等模型)、组织机构/部门管理 (作为主数据源或与 Foundation Data
-        协同)、用户组管理、登录认证 (OAuth2, JWT等)、单点登录 (SSO) 支持、API 访问控制、安全策略配置 (密码强度、锁定策略等)
+        协同)、用户组管理、登录认证 (OAuth2, JWT等)、API 访问控制、安全策略配置 (密码强度、锁定策略等)
     </description>
 
     <modules>
         <module>iam-api</module>
-        <module>iam-core</module>
+        <module>iam-server</module>
     </modules>
 
     <properties>
@@ -37,12 +37,7 @@
             </dependency>
             <dependency>
                 <groupId>com.indigo</groupId>
-                <artifactId>iam-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.indigo</groupId>
-                <artifactId>iam-client</artifactId>
+                <artifactId>iam-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

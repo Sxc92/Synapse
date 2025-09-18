@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>iam-core</artifactId>
+    <artifactId>iam-server</artifactId>
     <description>IAM Service Core Module - Contains the main business logic implementation</description>
 
     <dependencies>

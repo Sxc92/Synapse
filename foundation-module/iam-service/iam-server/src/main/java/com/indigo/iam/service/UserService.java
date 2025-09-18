@@ -1,6 +1,6 @@
 package com.indigo.iam.service;
 
-import com.indigo.iam.api.model.pojo.IamUser;
+import com.indigo.iam.repository.entity.Users;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  **/
 public interface UserService {
 
-    IamUser loadUserByUsername(String username);
+    Users loadUserByUsername(String username);
 
 }
 
@@ -20,7 +20,7 @@ class UserServiceImpl implements UserService {
 
 
     @Override
-    public IamUser loadUserByUsername(String username) {
+    public Users loadUserByUsername(String username) {
         return null;
     }
 }

@@ -53,36 +53,6 @@ synapse:
         max-wait: -1
   events:
     enabled: false
-#  jwt:
-#    enabled: true
-#    secret: SynapseMOM@2024!SecureJWTKey#256
-#    expiration: 1800
-#  security:
-#    auth:
-#      default-strategy: satoken
-#      allow-concurrent-login: true
-#      share-token: false
-#    token:
-#      name: user_token
-#      timeout: 7200
-#      active-timeout: 1800
-#      renewal:
-#        enabled: true
-#        threshold: 1800
-#        duration: 7200
-#      style: uuid
-#      prefix: Bearer
-#    session:
-#      store-type: redis
-#      redis-prefix: "session:"
-#      timeout: 7200
-#    permission:
-#      enabled: true
-#      admin-role: admin
-#      default-roles:
-#        - user
-#      default-permissions:
-#        - user:read
 
 # 日志配置
 logging:
