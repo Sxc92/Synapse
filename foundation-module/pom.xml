@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>iam-service</module>
-        <module>meta-data-service</module>
+        <module>mdm-service</module>
     </modules>
     <description>基础服务模块</description>
     <properties>

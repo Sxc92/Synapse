@@ -15,7 +15,7 @@ public interface IamUserService extends IService<Users> {
 
 }
 
-@Service
 @Slf4j
+@Service
 class IamUserServiceImpl extends ServiceImpl<IamUserMapper, Users> implements IamUserService {
 }

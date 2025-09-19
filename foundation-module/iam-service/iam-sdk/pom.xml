@@ -5,17 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.indigo</groupId>
-        <artifactId>meta-data-service</artifactId>
+        <artifactId>iam-service</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>meta-data-api</artifactId>
-
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <artifactId>iam-sdk</artifactId>
+    <description>IAM Service API Module - Contains service interfaces and models for external use</description>
 
     <dependencies>
         <!-- Synapse Core for basic utilities and models -->
@@ -38,5 +33,11 @@
             <artifactId>spring-boot-starter-validation</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- Synapse Database -->
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>synapse-databases</artifactId>
+        </dependency>
     </dependencies>
-</project>
+</project> 

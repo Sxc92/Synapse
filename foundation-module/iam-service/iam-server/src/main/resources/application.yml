@@ -15,7 +15,7 @@ synapse:
         port: 3306
         database: synapse_iam
         username: root
-        password: mamnan920130.
+        password: password
         pool-type: HIKARI
         params:
           useUnicode: "true"
