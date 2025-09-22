@@ -1,6 +1,7 @@
 package com.indigo.iam.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.indigo.databases.mapper.EnhancedVoMapper;
 import com.indigo.iam.repository.entity.Users;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,5 +10,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2025/07/22 16:15
  **/
 @Mapper
-public interface IamUserMapper extends BaseMapper<Users> {
+public interface IamUserMapper extends BaseMapper<Users>, EnhancedVoMapper<Users, Object> {
 }
