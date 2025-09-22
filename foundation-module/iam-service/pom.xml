@@ -17,7 +17,7 @@
     </description>
 
     <modules>
-        <module>iam-api</module>
+        <module>iam-sdk</module>
         <module>iam-server</module>
     </modules>
 
@@ -32,12 +32,7 @@
             <!-- 子模块依赖 -->
             <dependency>
                 <groupId>com.indigo</groupId>
-                <artifactId>iam-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.indigo</groupId>
-                <artifactId>iam-server</artifactId>
+                <artifactId>iam-sdk</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

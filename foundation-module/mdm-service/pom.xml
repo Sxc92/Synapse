@@ -5,32 +5,26 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.indigo</groupId>
-        <artifactId>Synapse</artifactId>
+        <artifactId>foundation-module</artifactId>
         <version>1.0.0</version>
     </parent>
-    
-    <artifactId>foundation-module</artifactId>
+
+    <artifactId>mdm-service</artifactId>
     <packaging>pom</packaging>
+    <description>
+        基础数据服务
+        1、字典
+        2、系统参数
+        3、i18n
+        4、
+    </description>
     <modules>
-        <module>iam-service</module>
-        <module>mdm-service</module>
+        <module>mdm-server</module>
+        <module>mdm-sdk</module>
     </modules>
-    <description>基础服务模块</description>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.indigo</groupId>
-                <artifactId>synapse-bom</artifactId>
-                <version>1.0.0</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>

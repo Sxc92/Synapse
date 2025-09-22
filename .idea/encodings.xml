@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-bom/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-bom/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-cache/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-cache/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-databases/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-databases/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-events/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-events/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-i18n/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-i18n/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-security/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Synapse-Framework/synapse-security/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/business-module/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/business-module/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/iam-service/iam-sdk/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/iam-service/iam-sdk/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/iam-service/iam-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/iam-service/iam-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/iam-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/iam-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/mdm-service/mdm-sdk/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/mdm-service/mdm-sdk/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/mdm-service/mdm-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/mdm-service/mdm-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/mdm-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/mdm-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/meta-data-service/meta-data-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/meta-data-service/meta-data-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/foundation-module/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/audit-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/audit-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/gateway-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/gateway-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/integration-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/integration-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/license-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/license-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/notification-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/notification-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/schedule-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/schedule-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/workflow-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/infrastructure-module/workflow-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

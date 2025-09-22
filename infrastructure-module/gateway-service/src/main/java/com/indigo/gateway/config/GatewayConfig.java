@@ -60,6 +60,11 @@ public class GatewayConfig {
      */
     private RateLimitConfig rateLimit = new RateLimitConfig();
 
+    /**
+     * 语言环境配置
+     */
+    private LocaleConfig locale = new LocaleConfig();
+
     @Data
     public static class ThirdPartyConfig {
         /**
@@ -163,5 +168,47 @@ public class GatewayConfig {
          * 时间窗口（秒）
          */
         private int windowSeconds = 60;
+    }
+
+    @Data
+    public static class LocaleConfig {
+        /**
+         * 是否启用语言环境处理
+         */
+        private boolean enabled = true;
+        
+        /**
+         * 默认语言环境
+         */
+        private String defaultLocale = "zh_CN";
+        
+        /**
+         * 语言环境参数名（URL参数）
+         */
+        private String paramName = "lang";
+        
+        /**
+         * 是否记录语言环境日志
+         */
+        private boolean logLocale = false;
+        
+        /**
+         * 语言环境请求头名称
+         */
+        private String headerName = "X-Locale";
+        
+        /**
+         * 是否严格验证语言环境格式
+         * true: 严格按照ISO标准验证
+         * false: 宽松验证，允许更多格式
+         */
+        private boolean strictValidation = true;
+        
+        /**
+         * 是否允许未知语言环境
+         * true: 允许任何有效格式的语言环境
+         * false: 只允许常见的语言环境
+         */
+        private boolean allowUnknownLocales = true;
     }
 } 

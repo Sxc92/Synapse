@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.indigo.core.entity.Result;
 import com.indigo.core.exception.BusinessException;
 import com.indigo.core.exception.IAMException;
-import com.indigo.core.exception.enums.ErrorCode;
+import com.indigo.core.constants.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.indigo</groupId>
+        <artifactId>iam-service</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>iam-sdk</artifactId>
+    <description>IAM Service API Module - Contains service interfaces and models for external use</description>
+
+    <dependencies>
+        <!-- Synapse Core for basic utilities and models -->
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>synapse-core</artifactId>
+        </dependency>
+
+        <!-- OpenFeign for service interfaces -->
+        <!-- OpenFeign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project> 

@@ -102,4 +102,13 @@ synapse:
       - /webjars/**        # 静态资源
       - /favicon.ico       # 网站图标
       - /error             # 错误页面
-      - /test/**           # 测试接口 
+      - /test/**           # 测试接口
+    # 语言环境配置
+    locale:
+      enabled: true                    # 是否启用语言环境处理
+      default-locale: zh_CN           # 默认语言环境
+      param-name: lang                # URL参数名
+      log-locale: false               # 是否记录语言环境日志
+      header-name: X-Locale           # 语言环境请求头名称
+      strict-validation: true          # 是否严格验证语言环境格式
+      allow-unknown-locales: true      # 是否允许未知语言环境 

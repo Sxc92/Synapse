@@ -16,7 +16,7 @@
         <!-- IAM API -->
         <dependency>
             <groupId>com.indigo</groupId>
-            <artifactId>iam-api</artifactId>
+            <artifactId>iam-sdk</artifactId>
         </dependency>
 
         <!-- Spring Boot Web -->

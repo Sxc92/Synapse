@@ -1,0 +1,73 @@
+server:
+  port: 8082
+
+synapse:
+  datasource:
+    mybatis-plus:
+      configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+        map-underscore-to-camel-case: true
+      global-config:
+        banner: false
+    primary: master1
+    datasources:
+      master1:
+        type: MYSQL
+        host: localhost
+        port: 3306
+        database: synapse_mdm
+        username: root
+        password: password
+        pool-type: HIKARI
+        params:
+          useUnicode: "true"
+          characterEncoding: "utf8"
+          useSSL: "false"
+          serverTimezone: "Asia/Shanghai"
+        hikari:
+          minimum-idle: 5
+          maximum-pool-size: 15
+          idle-timeout: 30000
+          max-lifetime: 1800000
+          connection-timeout: 30000
+          connection-test-query: "SELECT 1"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
+
+  jwt:
+    enabled: true
+    secret: SynapseMOM@2024!SecureJWTKey#256
+    expiration: 1800
+  security:
+    session:
+      store-type: redis
+      redis-prefix: "session:"
+      timeout: 7200
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.indigo: INFO
+    com.indigo.security: INFO  # 开启安全相关的调试日志
+
+# 管理端点
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: ["health", "info"]
+#  endpoint:
+#    health:
+#      show-details: when_authorized
+

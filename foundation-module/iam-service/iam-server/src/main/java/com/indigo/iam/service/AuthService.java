@@ -1,10 +1,7 @@
 package com.indigo.iam.service;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.indigo.cache.session.UserSessionService;
-import com.indigo.core.context.UserContext;
 import com.indigo.core.entity.Result;
-import com.indigo.iam.api.model.dto.LoginDTO;
 import com.indigo.iam.repository.service.IamUserService;
 import com.indigo.security.core.AuthenticationService;
 import com.indigo.security.model.AuthRequest;
@@ -13,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 认证服务
@@ -28,10 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AuthenticationService authenticationService;
+//    private final AuthenticationService authenticationService;
 //    private final UserSessionService userSessionService;
 
-    private final IamUserService iamUserService;
 
     @Value("${synapse.security.token.timeout:7200}")
     private long tokenTimeout;
@@ -43,17 +37,17 @@ public class AuthService {
         try {
 
             // 使用认证服务进行登录
-            Result<AuthResponse> result = authenticationService.authenticate(loginRequest);
+//            Result<AuthResponse> result = authenticationService.authenticate(loginRequest);
+//
+//            if (result.isSuccess()) {
+//                log.info("用户登录成功: username={}, token={}",
+//                        loginRequest.getUsername(), result.getData().getAccessToken());
+//            } else {
+//                log.warn("用户登录失败: username={}, error={}",
+//                        loginRequest.getUsername(), result.getMsg());
+//            }
 
-            if (result.isSuccess()) {
-                log.info("用户登录成功: username={}, token={}",
-                        loginRequest.getUsername(), result.getData().getAccessToken());
-            } else {
-                log.warn("用户登录失败: username={}, error={}",
-                        loginRequest.getUsername(), result.getMsg());
-            }
-
-            return result;
+            return null;
 
         } catch (Exception e) {
             log.error("用户登录异常: username={}", loginRequest.getUsername(), e);
@@ -96,17 +90,17 @@ public class AuthService {
             }
 
             // 使用认证服务刷新Token
-            Result<AuthResponse> result = authenticationService.renewToken(token);
+//            Result<AuthResponse> result = authenticationService.renewToken(token);
+//
+//            if (result.isSuccess()) {
+//                log.info("Token刷新成功: oldToken={}, newToken={}",
+//                        token, result.getData().getAccessToken());
+//            } else {
+//                log.warn("Token刷新失败: token={}, error={}",
+//                        token, result.getMsg());
+//            }
 
-            if (result.isSuccess()) {
-                log.info("Token刷新成功: oldToken={}, newToken={}",
-                        token, result.getData().getAccessToken());
-            } else {
-                log.warn("Token刷新失败: token={}, error={}",
-                        token, result.getMsg());
-            }
-
-            return result;
+            return null;
 
         } catch (Exception e) {
             log.error("Token刷新异常: token={}", token, e);
