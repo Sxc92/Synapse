@@ -7,11 +7,15 @@ import com.indigo.core.exception.Ex;
 import com.indigo.core.exception.SynapseException;
 import com.indigo.iam.repository.entity.Users;
 import com.indigo.iam.repository.service.IamUserService;
+import com.indigo.iam.sdk.dto.users.UserConditionDTO;
 import com.indigo.iam.sdk.dto.users.UsersDTO;
+import com.indigo.iam.sdk.vo.UsersVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.seata.spring.annotation.GlobalTransactional;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author 史偕成
@@ -27,6 +31,7 @@ public interface UserService {
 
     Boolean changePassword(String username, String oldPassword, String newPassword);
 
+    List<UsersVO> listUsers(UserConditionDTO params);
 }
 
 @Slf4j
@@ -149,5 +154,10 @@ class UserServiceImpl implements UserService {
             log.error("密码修改异常: {}", username, e);
             return false;
         }
+    }
+
+    @Override
+    public List<UsersVO> listUsers(UserConditionDTO params) {
+        return this.iamUserService.listWithDTO(params, UsersVO.class);
     }
 }

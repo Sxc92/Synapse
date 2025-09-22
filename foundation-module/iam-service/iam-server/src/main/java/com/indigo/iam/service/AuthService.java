@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AuthenticationService authenticationService;
+//    private final AuthenticationService authenticationService;
 //    private final UserSessionService userSessionService;
 
 
@@ -37,17 +37,17 @@ public class AuthService {
         try {
 
             // 使用认证服务进行登录
-            Result<AuthResponse> result = authenticationService.authenticate(loginRequest);
+//            Result<AuthResponse> result = authenticationService.authenticate(loginRequest);
+//
+//            if (result.isSuccess()) {
+//                log.info("用户登录成功: username={}, token={}",
+//                        loginRequest.getUsername(), result.getData().getAccessToken());
+//            } else {
+//                log.warn("用户登录失败: username={}, error={}",
+//                        loginRequest.getUsername(), result.getMsg());
+//            }
 
-            if (result.isSuccess()) {
-                log.info("用户登录成功: username={}, token={}",
-                        loginRequest.getUsername(), result.getData().getAccessToken());
-            } else {
-                log.warn("用户登录失败: username={}, error={}",
-                        loginRequest.getUsername(), result.getMsg());
-            }
-
-            return result;
+            return null;
 
         } catch (Exception e) {
             log.error("用户登录异常: username={}", loginRequest.getUsername(), e);
@@ -90,17 +90,17 @@ public class AuthService {
             }
 
             // 使用认证服务刷新Token
-            Result<AuthResponse> result = authenticationService.renewToken(token);
+//            Result<AuthResponse> result = authenticationService.renewToken(token);
+//
+//            if (result.isSuccess()) {
+//                log.info("Token刷新成功: oldToken={}, newToken={}",
+//                        token, result.getData().getAccessToken());
+//            } else {
+//                log.warn("Token刷新失败: token={}, error={}",
+//                        token, result.getMsg());
+//            }
 
-            if (result.isSuccess()) {
-                log.info("Token刷新成功: oldToken={}, newToken={}",
-                        token, result.getData().getAccessToken());
-            } else {
-                log.warn("Token刷新失败: token={}, error={}",
-                        token, result.getMsg());
-            }
-
-            return result;
+            return null;
 
         } catch (Exception e) {
             log.error("Token刷新异常: token={}", token, e);
