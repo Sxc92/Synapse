@@ -1,10 +1,7 @@
 package com.indigo.iam.service;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.indigo.cache.session.UserSessionService;
-import com.indigo.core.context.UserContext;
 import com.indigo.core.entity.Result;
-import com.indigo.iam.api.model.dto.LoginDTO;
 import com.indigo.iam.repository.service.IamUserService;
 import com.indigo.security.core.AuthenticationService;
 import com.indigo.security.model.AuthRequest;
@@ -13,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 认证服务
@@ -31,7 +26,6 @@ public class AuthService {
     private final AuthenticationService authenticationService;
 //    private final UserSessionService userSessionService;
 
-    private final IamUserService iamUserService;
 
     @Value("${synapse.security.token.timeout:7200}")
     private long tokenTimeout;

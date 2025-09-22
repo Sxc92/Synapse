@@ -1,4 +1,4 @@
-package com.indigo.iam.api.model.dto;
+package com.indigo.iam.sdk.dto.auth;
 
 import lombok.Data;
 

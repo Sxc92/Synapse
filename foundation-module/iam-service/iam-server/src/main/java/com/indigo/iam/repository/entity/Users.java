@@ -1,5 +1,6 @@
 package com.indigo.iam.repository.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Accessors(chain = true)
 @SuperBuilder
+@TableName(value = "users")
 public class Users extends AuditEntity<String> {
 
     /**

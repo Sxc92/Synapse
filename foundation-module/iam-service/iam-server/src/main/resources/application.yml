@@ -1,5 +1,12 @@
 # Synapse 配置
 synapse:
+  databases:
+    sql-annotation:
+      enabled: true
+#    auto-repository:
+#      enabled: true
+#      base-packages:
+#        - com.indigo.iam.repository
   datasource:
     mybatis-plus:
       configuration:
@@ -21,7 +28,12 @@ synapse:
           useUnicode: "true"
           characterEncoding: "utf8"
           useSSL: "false"
+          allowPublicKeyRetrieval: "true"
           serverTimezone: "Asia/Shanghai"
+          autoReconnect: "true"
+          failOverReadOnly: "false"
+          maxReconnects: "3"
+          initialTimeout: "2"
         hikari:
           minimum-idle: 5
           maximum-pool-size: 15
@@ -59,6 +71,7 @@ logging:
   level:
     root: INFO
     com.indigo: INFO
+    com.indigo.databases: DEBUG
     com.indigo.security: INFO
 #
 mybatis-plus:

@@ -121,6 +121,8 @@
                 <artifactId>synapse-databases</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            
+
         </dependencies>
     </dependencyManagement>
 
