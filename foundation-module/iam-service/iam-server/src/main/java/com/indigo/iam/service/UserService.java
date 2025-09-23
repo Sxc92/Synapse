@@ -3,13 +3,15 @@ package com.indigo.iam.service;
 import cn.dev33.satoken.secure.BCrypt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.indigo.core.constants.StandardErrorCode;
+import com.indigo.core.entity.result.PageResult;
 import com.indigo.core.exception.Ex;
 import com.indigo.core.exception.SynapseException;
 import com.indigo.iam.repository.entity.Users;
 import com.indigo.iam.repository.service.IamUserService;
 import com.indigo.iam.sdk.dto.users.UserConditionDTO;
 import com.indigo.iam.sdk.dto.users.UsersDTO;
-import com.indigo.iam.sdk.vo.UsersVO;
+import com.indigo.iam.sdk.dto.users.UsersPageDTO;
+import com.indigo.iam.sdk.vo.UsersCVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.seata.spring.annotation.GlobalTransactional;
@@ -31,7 +33,9 @@ public interface UserService {
 
     Boolean changePassword(String username, String oldPassword, String newPassword);
 
-    List<UsersVO> listUsers(UserConditionDTO params);
+    List<UsersCVO> listUsers(UserConditionDTO params);
+
+    PageResult<UsersCVO> pageUsers(UsersPageDTO params);
 }
 
 @Slf4j
@@ -43,13 +47,12 @@ class UserServiceImpl implements UserService {
 
     @Override
     public Users loadUserByUsername(String key) {
-        Users users = iamUserService.getOne(new LambdaQueryWrapper<Users>()
-                .eq(Users::getAccount, key));
-
-        if (users == null) {
-//            Ex.throwEx();
-        }
-        return users;
+//        Users users = iamUserService.getOneWithDTO();
+//
+//        if (users == null) {
+////            Ex.throwEx();
+//        }
+        return null;
     }
 
     @Override
@@ -157,7 +160,12 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UsersVO> listUsers(UserConditionDTO params) {
-        return this.iamUserService.listWithDTO(params, UsersVO.class);
+    public List<UsersCVO> listUsers(UserConditionDTO params) {
+        return this.iamUserService.listWithDTO(params, UsersCVO.class);
+    }
+
+    @Override
+    public PageResult<UsersCVO> pageUsers(UsersPageDTO params) {
+        return this.iamUserService.pageWithCondition(params, UsersCVO.class);
     }
 }

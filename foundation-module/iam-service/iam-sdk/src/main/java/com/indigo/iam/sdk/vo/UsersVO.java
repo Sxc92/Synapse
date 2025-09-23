@@ -12,8 +12,6 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UsersVO extends BaseVO {
+public class UsersVO extends BaseVO<String> {
     private String account;
-    private String password;
-    private Boolean locked;
 }

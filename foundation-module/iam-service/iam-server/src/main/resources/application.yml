@@ -1,12 +1,12 @@
 # Synapse 配置
 synapse:
   databases:
+    # 使用SQL注解功能（推荐）
     sql-annotation:
       enabled: true
-#    auto-repository:
-#      enabled: true
-#      base-packages:
-#        - com.indigo.iam.repository
+    # 禁用auto-repository避免冲突
+    auto-repository:
+      enabled: false
   datasource:
     mybatis-plus:
       configuration:
@@ -15,6 +15,11 @@ synapse:
       global-config:
         banner: false
     primary: master1
+    # 字段转换配置
+    field-conversion:
+      enabled: true
+      strategy: CAMEL_TO_UNDERLINE
+    # 数据源配置
     datasources:
       master1:
         type: MYSQL
@@ -41,6 +46,8 @@ synapse:
           max-lifetime: 1800000
           connection-timeout: 30000
           connection-test-query: "SELECT 1"
+    seata:
+      enabled: false
   security:
     enabled: true
     jwt:
@@ -71,9 +78,9 @@ logging:
   level:
     root: INFO
     com.indigo: INFO
-    com.indigo.databases: DEBUG
+    com.indigo.databases: INFO
     com.indigo.security: INFO
-#
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
