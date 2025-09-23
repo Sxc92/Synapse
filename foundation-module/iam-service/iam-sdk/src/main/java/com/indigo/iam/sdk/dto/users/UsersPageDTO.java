@@ -1,5 +1,6 @@
 package com.indigo.iam.sdk.dto.users;
 
+import com.indigo.core.annotation.QueryCondition;
 import com.indigo.core.entity.dto.PageDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,4 +14,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UsersPageDTO extends PageDTO {
+    @QueryCondition(field = "account", type = QueryCondition.QueryType.EQ)
+    private String username;
 }

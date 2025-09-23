@@ -1,7 +1,11 @@
-server:
-  port: 8082
-
 synapse:
+  databases:
+    # 使用SQL注解功能（推荐）
+    sql-annotation:
+      enabled: true
+    # 禁用auto-repository避免冲突
+    auto-repository:
+      enabled: false
   datasource:
     mybatis-plus:
       configuration:
@@ -10,6 +14,11 @@ synapse:
       global-config:
         banner: false
     primary: master1
+    # 字段转换配置
+    field-conversion:
+      enabled: true
+      strategy: CAMEL_TO_UNDERLINE
+    # 数据源配置
     datasources:
       master1:
         type: MYSQL
@@ -23,7 +32,12 @@ synapse:
           useUnicode: "true"
           characterEncoding: "utf8"
           useSSL: "false"
+          allowPublicKeyRetrieval: "true"
           serverTimezone: "Asia/Shanghai"
+          autoReconnect: "true"
+          failOverReadOnly: "false"
+          maxReconnects: "3"
+          initialTimeout: "2"
         hikari:
           minimum-idle: 5
           maximum-pool-size: 15
@@ -31,6 +45,8 @@ synapse:
           max-lifetime: 1800000
           connection-timeout: 30000
           connection-test-query: "SELECT 1"
+    seata:
+      enabled: false
   data:
     redis:
       host: ${REDIS_HOST:localhost}

@@ -17,8 +17,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
         DruidDataSourceAutoConfigure.class,
         JacksonAutoConfiguration.class
 })
-public class MetaDataApplication {
+public class MdmApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MetaDataApplication.class, args);
+        SpringApplication.run(MdmApplication.class, args);
     }
 }

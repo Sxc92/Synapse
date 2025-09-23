@@ -13,6 +13,6 @@ import lombok.Data;
 @Data
 public class UserConditionDTO extends QueryDTO {
 
-    @QueryCondition(field = "account", type = QueryCondition.QueryType.EQ)
+    @QueryCondition(field = "account", type = QueryCondition.QueryType.LIKE)
     private String username;
 }
