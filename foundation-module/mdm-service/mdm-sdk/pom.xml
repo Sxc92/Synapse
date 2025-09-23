@@ -18,18 +18,13 @@
     </properties>
 
     <dependencies>
+
         <!-- Synapse Core for basic utilities and models -->
         <dependency>
             <groupId>com.indigo</groupId>
             <artifactId>synapse-core</artifactId>
         </dependency>
 
-        <!-- OpenFeign for service interfaces -->
-        <!-- OpenFeign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
 
 
         <!-- Validation -->
