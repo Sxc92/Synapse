@@ -4,8 +4,12 @@ package com.indigo.mdm.sdk.dto;
 import com.indigo.core.entity.dto.QueryDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 /**
  * 错误码DTO
@@ -15,7 +19,11 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ErrorCodeDTO extends QueryDTO {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = true)
+public class ErrorCodeDTO extends QueryDTO<String> {
 
     /**
      * 错误码，如IAM002
