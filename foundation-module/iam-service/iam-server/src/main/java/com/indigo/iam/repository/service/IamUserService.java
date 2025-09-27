@@ -3,7 +3,6 @@ package com.indigo.iam.repository.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.indigo.databases.annotation.AutoRepository;
-import com.indigo.databases.annotation.IdeFriendlyRepository;
 import com.indigo.databases.repository.BaseRepository;
 import com.indigo.iam.repository.entity.Users;
 import com.indigo.iam.repository.mapper.IamUserMapper;

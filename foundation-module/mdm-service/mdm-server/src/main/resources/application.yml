@@ -45,18 +45,22 @@ synapse:
           max-lifetime: 1800000
           connection-timeout: 30000
           connection-test-query: "SELECT 1"
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      database: 0
-      timeout: 2000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-          max-wait: -1
+  cache:
+    enabled: true
+    default-strategy: "LOCAL_AND_REDIS"
+    redis-cache:
+      enabled: true
+      connection:
+        host: 192.168.3.4
+        port: 6379
+        database: 0
+        timeout: PT2S
+      connection-timeout: PT5S
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: PT-1S
   security:
     satoken:
       print: false
