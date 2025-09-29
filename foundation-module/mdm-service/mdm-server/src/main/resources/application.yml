@@ -26,7 +26,7 @@ synapse:
         port: 3306
         database: synapse_mdm
         username: root
-        password: password
+        password: mamnan920130.
         pool-type: HIKARI
         params:
           useUnicode: "true"
@@ -44,7 +44,6 @@ synapse:
           idle-timeout: 30000
           max-lifetime: 1800000
           connection-timeout: 30000
-          connection-test-query: "SELECT 1"
   cache:
     enabled: true
     default-strategy: "LOCAL_AND_REDIS"
@@ -69,15 +68,20 @@ synapse:
       header-name: Authorization
       secret: SynapseMOM@2024!SecureJWTKey#256
       expiration: 86400
-      prefix: Bearer
+      prefix: Bearer 
 
 # 日志配置
 logging:
   level:
-    root: INFO
-    com.indigo: INFO
-    com.indigo.databases: debug
-    com.indigo.security: INFO  # 开启安全相关的调试日志
+    root: error
+#    com.indigo: INFO
+#    com.indigo.databases: INFO
+#    com.indigo.security: INFO  # 开启安全相关的调试日志
+
+# 系统属性配置 - 用于logback-spring.xml
+ext:
+  logback:
+    root-level: error
 
 # 管理端点
 #management:

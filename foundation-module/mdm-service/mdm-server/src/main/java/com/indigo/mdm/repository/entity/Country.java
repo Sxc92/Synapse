@@ -1,5 +1,7 @@
 package com.indigo.mdm.repository.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
 import lombok.AllArgsConstructor;
@@ -33,6 +35,7 @@ public class Country extends AuditEntity<String> {
     /**
      * 启用状态 0:停用、1:启用
      */
+    @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NOT_NULL)
     private Boolean enabled;
 
 }

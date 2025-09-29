@@ -17,7 +17,16 @@ import org.springframework.stereotype.Service;
  * @date 2025/09/26 11:15
  **/
 public interface CountryService {
+
+    /**
+     * 新增/修改信息
+     *
+     * @param param 参数
+     * @return Boolean
+     */
     Boolean addOrModify(CountryDTO param);
+
+
 }
 
 @Service
@@ -37,9 +46,12 @@ class CountryServiceImpl implements CountryService {
             BeanUtils.copyProperties(param, country);
             return countryService.save(country);
         } else {
-
+            Country country = this.countryService.getById(param.getId());
+            if (country == null) {
+                Ex.throwEx(MdmError.COUNTRY_NOT_FOUND);
+            }
+            country.setName(param.getName());
+            return countryService.updateById(country);
         }
-
-        return null;
     }
 }

@@ -10,7 +10,12 @@ public enum MdmError implements ErrorCode {
     /**
      * 国家编码重复
      */
-    COUNTRY_CODE_DUPLICATION("MDM001")
+    COUNTRY_CODE_DUPLICATION("MDM001"),
+
+    /**
+     * 国家不存在
+     */
+    COUNTRY_NOT_FOUND("MDM002"),
     ;
 
     private final String code;
