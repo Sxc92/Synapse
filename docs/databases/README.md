@@ -432,7 +432,196 @@ A: 在 Mapper 中使用 `LIMIT` 和 `OFFSET`，然后在 Repository 中构建 `P
 
 A: 使用索引、合理分页、避免 N+1 查询、使用缓存等。
 
+## 故障排除指南
+
+### 🔍 checkKeyUniqueness 方法问题
+
+**问题描述**：调用 `checkKeyUniqueness` 时出现 `NoSuchFieldException` 或参数类型错误。
+
+**常见错误**：
+```
+java.lang.NoSuchFieldException: [Ljava.lang.String;@xxxxx
+Failed to access field [Ljava.lang.String;@xxxxx for uniqueness check
+```
+
+**解决方案**：
+1. **确保使用正确的调用方式**：
+   ```java
+   // ✅ 正确
+   countryService.checkKeyUniqueness(param, "fieldName");
+   
+   // ❌ 错误 - 传递数组
+   countryService.checkKeyUniqueness(param, new String[]{"fieldName"});
+   ```
+
+2. **检查 BaseDTO 参数**：确保第一个参数正确继承了 `BaseDTO`
+   ```java
+   @Data
+   public class CountryDTO extends BaseDTO<String> {
+       private String code;
+       private String name;
+   }
+   ```
+
+3. **调试模式启用**：检查日志中的详细调试信息
+   ```
+   DEBUG [SqlMethodInterceptor] - checkKeyUniqueness - args.length: 2
+   DEBUG [SqlMethodInterceptor] - args[1]: type=[Ljava.lang.String;, value=[code]
+   ```
+
+### 🔍 Mapper 未找到问题
+
+**问题描述**：`NoSuchBeanDefinitionException: No qualifying bean of type 'xxxMapper'`
+
+**解决方案**：
+1. **检查 Mapper 注解**：
+   ```java
+   @Mapper  // ✅ 确保有 @Mapper 注解
+   public interface CountryMapper extends BaseMapper<Country> {
+   }
+   ```
+
+2. **确认扫描路径**：框架已配置全局扫描 `com.indigo.**.repository.mapper`
+
+3. **检查包路径结构**：
+   ```
+   src/main/java/
+   └── com/indigo/
+       └── mdm/
+           └── repository/
+               └── mapper/     # ✅ Mapper 放在这里
+                   └── CountryMapper.java
+   ```
+
+### 🔍 代理调用问题
+
+**问题描述**：动态代理方法调用失败或死循环
+
+**解决方案**：
+1. **检查方法默认性**：确保调用的是 `default` 方法
+2. **验证 Spring AOP 配置**：确保 Spring 代理正常工作
+3. **调试日志**：查看 `SqlMethodInterceptor` 的详细日志
+
+### 🔍 参数类型问题
+
+**问题描述**：参数类型在传递过程中被污染或转换错误
+
+**调试步骤**：
+1. 启用调试日志：
+   ```yaml
+   logging:
+     level:
+       com.indigo.databases.proxy.SqlMethodInterceptor: DEBUG
+   ```
+
+2. 查看关键调试信息：
+   ```
+   Processing fieldNameParam: class=java.lang.String, toString=code
+   Parsed fieldNames: [code]
+   Final actualFieldName: code
+   ```
+
+### 📊 最佳调试实践
+
+1. **启用详细日志**：
+   ```yaml
+   logging:
+     level:
+       com.indigo.databases: DEBUG
+       org.springframework.aop: DEBUG
+   ```
+
+2. **关键日志标识**：
+   - `Handling BaseRepository method:` - 方法拦截
+   - `Processing fieldNameParam:` - 参数处理
+   - `Parsed fieldNames:` - 字段解析
+   - `Final actualFieldName:` - 最终字段名
+
+3. **常见模式匹配**：
+   - 参数类型：`[Ljava.lang.String;` = String[]
+   - 正常字段名：`java.lang.String`
+   - 类型污染：异常的对象类型标识
+
+## 核心架构实现
+
+### 🔧 SqlMethodInterceptor 核心技术
+
+Synapse Databases 的核心是 `SqlMethodInterceptor` 动态代理，它实现了：
+
+#### **智能方法拦截**
+```java
+@Override
+ public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+     // 1. 检查是否是 BaseRepository 的方法
+     if (isBaseRepositoryMethod(method)) {
+         return handleBaseRepositoryMethod(proxy, method, args);
+     }
+     // 2. 检查是否是 Mapper 的方法  
+     if (isMapperMethod(method)) {
+         return callMapperMethod(method, args);
+     }
+     // 3. 处理默认方法
+     if (method.isDefault()) {
+         return executeDefaultMethod(proxy, method, args);
+     }
+ }
+```
+
+#### **Spring Context 集成**
+- 使用 `ApplicationContext` 进行依赖注入
+- 动态创建 `ServiceImpl` 实例
+- 支持 Spring AOP 代理的深层次调用
+
+#### **BaseRepository 默认方法支持**
+框架完美支持 `BaseRepository` 的所有默认方法：
+- ✅ `checkKeyUniqueness(T entity, String... keyFields)`
+- ✅ `checkKeyUniqueness(BaseDTO<?> dto, String... keyFields)`  
+- ✅ `pageWithCondition(PageDTO<?> queryDTO)`
+- ✅ `listWithCondition(QueryDTO<?> queryDTO)`
+- ✅ 所有 MyBatis-Plus IService 方法
+
+### 🚀 高级特性
+
+#### **全局 Mapper 扫描**
+在框架级别配置，无需在每个模块重复：
+```java
+@Configuration
+@MapperScan("com.indigo.**.repository.mapper")
+public class MybatisPlusConfig {
+    // 框架级别统一扫描所有 Mapper
+}
+```
+
+#### **智能参数处理**
+框架能智能处理各种参数类型混淆问题：
+```java
+// 支持 BaseDTO 类型的 checkKeyUniqueness 调用
+countryService.checkKeyUniqueness(param, "code")  
+// param: CountryDTO extends BaseDTO<String>
+// "code": String 可变参数
+```
+
+#### **多层安全检查机制**
+针对 Spring AOP 和反射调用中的类型问题，实现了多层防护：
+1. **参数类型检测**：智能识别 `String[]`, `String`, `List` 等类型
+2. **字段名解析**：自动处理嵌套数组和类型转换问题  
+3. **反射安全检查**：确保字段访问的类型正确性
+4. **异常容错处理**：详细的调试日志和错误处理
+
 ## 更新日志
+
+### 2025-09-29
+- 🔧 **修复 SqlMethodInterceptor 核心问题**
+  - ✅ 解决 `checkKeyUniqueness` BaseDTO 类型调用问题
+  - ✅ 修复 Spring AOP 可变参数类型污染问题  
+  - ✅ 实现智能参数类型检测和转换
+  - ✅ 添加多层安全检查机制
+  - ✅ 修复 `NoSuchFieldException` 反射问题
+- 🚀 **优化架构设计**
+  - ✅ 全局 Mapper 扫描配置
+  - ✅ 增强 BaseRepository 默认方法支持
+  - ✅ 完善异常处理和调试日志
+  - ✅ 提升框架稳定性和容错性
 
 ### 2024-12-19
 - ✅ 完成 DTO 模块化重构
@@ -450,11 +639,11 @@ A: 使用索引、合理分页、避免 N+1 查询、使用缓存等。
 ## 技术支持
 
 - **维护者**: 史偕成
-- **邮箱**: [your-email@example.com]
-- **项目地址**: [https://github.com/your-username/SynapseMOM]
+- **邮箱**: [christ.sxc@gmail.com]
+- **项目地址**: [https://github.com/christ-sxc/SynapseMOM]
 
 ---
 
-**最后更新**: 2024-12-19  
-**版本**: 1.0.0  
+**最后更新**: 2025-09-29  
+**版本**: 0.0.1  
 **维护者**: 史偕成

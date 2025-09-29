@@ -26,7 +26,7 @@ synapse:
         port: 3306
         database: synapse_mdm
         username: root
-        password: mamnan920130.
+        password: password
         pool-type: HIKARI
         params:
           useUnicode: "true"
@@ -51,7 +51,7 @@ synapse:
     redis-cache:
       enabled: true
       connection:
-        host: 192.168.3.4
+        host: localhost
         port: 6379
         database: 0
         timeout: PT2S
@@ -76,6 +76,7 @@ logging:
   level:
     root: INFO
     com.indigo: INFO
+    com.indigo.databases: debug
     com.indigo.security: INFO  # 开启安全相关的调试日志
 
 # 管理端点

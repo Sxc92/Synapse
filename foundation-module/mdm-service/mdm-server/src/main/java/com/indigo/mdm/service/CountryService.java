@@ -9,6 +9,7 @@ import com.indigo.mdm.sdk.dto.CountryDTO;
 import com.indigo.mdm.sdk.dto.enums.MdmError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,14 +29,17 @@ class CountryServiceImpl implements CountryService {
 
     @Override
     public Boolean addOrModify(CountryDTO param) {
-         if (countryService.checkKeyUniqueness(param, "code")) {
-             Ex.throwEx(MdmError.COUNTRY_CODE_DUPLICATION);
-         }
-//        if (StrUtil.isBlank(param.getId())) {
-//
-//        } else {
-//
-//        }
+        if (countryService.checkKeyUniqueness(param, new String[]{"code"})) {
+            Ex.throwEx(MdmError.COUNTRY_CODE_DUPLICATION);
+        }
+        if (StrUtil.isBlank(param.getId())) {
+            Country country = Country.builder().build();
+            BeanUtils.copyProperties(param, country);
+            return countryService.save(country);
+        } else {
+
+        }
+
         return null;
     }
 }

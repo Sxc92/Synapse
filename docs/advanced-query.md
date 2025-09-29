@@ -6,11 +6,254 @@ Synapse Framework 提供了强大的查询能力，支持从简单查询到复�
 
 ## 🔍 查询方式对比
 
-| 查询方式 | 适用场景 | 性能 | 复杂度 | 推荐度 |
-|---------|---------|------|--------|--------|
-| 注解驱动 | 简单条件查询 | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 流式查询 | 复杂条件查询 | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| 原生SQL | 多表关联查询 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| 查询方式 | 适用场景 | 性能 | 复杂度 | 推荐度 | 最新特性 |
+|---------|---------|------|--------|--------|----------|
+| **EnhancedQueryBuilder** | 复杂条件查询、多表关联 | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ 聚合查询、性能监控 |
+| **注解驱动** | 简单条件查询 | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ checkKeyUniqueness |
+| **流式查询** | 动态条件构建 | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ✅ Lambda支持 |
+| **原生SQL** | 多表关联查询、复杂业务 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ✅ @VoMapping |
+| **异步查询** | 大数据量查询 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ | ⚡ CompletableFuture |
+
+## 🚀 EnhancedQueryBuilder (推荐方式)
+
+### 1. 基础查询操作
+
+```java
+@Service
+public class EnhancedQueryService {
+    
+    @Autowired
+    private TenantRepository tenantRepository;
+    
+    // ✅ 基础列表查询
+    public List<IamTenant> getActiveTenants() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .like(IamTenant::getCode, "TENANT")
+            .orderByDesc(IamTenant::getCreateTime)
+            .list();
+    }
+    
+    // ✅ 分页查询
+    public PageResult<IamTenant> getTenantsWithPage(int current, int size) {
+        PageDTO<IamTenant> pageDTO = PageDTO.<IamTenant>builder()
+            .current(current)
+            .size(size)
+            .build();
+            
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .orderByDesc(IamTenant::getCreateTime)
+            .page(pageDTO);
+    }
+    
+    // ✅ VO 映射查询
+    public PageResult<TenantVO> getTenantVOs(PageDTO<IamTenant> pageDTO) {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .orderByDesc(IamTenant::getCreateTime)
+            .page(pageDTO, TenantVO.class);  // 自动映射到VO
+    }
+    
+    // ✅ 单条查询
+    public IamTenant getTenantByCode(String code) {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getCode, code)
+            .single();
+    }
+    
+    // ✅ 存在性查询
+    public boolean existsTenant(String code) {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getCode, code)
+            .exists();
+    }
+    
+    // ✅ 统计查询
+    public long countActiveTenants() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .count();
+    }
+}
+```
+
+### 2. 多表关联查询
+
+```java
+@Service
+public class AdvancedQueryService {
+    
+    @Autowired
+    private TenantRepository tenantRepository;
+    
+    // ✅ Inner Join 查询
+    public List<TenantWithCreatorVO> getTenantsWithCreator() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .alias("t")
+            .innerJoin("iam_user", "u", "t.creator_id = u.id")
+            .select("t.*", "u.username as creator_name", "u.email as creator_email")
+            .eq("t.status", 1)
+            .list(TenantWithCreatorVO.class);
+    }
+    
+    // ✅ Left Join 分页查询
+    public PageResult<TenantWithCreatorVO> getTenantsWithCreatorPage(PageDTO<IamTenant> pageDTO) {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .alias("t")
+            .leftJoin("iam_user", "u", "t.creator_id = u.id")
+            .select("t.*", "u.username as creator_name")
+            .eq("t.status", 1)
+            .orderByDesc("t.create_time")
+            .page(pageDTO, TenantWithCreatorVO.class);
+    }
+    
+    // ✅ 复杂多表关联
+    public List<TenantWithCreatorAndDeptVO> getTenantsWithDepartment() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .alias("t")
+            .leftJoin("iam_user", "u", "t.creator_id = u.id")
+            .leftJoin("iam_department", "d", "u.department_id = d.id")
+            .select(
+                "t.*",
+                "u.username as creator_name",
+                "d.name as department_name",
+                "d.code as department_code"
+            )
+            .eq("t.status", 1)
+            .orderByDesc("t.create_time")
+            .list(TenantWithCreatorAndDeptVO.class);
+    }
+}
+```
+
+### 3. 聚合查询
+
+```java
+@Service
+public class AggregationQueryService {
+    
+    @Autowired
+    private TenantRepository tenantRepository;
+    
+    // ✅ 基础聚合
+    public TenantStatisticsVO getTenantStatistics() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .select(
+                count().alias("total_count"),
+                sum(IamTenant::getStatus).alias("total_status"),
+                avg("create_time").alias("avg_create_time"),
+                max(IamTenant::getCreateTime).alias("latest_create_time"),
+                min(IamTenant::getCreateTime).alias("earliest_create_time")
+            )
+            .single(TenantStatisticsVO.class);
+    }
+    
+    // ✅ 分组统计
+    public List<TenantStatusStatisticsVO> getTenantStatusStatistics() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .select(
+                "status",
+                count().alias("count"),
+                avg("create_time").alias("avg_create_time")
+            )
+            .groupBy("status")
+            .orderBy("status")
+            .list(TenantStatusStatisticsVO.class);
+    }
+    
+    // ✅ 复杂聚合查询
+    public List<TenantMonthlyStatisticsVO> getTenantMonthlyTrend() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .alias("t")
+            .leftJoin("iam_user", "u", "t.creator_id = u.id")
+            .select(
+                "DATE_FORMAT(t.create_time, '%Y-%m') as month",
+                count().alias("tenant_count"),
+                "COUNT(DISTINCT u.id) as creator_count",
+                avg("DATEDIFF(NOW(), t.create_time)").alias("avg_age_days")
+            )
+            .groupBy("DATE_FORMAT(getCreate_time, '%Y-%m')")
+            .orderBy("month DESC")
+            .list(TenantMonthlyStatisticsVO.class);
+    }
+}
+```
+
+### 4. 性能监控查询
+
+```java
+@Service
+public class PerformanceMonitorQueryService {
+    
+    @Autowired
+    private TenantRepository tenantRepository;
+    
+    // ✅ 查询性能监控
+    public List<IamTenant> getTenantsWithPerformanceMonitoring(String keyword) {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .like(IamTenant::getCode, keyword)
+            .like(IamTenant::getName, keyword)
+            .orderByDesc(IamTenant::getCreateTime)
+            .monitorPerformance()  // 启用性能监控
+            .list();
+    }
+    
+    // ✅ 大分页查询优化
+    public PageResult<IamTenant> getTenantsOptimizedPagination(PageDTO<IamTenant> pageDTO) {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .orderBy("id")  // 使用索引字段排序
+            .limit(pageDTO.getSize())
+            .offset(pageDTO.getCurrent() * pageDTO.getSize())
+            .enablePerformanceOptimization()  // 启用查询优化
+            .page(pageDTO);
+    }
+}
+```
+
+### 5. 异步查询
+
+```java
+@Service
+public class AsyncQueryService {
+    
+    @Autowired
+    private TenantRepository tenantRepository;
+    
+    // ✅ 异步列表查询
+    public CompletableFuture<List<IamTenant>> getTenantsAsync() {
+        return tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .orderByDesc(IamTenant::getCreateTime)
+            .listAsync();  // 返回CompletableFuture
+    }
+    
+    // ✅ 并行异步查询
+    public CompletableFuture<Map<String, Object>> getTenantsStatisticsParallel() {
+        CompletableFuture<Long> totalFuture = tenantRepository.enhancedQuery(IamTenant.class)
+            .countAsync();
+            
+        CompletableFuture<Long> activeFuture = tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .countAsync();
+            
+        CompletableFuture<List<IamTenant>> recentTenantsFuture = tenantRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .orderByDesc(IamTenant::getCreateTime)
+            .limit(10)
+            .listAsync();
+        
+        return CompletableFuture.allOf(totalFuture, activeFuture, recentTenantsFuture)
+            .thenApply(v -> Map.of(
+                "total", totalFuture.join(),
+                "active", activeFuture.join(),
+                "recentTenants", recentTenantsFuture.join()
+            ));
+    }
+}
+```
 
 ## 📊 注解驱动查询
 
@@ -96,7 +339,42 @@ public class AdvancedQueryDTO extends PageDTO {
 }
 ```
 
-### 3. 使用示例
+### 3. 唯一性验证查询
+
+```java
+@Service
+public class TenantValidationService {
+    
+    @Autowired
+    private TenantsRepository tenantsRepository;
+    
+    // ✅ 使用 checkKeyUniqueness 进行唯一性验证
+    public boolean isTenantCodeUnique(IamTenant tenant) {
+        return !tenantsRepository.checkKeyUniqueness(tenant, "code");
+    }
+    
+    // ✅ 多字段唯一性验证
+    public boolean isTenantUnique(IamTenant tenant) {
+        return !tenantsRepository.checkKeyUniqueness(tenant, "code", "name");
+    }
+    
+    // ✅ 使用 VO 进行唯一性验证
+    public boolean isTenantDtoUnique(IamTenantDTO tenantDto) {
+        return !tenantsRepository.checkKeyUniqueness(tenantDto, "code");
+    }
+    
+    // ✅ 批量唯一性验证
+    public Map<String, Boolean> validateTenants(Map<String, IamTenant> tenants) {
+        return tenants.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> !tenantsRepository.checkKeyUniqueness(entry.getValue(), "code")
+            ));
+    }
+}
+```
+
+### 4. 使用示例
 
 ```java
 @Service
@@ -105,25 +383,36 @@ public class TenantService {
     @Autowired
     private TenantsRepository tenantsRepository;
     
-    // 简单查询
+    // ✅ EnhancedQueryBuilder 查询
     public List<IamTenant> findActiveTenants() {
-        TenantQueryDTO query = TenantQueryDTO.builder()
-            .status(1)
-            .build();
-        return tenantsRepository.listWithCondition(query);
+        return tenantsRepository.enhancedQuery(IamTenant.class)
+            .eq(IamTenant::getStatus, 1)
+            .orderByDesc(IamTenant::getCreateTime)
+            .list();
     }
     
-    // 复杂查询
+    // ✅ 注解驱动分页查询
     public PageResult<IamTenant> findTenantsWithConditions(AdvancedQueryDTO query) {
         return tenantsRepository.pageWithCondition(query);
     }
     
-    // 时间范围查询
+    // ✅ 时间范围查询
     public List<IamTenant> findTenantsByTimeRange(LocalDateTime start, LocalDateTime end) {
-        TenantQueryDTO query = TenantQueryDTO.builder()
-            .createTime(new LocalDateTime[]{start, end})
-            .build();
-        return tenantsRepository.listWithCondition(query);
+        return tenantsRepository.enhancedQuery(IamTenant.class)
+            .between(IamTenant::getCreateTime, start, end)
+            .eq(IamTenant::getStatus, 1)
+            .list();
+    }
+    
+    // ✅ 创建租户并验证唯一性
+    public boolean createTenant(IamTenant tenant) {
+        // 检查唯一性
+        if (tenantsRepository.checkKeyUniqueness(tenant, "code")) {
+            throw new BusinessException("租户编码已存在");
+        }
+        
+        // 保存租户
+        return tenantsRepository.save(tenant);
     }
 }
 ```

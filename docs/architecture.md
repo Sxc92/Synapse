@@ -40,59 +40,112 @@ Synapse Framework
 **核心组件**:
 - `Result<T>`: 统一返回结果封装
 - `BusinessException`: 业务异常处理
+- `PageResult<T>`: 分页结果封装
+- `QueryCondition`: 查询条件构建
+- `AuditEntity<T>`: 审计字段基类
 - `AssertUtils`: 断言工具类
-- `DateUtils`: 日期时间工具
 - `StringUtils`: 字符串工具
 - `CollectionUtils`: 集合工具
 
+**设计特点**:
+- 🎯 零依赖设计
+- 🔧 丰富工具类
+- 📋 统一异常处理
+- 🔍 智能断言工具
+
 ### synapse-databases (数据库框架)
 
-**职责**: 提供数据库操作能力
+**职责**: 提供强大的数据库操作能力
 
 **核心组件**:
-- `@AutoRepository`: 自动生成 Repository 代理
-- `BaseRepository<T, M>`: 基础 Repository 接口
+- `BaseRepository<T, M>`: 基础Repository接口，集成MyBatis-Plus
+- `EnhancedQueryBuilder`: 增强查询构建器
+- `SqlMethodInterceptor`: 智能SQL方法拦截器
+- `@AutoRepository`: 自动Repository注解
 - `@QueryCondition`: 查询条件注解
-- `PageDTO/PageResult`: 分页查询支持
-- `DataSourceLoadBalancer`: 数据源负载均衡
+- `DataSourceLoadBalancer`: 智能数据源负载均衡
+- `AuditEntity<T>`: 审计实体基类
+- `@SynapseDataSource`: 动态数据源切换注解
 
 **设计特点**:
-- 无 ServiceImpl 架构
-- 类型安全的查询构建
-- 动态数据源支持
-- 统一分页处理
+- 🚀 **无ServiceImpl架构**: 基于动态代理自动生成实现
+- 🧠 **智能参数处理**: 完美处理Spring AOP和反射调用
+- 🔍 **增强查询构建**: 支持复杂查询、多表关联、聚合查询
+- 📊 **性能监控**: 查询时间监控、执行计划分析
+- 🔄 **故障转移**: 智能数据源路由和故障恢复
+- 🛡️ **多媒体安全检查**: 多层参数校验和类型保护
 
 ### synapse-cache (缓存框架)
 
-**职责**: 提供多级缓存能力
+**职责**: 提供高性能多级缓存能力
 
 **核心组件**:
-- `TwoLevelCacheService`: 二级缓存服务
-- `@Cacheable/@CacheEvict`: 缓存注解
-- `DistributedLockService`: 分布式锁
+- `TwoLevelCacheService`: 二级缓存服务（本地+分布式）
+- `@Cacheable/@CacheEvict`: 智能缓存注解
+- `DistributedLockService`: 分布式锁管理
 - `RateLimiter`: 限流器
-- `SessionManager`: 会话管理
+- `LockManager`: 锁管理器
+- `SessionManager`: 用户会话管理
+- `CacheKeyGenerator`: 缓存键生成器
+
+**设计特点**:
+- ⚡ **多级缓存**: L1本地缓存 + L2分布式缓存
+- 🔒 **智能锁管理**: 自动死锁检测和释放
+- 🚦 **限流控制**: 多种限流算法支持
+- 📈 **性能优化**: 缓存预热、主动过期
 
 ### synapse-security (安全框架)
 
-**职责**: 提供认证授权能力
+**职责**: 提供统一认证授权能力
 
 **核心组件**:
-- `AuthenticationService`: 认证服务
-- `AuthorizationService`: 授权服务
-- `@RequiresPermissions`: 权限注解
-- `@RequiresRoles`: 角色注解
-- `JwtTokenManager`: JWT 令牌管理
+- `AuthenticationFacade`: 认证门面模式实现
+- `SaTokenAuthenticationStrategy`: Sa-Token认证策略
+- `@RequiresPermissions`: 权限验证注解
+- `@RequiresRoles`: 角色验证注解
+- `PermissionValidator`: 权限验证器
+- `SecurityProperties`: 安全配置属性
+- `PasswordEncoder`: 密码编码器
+
+**设计特点**:
+- 🔐 **多策略认证**: 支持多种认证策略切换
+- 📋 **统一接口**: 基于门面模式统一认证接口
+- ⚙️ **灵活配置**: 支持多种安全配置选项
+- 🔒 **密码安全**: 内置密码编码器支持
 
 ### synapse-events (事件框架)
 
-**职责**: 提供事件驱动能力
+**职责**: 提供事件驱动编程能力
 
 **核心组件**:
 - `UnifiedEventPublisher`: 统一事件发布器
 - `@EventListener`: 事件监听注解
 - `EventTransactionManager`: 事件事务管理
+- `DomainEvent`: 领域事件基类
 - `ReliableMessageService`: 可靠消息服务
+- `AsyncEventHandler`: 异步事件处理器
+
+**设计特点**:
+- 📡 **事件发布订阅**: 支持同步和异步事件处理
+- 🔄 **事务支持**: 事件与事务结合的可靠性保障
+- ⚡ **异步处理**: 高性能异步事件处理
+- 🛡️ **可靠投递**: 消息可靠投递机制
+
+### synapse-i18n (国际化框架)
+
+**职责**: 提供国际化支持能力
+
+**核心组件**:
+- `I18nMessageResolver`: 国际化消息解析器
+- `ErrorMessageResolver`: 错误消息本地化
+- `I18nProperties`: 国际化配置属性
+- `LocaleResolver`: 语言环境解析器
+
+**设计特点**:
+- 🌍 **多语言支持**: 支持多种语言环境
+- 🔄 **动态切换**: 运行时语言环境切换
+- 📋 **统一管理**: 集中的国际化资源管理
+- ⚙️ **灵活配置**: 灵活的语言资源配置
 
 ## 🔧 技术实现
 

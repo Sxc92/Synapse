@@ -45,52 +45,83 @@ SynapseMOM Platform
 - **Redis**: 6.0+ (可选)
 - **Nacos**: 2.0+ (可选)
 
-### 5分钟快速体验
+### ⚡ 最速体验 (3分钟)
 
-1. **克隆项目**
-```bash
-git clone <repository-url>
-cd SynapseMOM
+**🔥 推荐**: 直接使用 `synapse-databases` 框架，体验无 ServiceImpl 的强大功能！
+
+```xml
+<!-- 1. 在你的项目中添加依赖 -->
+<dependency>
+    <groupId>com.indigo</groupId>
+    <artifactId>synapse-databases</artifactId>
+    <version>1.1.0</version>
+</dependency>
 ```
 
-2. **配置数据库**
 ```yaml
-# application.yml
-spring:
+# 2. 最少配置 (application.yml)
+synapse:
   datasource:
-    dynamic:
-      primary: master1
-      datasource:
-        master1:
-          type: MYSQL
-          host: localhost
-          port: 3306
-          database: synapse_iam
-          username: root
-          password: your_password
+    primary: master1
+    datasources:
+      master1:
+        type: MYSQL
+        host: localhost
+        port: 3306
+        database: your_database
+        username: root
+        password: your_password
 ```
 
-3. **启动服务**
-```bash
-# 启动 IAM 服务
-cd foundation-module/iam-service/iam-core
-mvn spring-boot:run
+```java
+// 3. 定义 Repository (零ServiceImpl!)
+@AutoRepository
+public interface ICountryService extends BaseRepository<Country, CountryMapper> {
+    // ✅ 自动获得 checkKeyUniqueness、enhancedQuery、分页查询等所有功能
+}
 
-# 启动网关服务
-cd infrastructure-module/gateway-service
-mvn spring-boot:run
+// 4. 立即使用强大功能
+@Service
+public class CountryService {
+    @Autowired private ICountryService countryRepo;
+    
+    // ✅ 唯一性验证 (最新功能)
+    public boolean isUnique(Country country) { 
+        return !countryRepo.checkKeyUniqueness(country, "code"); 
+    }
+    
+    // ✅ 增强查询
+    public List<Country> findActive() {
+        return countryRepo.enhancedQuery(Country.class)
+            .eq(Country::getStatus, 1).list();
+    }
+    
+    // ✅ 多表关联查询
+    public PageResult<CountryVO> getWithRegion(PageDTO<Country> dto) {
+        return countryRepo.enhancedQuery(Country.class)
+            .leftJoin("region r", "c.region_id = r.id")
+            .select("c.*", "r.name as region_name")
+            .page(dto, CountryVO.class);
+    }
+}
 ```
 
-4. **访问服务**
-```bash
-# IAM 服务
-http://localhost:8081
+### 🌟 Synapse Framework v1.1.0 新特性
 
-# 网关服务
-http://localhost:8080
-```
+| 模块 | 版本 | 亮点特性 | 状态 |
+|------|------|----------|------|
+| **synapse-databases** | v1.1.0 | ✅ **checkKeyUniqueness**、EnhancedQueryBuilder、SqlMethodInterceptor | 🚀 生产可用 |
+| **synapse-cache** | v1.1.0 | ✅ 二级缓存、分布式锁、智能死锁检测 | 🚀 生产可用 |
+| **synapse-security** | v1.1.0 | ✅ Sa-Token集成、认证门面模式、多策略支持 | 🚀 生产可用 |
+| **synapse-events** | v1.1.0 | ✅ 异步事件处理、事务事件、可靠性投递 | 🚀 生产可用 |
+| **synapse-i18n** | v1.1.0 | 🆕 国际化支持、多语言环境、动态切换 | ⚡ 测试可用 |
+| **synapse-core** | v1.1.0 | ✅ 增强工具类、异常处理、断言工具 | 🚀 生产可用 |
 
-详细步骤请参考：[快速开始指南](./getting-started.md)
+### 🔧 完整平台部署
+
+如需部署完整平台，请参考：[完整部署指南](./getting-started.md#方案b完整平台部署)
+
+详细步骤请参考：[快速开始指南](./getting-started.md) | [故障排除指南](./databases/README.md#故障排除指南)
 
 ## 📚 文档导航
 
@@ -439,4 +470,15 @@ chore: 构建过程或辅助工具的变动
 
 ---
 
-**SynapseMOM** - 让制造运营管理更简单、更高效、更智能！ 
+---
+
+**🎉 最新更新**: 2025-09-29 v1.1.0  
+**🚀 Synapse Framework** - 让制造运营管理更简单、更高效、更智能！  
+**🔧 SqlMethodInterceptor** - 完美解决 checkKeyUniqueness，零 ServiceImpl 架构！  
+**⚡ EnhancedQueryBuilder** - 支持聚合查询、多表关联、异步查询！
+
+---
+
+📖 **完整文档**: [Synapse Databases 框架](./databases/README.md)  
+🐛 **问题反馈**: [GitHub Issues](https://github.com/your-repo/issues)  
+💬 **技术讨论**: [GitHub Discussions](https://github.com/your-repo/discussions) 

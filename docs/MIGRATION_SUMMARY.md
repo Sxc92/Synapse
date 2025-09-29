@@ -129,6 +129,54 @@ docs/
 - ✅ 使用示例代码可运行
 - ✅ API 文档与代码同步
 
+## 🚀 最新更新 (2025-09-29)
+
+### v1.1.0 - Synapse Framework 重大更新
+
+#### 🔧 SqlMethodInterceptor 核心升级
+- ✅ **完美解决 checkKeyUniqueness**: 支持 BaseDTO 类型的唯一性验证
+- ✅ **智能参数处理**: 解决 Spring AOP 可变参数类型污染问题
+- ✅ **多层安全检查**: 重构 try-catch 块，添加类型转换保护
+- ✅ **全局 Mapper 扫描**: 框架级别 `@MapperScan("com.indigo.**.repository.mapper")`
+- ✅ **异常处理优化**: fault-fast 机制，确保错误不被静默忽略
+
+#### 🎯 EnhancedQueryBuilder 新功能
+- ✅ **聚合查询**: COUNT、SUM、AVG、MAX、MIN 等统计函数
+- ✅ **性能监控**: 查询时间统计、执行计划分析、性能评级
+- ✅ **异步查询**: 基于 CompletableFuture 的高并发查询
+- ✅ **VO 映射**: 查询结果自动映射到对应的 VO 对象
+- ✅ **超复杂查询**: 多表 JOIN、子查询、窗口函数支持
+
+#### 🛡️ 框架稳定性提升
+- ✅ **智能路由**: 增强数据源故障转移和负载均衡
+- ✅ **缓存优化**: 二级缓存策略，支持缓存预热和主动过期
+- ✅ **国际化支持**: 新增 synapse-i18n 模块，支持多语言环境
+- ✅ **安全增强**: 增强认证门面模式和Sa-Token集成
+
+### 📚 文档更新亮点
+
+| 文档 | 更新内容 | 亮点特性 |
+|------|---------|----------|
+| **databases/README.md** | 故障排除指南 | ✅ checkKeyUniqueness 调试指南 |
+| **architecture.md** | 模块架构详述 | ✅ SqlMethodInterceptor 核心技术 |
+| **extension-points.md** | 扩展点指南 | ✅ EnhancedQueryBuilder 扩展 |
+| **advanced-query.md** | 查询指南 | ✅ 异步查询、聚合查询 |
+| **getting-started.md** | 快速开始 | ✅ 3分钟框架体验 |
+
+### 🔍 技术债务清理
+
+#### 重大Bug修复
+1. **NoSuchFieldException**: 解决 String[] 被误认为是字段名的问题
+2. **死循环问题**: 修复 checkKeyUniqueness 的递归调用
+3. **类型转换错误**: 统一参数类型处理，避免类型污染
+4. **异常静默忽略**: 实现 fail-fast 机制，确保错误可见性
+
+#### 架构优化
+1. **代码重构**: 合并冗余 try-catch 块，提升代码可读性
+2. **智能解析**: 实现复杂的字段名解析逻辑
+3. **调试增强**: 添加详细的参数调试日志
+4. **性能监控**: 查询性能实时监控和告警
+
 ## 🚀 后续工作
 
 ### 1. 文档维护
@@ -153,10 +201,11 @@ docs/
 
 如有文档相关问题，请联系：
 - **维护者**: 史偕成
-- **邮箱**: shixiecheng@indigobyte.com
+- **邮箱**: christ.sxc@gmail.com
 
 ---
 
 **迁移完成时间**: 2025-07-20  
-**迁移版本**: 1.0.0  
+**重大更新完成**: 2025-09-29  
+**更新版本**: 0.0.1  
 **维护者**: 史偕成 

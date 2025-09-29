@@ -2,7 +2,7 @@
 
 ## 📖 概述
 
-本指南将帮助您快速搭建和运行 SynapseMOM 制造运营管理平台，从环境准备到第一个功能演示，让您在 30 分钟内完成平台的部署和体验。
+本指南将帮助您快速搭建和运行 SynapseMOM 制造运营管理平台，专注于 Synapse Framework 的最新特性。**重点推荐**：可以直接使用 `synapse-databases` 模块的 **无 ServiceImpl 架构**，3分钟内实现高级数据库操作！
 
 ## 🛠️ 环境准备
 
@@ -41,7 +41,91 @@ redis-server --version
 
 ## 🚀 快速部署
 
-### 1. 克隆项目
+### 🎯 最速方案：使用 Synapse Framework
+
+#### 方案A：直接使用 synapse-databases（推荐）
+
+1. **📦 添加依赖**
+```xml
+<!-- 在你的项目 pom.xml 中添加 -->
+<dependency>
+    <groupId>com.indigo</groupId>
+    <artifactId>synapse-databases</artifactId>
+    <version>1.1.0</version>
+</dependency>
+```
+
+2. **⚙️ 最少配置**
+```yaml
+# application.yml
+synapse:
+  datasource:
+    primary: master1
+    datasources:
+      master1:
+        type: MYSQL
+        host: localhost
+        port: 3306
+        database: your_database
+        username: root
+        password: your_password
+        pool-type: HIKARI
+```
+
+3. **🎯 定义 Repository（零代码）**
+```java
+@AutoRepository
+public interface ICountryService extends BaseRepository<Country, CountryMapper> {
+    // ✅ 自动获得所有 CRUD、分页、查询方法！
+}
+
+@Mapper
+public interface CountryMapper extends BaseMapper<Country> {
+    // ✅ MyBatis-Plus 自动提供基础 CRUD
+}
+```
+
+4. **✨ 立即使用**
+```java
+@Service
+public class CountryService {
+    @Autowired private ICountryService countryRepo;
+    
+    // ✅ 基础操作
+    public Country save(Country country) { return countryRepo.save(country); }
+    
+    // ✅ 唯一性验证（最新功能）
+    public boolean isUnique(Country country) { 
+        return !countryRepo.checkKeyUniqueness(country, "code"); 
+    }
+    
+    // ✅ 增强查询
+    public List<Country> findActive() {
+        return countryRepo.enhancedQuery(Country.class)
+            .eq(Country::getStatus, 1).orderByDesc(Country::getCreateTime).list();
+    }
+    
+    // ✅ 多表查询
+    public PageResult<CountryVO> pageWithRegion(PageDTO<Country> dto) {
+        return countryRepo.enhancedQuery(Country.class)
+            .leftJoin("region r", "c.region_id = r.id")
+            .select("c.*", "r.name as region_name")
+            .page(dto, CountryVO.class);
+    }
+}
+```
+
+5. **🚀 启动测试**
+```bash
+mvn spring-boot:run
+curl http://localhost:8080/api/countries
+```
+
+---
+
+### 方案B：完整平台部署
+
+#### 1. 克隆项目
 
 ```bash
 # 克隆项目到本地
@@ -52,7 +136,7 @@ cd SynapseMOM
 ls -la
 ```
 
-### 2. 数据库准备
+#### 2. 数据库准备
 
 #### 创建数据库
 
@@ -175,7 +259,7 @@ mvn spring-boot:run
 
 ```bash
 # 新开终端，进入元数据服务目录
-cd foundation-module/meta-data-service/meta-data-core
+cd foundation-module/mdm-service/mdm-core
 
 # 启动服务
 mvn spring-boot:run
@@ -221,7 +305,140 @@ curl http://localhost:8080/api/iam/roles
 
 ## 🎯 功能演示
 
-### 1. 用户管理
+### 🔥 Synapse Framework 最新特性演示
+
+#### 1. checkKeyUniqueness 唯一性验证
+
+```java
+@Service
+public class UniqueValidationDemo {
+    
+    @Autowired private ICountryService countryRepo;
+    
+    // ✅ 单字段唯一性验证
+    public boolean validateCountryCode(Country country) {
+        return !countryRepo.checkKeyUniqueness(country, "code");
+    }
+    
+    // ✅ 多字段联合唯一性验证
+    public boolean validateCountryKeys(Country country) {
+        return !countryRepo.checkKeyUniqueness(country, "code", "name");
+    }
+    
+    // ✅ 使用 BaseDTO 进行验证
+    public boolean validateCountryDTO(CountryDTO countryDto) {
+        return !countryRepo.checkKeyUniqueness(countryDto, "code");
+    }
+    
+    // ✅ 批量验证场景
+    public Map<String, Boolean> validateBatchCountries(List<Country> countries) {
+        return countries.stream()
+            .collect(Collectors.toMap(
+                Country::getCode,
+                country -> !countryRepo.checkKeyUniqueness(country, "code")
+            ));
+    }
+}
+```
+
+#### 2. EnhancedQueryBuilder 高性能查询
+
+```java
+@Service
+public class EnhancedQueryDemo {
+    
+    @Autowired private ICountryService countryRepo;
+    
+    // ✅ 复杂条件查询
+    public List<Country> findCountriesAdvanced(String keyword, Integer status) {
+        return countryRepo.enhancedQuery(Country.class)
+            .like(StringUtils.hasText(keyword), Country::getName, keyword)
+            .or()
+            .like(StringUtils.hasText(keyword), Country::getCode, keyword)
+            .eq(Objects.nonNull(status), Country::getStatus, status)
+            .between(Country::getCreateTime, getStartTime(), getEndTime())
+            .orderByDesc(Country::getCreateTime)
+            .monitorPerformance()  // 🚀 启用性能监控
+            .list();
+    }
+    
+    // ✅ 聚合统计查询
+    public CountryStatisticsVO getStatistics() {
+        return countryRepo.enhancedQuery(Country.class)
+            .select(
+                count().alias("total_count"),
+                sum(Country::getPopulation).alias("total_population"),
+                avg(Country::getArea).alias("avg_area"),
+                max(Country::getCreateTime).alias("latest_create")
+            )
+            .eq(Country::getStatus, 1)
+            .single(CountryStatisticsVO.class);
+    }
+    
+    // ✅ 多表关联 + 分页
+    public PageResult<CountryWithRegionVO> getCountriesWithRegion(int current, int size) {
+        PageDTO<Country> pageDTO = PageDTO.<Country>builder()
+            .current(current).size(size).build();
+            
+        return countryRepo.enhancedQuery(Country.class)
+            .alias("c")
+            .leftJoin("region r", "c.region_id = r.id")
+            .leftJoin("continent ct", "r.continent_id = ct.id")
+            .select(
+                "c.id", "c.code", "c.name as country_name",
+                "r.name as region_name",
+                "ct.name as continent_name"
+            )
+            .eq("c.status", 1)
+            .orderByDesc("c.create_time")
+            .page(pageDTO, CountryWithRegionVO.class);
+    }
+    
+    // ✅ 异步查询（实验性功能）
+    public CompletableFuture<List<Country>> getCountriesAsync() {
+        return countryRepo.enhancedQuery(Country.class)
+            .eq(Country::getStatus, 1)
+            .orderByDesc(Country::getCreateTime)
+            .listAsync();
+    }
+}
+```
+
+#### 3. 智能 SqlMethodInterceptor 功能
+
+```java
+@Service
+public class SqlInterceptorDemo {
+    
+    @Autowired private ICountryService countryRepo;
+    
+    // ✅ 自动处理复杂参数类型
+    public boolean smartValidation(Object entity, String... fields) {
+        // SqlMethodInterceptor 会自动处理类型转换和参数解析
+        return !countryRepo.checkKeyUniqueness(entity, fields);
+    }
+    
+    // ✅ 支持 JSON 字符串自动解析
+    public Country parseAndValidate(String jsonCountry) {
+        Country country = JSON.parseObject(jsonCountry, Country.class);
+        if (countryRepo.checkKeyUniqueness(country, "code")) {
+            throw new BusinessException("国家编码已存在");
+        }
+        return country;
+    }
+    
+    // ✅ 批量操作验证
+    public List<Tenant> batchValidate(List<Tenant> tenants) {
+        return tenants.stream()
+            .filter(tenant -> !countryRepo.checkKeyUniqueness(tenant, "code"))
+            .collect(Collectors.toList());
+    }
+}
+```
+
+### 📚 传统功能演示
+
+#### 1. 用户管理
 
 #### 创建用户
 
