@@ -1,4 +1,4 @@
-package com.indigo.mdm.sdk.dto.enums;
+package com.indigo.mdm.sdk.enums;
 
 import com.indigo.core.constants.ErrorCode;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,22 @@ public enum MdmError implements ErrorCode {
      * 国家不存在
      */
     COUNTRY_NOT_FOUND("MDM002"),
+
+    /**
+     * 国家名称重复
+     */
+    COUNTRY_NAME_DUPLICATION("MDM003"),
+
+    /**
+     * 国家语言重复
+     */
+    LANGUAGE_CODE_DUPLICATION("MDM004"),
+
+
+    /**
+     * 国家语言不存在
+     */
+    LANGUAGE_NOT_EXIST("MDM005"),
     ;
 
     private final String code;
