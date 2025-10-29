@@ -1,0 +1,493 @@
+---
+alwaysApply: true
+description: Java code quality and architecture standards
+---
+
+# Java 代码质量与架构标准
+
+## 代码组织结构
+
+### 分层架构
+```
+Controller Layer (控制层)
+    ↓
+Service Layer (业务层)
+    ↓
+Repository Layer (数据访问层)
+    ↓
+Database Layer (数据层)
+```
+
+### 包结构规范
+```java
+com.indigo.project
+├── controller/     // 控制层
+│   ├── UserController
+│   └── OrderController
+├── service/        // 业务层
+│   ├── UserService
+│   └── OrderService
+│   └── impl/       // 实现
+│       ├── UserServiceImpl
+│       └── OrderServiceImpl
+├── repository/     // 数据访问层
+│   ├── UserRepository
+│   └── OrderRepository
+├── entity/         // 实体类
+│   ├── User
+│   └── Order
+├── dto/            // 数据传输对象
+│   ├── CreateUserDTO
+│   ├── UpdateUserDTO
+│   └── UserQueryDTO
+├── vo/             // 视图对象
+│   ├── UserVO
+│   └── OrderVO
+├── config/         // 配置类
+│   ├── RedisConfig
+│   └── WebMvcConfig
+├── exception/      // 异常定义
+│   ├── BusinessException
+│   └── ValidationException
+├── constants/      // 常量
+│   ├── StatusCode
+│   └── ErrorCode
+└── utils/          // 工具类
+    ├── DateUtils
+    └── StringUtils
+```
+
+## 代码质量规范
+
+### 1. 命名规范
+```java
+// ✅ 类名：大驼峰，名词，清晰描述职责
+public class UserService {}
+public class UserController {}
+public class UserRepository {}
+
+// ✅ 接口：通常省略 I 前缀
+public interface UserService {}
+public interface OrderRepository {}
+
+// ✅ 实现类：使用 Impl 后缀
+public class UserServiceImpl implements UserService {}
+
+// ✅ 抽象类：使用 Abstract 或 Base 前缀
+public abstract class AbstractUserService {}
+public class BaseRepository<T> {}
+
+// ✅ 枚举：单数形式，全大写
+public enum UserStatus {}
+public enum OrderType {}
+
+// ✅ 常量：全大写，下划线分隔
+public static final String DEFAULT_TIMEOUT = "5000";
+public static final int MAX_RETRY_COUNT = 3;
+
+// ✅ 方法名：小驼峰，动词开头
+public void createUser() {}
+public User getUser(String id) {}
+public boolean isActive() {}
+public void setActive(boolean active) {}
+
+// ✅ 参数：小驼峰，描述性名称
+public void createUser(String username, String email) {}
+
+// ✅ 局部变量：小驼峰
+String username = "john";
+List<User> users = new ArrayList<>();
+```
+
+### 2. 方法设计原则
+
+#### SOLID 原则
+```java
+// ✅ 单一职责原则
+public class UserService {
+    public void createUser() {}  // 只负责创建用户
+}
+
+public class UserValidator {
+    public void validateUser() {}  // 只负责验证用户
+}
+
+// ✅ 开闭原则：对扩展开放，对修改封闭
+public interface PaymentStrategy {
+    void pay(BigDecimal amount);
+}
+
+public class AlipayStrategy implements PaymentStrategy {
+    @Override
+    public void pay(BigDecimal amount) {}
+}
+
+public class WechatStrategy implements PaymentStrategy {
+    @Override
+    public void pay(BigDecimal amount) {}
+}
+
+// ✅ 依赖倒置原则：依赖抽象，不依赖具体
+public class UserService {
+    private final UserRepository userRepository;  // 依赖接口
+    
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+}
+```
+
+#### 方法长度与复杂度
+```java
+// ✅ 短方法：单一职责，易于测试
+public void processOrder(Order order) {
+    validateOrder(order);
+    calculatePrice(order);
+    applyDiscount(order);
+    createPayment(order);
+}
+
+private void validateOrder(Order order) {
+    if (order == null) {
+        throw new IllegalArgumentException("Order cannot be null");
+    }
+    if (order.getItems().isEmpty()) {
+        throw new IllegalArgumentException("Order must have items");
+    }
+}
+
+// ❌ 避免：过长的方法
+public void processOrder(Order order) {
+    // 100+ 行代码
+}
+```
+
+### 3. 异常处理
+```java
+// ✅ 使用具体异常类型
+public void transferMoney(String from, String to, BigDecimal amount) {
+    if (from == null || to == null) {
+        throw new IllegalArgumentException("账户不能为空");
+    }
+    if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+        throw new IllegalArgumentException("转账金额必须大于0");
+    }
+    
+    Account fromAccount = accountRepository.findById(from);
+    if (fromAccount == null) {
+        throw new AccountNotFoundException("源账户不存在");
+    }
+    
+    Account toAccount = accountRepository.findById(to);
+    if (toAccount == null) {
+        throw new AccountNotFoundException("目标账户不存在");
+    }
+    
+    if (fromAccount.getBalance().compareTo(amount) < 0) {
+        throw new InsufficientBalanceException("余额不足");
+    }
+    
+    // 执行业务逻辑
+}
+
+// ✅ 捕获特定异常
+try {
+    processPayment(order);
+} catch (PaymentException e) {
+    log.error("支付失败", e);
+    throw new BusinessException("支付处理失败");
+} catch (NetworkException e) {
+    log.error("网络异常", e);
+    throw new BusinessException("网络异常，请稍后重试");
+}
+
+// ❌ 避免：捕获所有异常
+try {
+    processPayment(order);
+} catch (Exception e) {  // 过于宽泛
+    // ...
+}
+```
+
+### 4. 空值处理
+```java
+// ✅ 使用 Optional
+public Optional<User> getUser(String id) {
+    return Optional.ofNullable(userRepository.getById(id));
+}
+
+public void updateUser(String id, UpdateUserDTO dto) {
+    User user = getUser(id)
+        .orElseThrow(() -> new UserNotFoundException(id));
+    
+    user.setUsername(dto.getUsername());
+    userRepository.updateById(user);
+}
+
+// ✅ 使用 Objects.requireNonNull
+public void createUser(String username, String email) {
+    this.username = Objects.requireNonNull(username, "username cannot be null");
+    this.email = Objects.requireNonNull(email, "email cannot be null");
+}
+
+// ✅ 参数验证
+public void transfer(String from, String to, BigDecimal amount) {
+    AssertUtils.notNull(from, "源账户不能为空");
+    AssertUtils.notNull(to, "目标账户不能为空");
+    AssertUtils.isTrue(amount.compareTo(BigDecimal.ZERO) > 0, "金额必须大于0");
+    
+    // 业务逻辑
+}
+
+// ❌ 避免：空指针异常
+public void processUser(String userId) {
+    User user = userRepository.getById(userId);
+    user.getName();  // 可能 NPE
+}
+
+// ✅ 正确的做法
+public void processUser(String userId) {
+    User user = userRepository.getById(userId);
+    if (user != null) {
+        user.getName();
+    }
+}
+```
+
+### 5. 集合操作
+```java
+// ✅ 使用 Stream API
+List<UserVO> activeUsers = users.stream()
+    .filter(User::isActive)
+    .map(User::getName)
+    .collect(Collectors.toList());
+
+// ✅ 分组
+Map<String, List<User>> usersByStatus = users.stream()
+    .collect(Collectors.groupingBy(User::getStatus));
+
+// ✅ 聚合
+Long totalAge = users.stream()
+    .mapToLong(User::getAge)
+    .sum();
+
+// ✅ 去重
+List<String> uniqueUsernames = users.stream()
+    .map(User::getUsername)
+    .distinct()
+    .collect(Collectors.toList());
+
+// ✅ 并行流（大数据集）
+List<User> processedUsers = users.parallelStream()
+    .filter(User::isActive)
+    .collect(Collectors.toList());
+
+// ❌ 避免：过度使用 Stream（简单操作用循环）
+// ✅ 简单操作用 for-each
+for (User user : users) {
+    if (user.isActive()) {
+        processActiveUser(user);
+    }
+}
+```
+
+### 6. 资源管理
+```java
+// ✅ 使用 try-with-resources
+try (BufferedReader reader = new BufferedReader(new FileReader("file.txt"))) {
+    String line;
+    while ((line = reader.readLine()) != null) {
+        process(line);
+    }
+} catch (IOException e) {
+    log.error("读取文件失败", e);
+}
+
+// ✅ 自动清理资源
+try (Connection conn = dataSource.getConnection()) {
+    // 使用连接
+} // 自动关闭
+
+// ✅ 释放线程本地变量
+try {
+    UserContext.setCurrentUser(user);
+    // 业务逻辑
+} finally {
+    UserContext.clearCurrentUser();  // 必须清理
+}
+```
+
+### 7. 线程安全
+```java
+// ✅ 使用线程安全的集合
+ConcurrentHashMap<String, User> userCache = new ConcurrentHashMap<>();
+CopyOnWriteArrayList<Event> eventList = new CopyOnWriteArrayList<>();
+
+// ✅ 使用同步块
+private final Object lock = new Object();
+
+public void increment() {
+    synchronized (lock) {
+        count++;
+    }
+}
+
+// ✅ 使用 Atomic 类
+private final AtomicInteger counter = new AtomicInteger(0);
+
+public void increment() {
+    counter.incrementAndGet();
+}
+
+// ✅ 使用 ThreadLocal
+private static final ThreadLocal<UserContext> contextHolder = new ThreadLocal<>();
+
+public static void setContext(UserContext context) {
+    contextHolder.set(context);
+}
+
+public static void clearContext() {
+    contextHolder.remove();  // 必须清理
+}
+```
+
+### 8. 性能优化
+```java
+// ✅ 使用 StringBuilder（多字符串拼接）
+StringBuilder sb = new StringBuilder();
+for (String str : strings) {
+    sb.append(str).append(",");
+}
+String result = sb.toString();
+
+// ✅ 合理使用缓存
+@Cacheable(value = "users", key = "#id")
+public User getUser(String id) {
+    return userRepository.getById(id);
+}
+
+// ✅ 批量操作
+public void batchUpdate(List<User> users) {
+    userRepository.updateBatch(users, 100);  // 分批更新
+}
+
+// ✅ 使用 PreparedStatement（参数化查询）
+String sql = "SELECT * FROM users WHERE username = ?";
+PreparedStatement ps = conn.prepareStatement(sql);
+ps.setString(1, username);
+ResultSet rs = ps.executeQuery();
+
+// ❌ 避免：SQL 注入
+String sql = "SELECT * FROM users WHERE username = '" + username + "'";
+```
+
+## 代码审查清单
+
+### 必须检查
+- ✅ 方法长度不超过 50 行
+- ✅ 类长度不超过 500 行
+- ✅ 方法圈复杂度不超过 10
+- ✅ 空指针检查
+- ✅ 异常处理
+- ✅ 资源释放
+- ✅ 线程安全
+- ✅ 性能考虑
+- ✅ 代码注释
+- ✅ 单元测试
+
+### 代码异味
+- ❌ 过长方法 (>50 行)
+- ❌ 过大类 (>500 行)
+- ❌ 过多参数 (>5 个)
+- ❌ 深层嵌套 (>3 层)
+- ❌ 重复代码
+- ❌ 魔法数字
+- ❌ 硬编码字符串
+- ❌ 未使用的变量/方法
+- ❌ 过时的方法
+- ❌ 不合理的依赖
+
+### 代码审查要点
+```java
+// ✅ 检查点
+1. 命名是否清晰、有意义
+2. 方法职责是否单一
+3. 是否有适当的错误处理
+4. 是否有必要的注释
+5. 是否有潜在的线程安全问题
+6. 是否有性能问题
+7. 是否遵循了设计模式
+8. 是否有适当的日志
+9. 是否避免了代码重复
+10. 是否易于测试
+```
+
+## 测试规范
+
+### 单元测试
+```java
+@SpringBootTest
+class UserServiceTest {
+    
+    @Autowired
+    private UserService userService;
+    
+    @Mock
+    private UserRepository userRepository;
+    
+    @Test
+    void testGetUser_Success() {
+        // Given
+        String userId = "123";
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("test");
+        
+        when(userRepository.getById(userId)).thenReturn(user);
+        
+        // When
+        UserVO result = userService.getUser(userId);
+        
+        // Then
+        assertNotNull(result);
+        assertEquals("test", result.getUsername());
+        verify(userRepository).getById(userId);
+    }
+    
+    @Test
+    void testGetUser_NotFound() {
+        // Given
+        String userId = "999";
+        when(userRepository.getById(userId)).thenReturn(null);
+        
+        // When & Then
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.getUser(userId);
+        });
+    }
+}
+```
+
+### 集成测试
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class UserControllerTest {
+    
+    @Autowired
+    private MockMvc mockMvc;
+    
+    @Test
+    void testCreateUser() throws Exception {
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setUsername("test");
+        dto.setEmail("test@example.com");
+        
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("0000"));
+    }
+}
+```

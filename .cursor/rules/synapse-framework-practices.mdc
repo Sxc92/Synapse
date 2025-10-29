@@ -1,0 +1,766 @@
+---
+alwaysApply: true
+description: Synapse Framework specific practices and patterns
+---
+
+# Synapse Framework 框架实践指南
+
+## 模块依赖关系
+
+```
+synapse-core (基础模块)
+├── synapse-databases (数据访问层)
+├── synapse-security (安全模块)
+├── synapse-cache (缓存模块)
+└── synapse-events (事件模块)
+```
+
+## 模块使用规范
+
+### 1. Synapse Core - 核心模块
+
+#### 统一响应 Result<T>
+```java
+// ✅ 标准用法
+@RestController
+public class UserController {
+    
+    @GetMapping("/{id}")
+    public Result<UserVO> getUser(@PathVariable String id) {
+        UserVO user = userService.getUser(id);
+        return Result.success(user);
+    }
+    
+    // 带自定义消息
+    @PostMapping
+    public Result<UserVO> createUser(@RequestBody CreateUserDTO dto) {
+        UserVO user = userService.createUser(dto);
+        return Result.success(user, "创建成功");
+    }
+    
+    // 错误返回
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteUser(@PathVariable String id) {
+        if (!userService.exists(id)) {
+            return Result.error(StandardErrorCode.USER_NOT_FOUND);
+        }
+        userService.deleteUser(id);
+        return Result.success();
+    }
+}
+```
+
+#### 统一异常处理
+```java
+// ✅ 使用 Ex 工具类处理异常（推荐）
+import com.indigo.core.exception.Ex;
+import static com.indigo.core.exception.Ex.*;
+
+public void validateUser(String userId) {
+    if (userId == null || userId.isEmpty()) {
+        Ex.throwEx(StandardErrorCode.USER_ID_REQUIRED);
+    }
+    
+    User user = userRepository.getById(userId);
+    if (user == null) {
+        Ex.throwEx(StandardErrorCode.USER_NOT_FOUND, userId);
+    }
+    
+    if (!user.isActive()) {
+        Ex.throwEx(StandardErrorCode.USER_INACTIVE);
+    }
+}
+
+// ✅ 带原因的异常
+public void processUser(String userId) {
+    try {
+        User user = userRepository.getById(userId);
+        // 处理逻辑
+    } catch (DataAccessException e) {
+        Ex.throwEx(StandardErrorCode.DATABASE_ERROR, e);
+    }
+}
+
+// ✅ 自定义消息
+public void transferMoney(BigDecimal amount) {
+    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+        Ex.throwEx(StandardErrorCode.INVALID_AMOUNT, "转账金额必须大于0");
+    }
+}
+
+// ✅ 创建异常（不抛出）
+public void handleUserError(String userId) {
+    if (userId == null) {
+        SynapseException exception = Ex.of(StandardErrorCode.USER_NOT_FOUND);
+        log.error("用户错误", exception);
+        // 其他处理
+    }
+}
+
+// ❌ 避免：直接使用 new SynapseException
+public void oldStyle(String userId) {
+    if (userId == null) {
+        throw new SynapseException(StandardErrorCode.USER_NOT_FOUND);  // 不推荐
+    }
+}
+
+// ✅ 自定义错误码
+public enum UserErrorCode implements ErrorCode {
+    USER_NOT_FOUND("E1001", "用户不存在"),
+    USER_INACTIVE("E1002", "用户未激活");
+    
+    private final String code;
+    private final String messageKey;
+}
+```
+
+#### 用户上下文 UserContext
+```java
+// ✅ 获取当前用户信息
+@Service
+public class UserService {
+    
+    public void updateProfile(UpdateProfileDTO dto) {
+        // 从上下文获取当前用户
+        String userId = UserContext.getCurrentUserId();
+        
+        UserContext userContext = UserContext.getCurrentUser();
+        if (userContext == null) {
+            throw new SynapseException(StandardErrorCode.USER_NOT_LOGIN);
+        }
+        
+        // 使用用户信息
+        String tenantId = userContext.getTenantId();
+        String deptId = userContext.getDeptId();
+    }
+}
+```
+
+### 2. Synapse Databases - 数据访问层
+
+#### Repository 设计
+```java
+@Repository
+public interface UserRepository extends BaseRepository<User> {
+    
+    // ✅ 使用 @QueryCondition 自动构建查询
+    @QueryCondition
+    List<User> findByUsername(String username);
+    
+    @QueryCondition(condition = "LIKE")
+    List<User> findByUsernameLike(String username);
+    
+    @QueryCondition(condition = "IN")
+    List<User> findByIdIn(List<Long> ids);
+    
+    // ✅ 自定义 SQL
+    @Select("SELECT * FROM users WHERE status = #{status} AND create_time >= #{startTime}")
+    List<User> findActiveUsers(@Param("status") String status, @Param("startTime") Date startTime);
+    
+    // ✅ 使用 VO 映射
+    @QueryCondition
+    List<UserVO> findUsers(UserQueryDTO query);
+    
+    @QueryCondition
+    PageResult<UserVO> findUsersPage(UserPageDTO pageDTO);
+}
+```
+
+#### 实体类设计
+```java
+// ✅ 继承 AuditEntity 获取审计字段
+@Data
+@TableName("users")
+public class User extends AuditEntity<Long> {
+    
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
+    
+    @TableField(value = "user_name")
+    private String username;
+    
+    @TableField(value = "email_address")
+    private String email;
+    
+    @TableField(value = "is_active")
+    private Boolean isActive;
+    
+    // 逻辑删除
+    @TableLogic
+    @TableField(value = "deleted")
+    private Integer deleted;
+    
+    // 版本号（乐观锁）
+    @Version
+    @TableField(value = "version")
+    private Integer version;
+}
+```
+
+#### VO 设计
+
+##### DTO & VO 存放规范
+```
+✅ DTO/VO 必须放在 *-sdk 模块中
+
+实际项目结构：
+foundation-module/
+├── iam-service/              # IAM 服务模块
+│   ├── iam-sdk/              # IAM SDK 模块（存放 DTO & VO）
+│   │   ├── dto/
+│   │   │   ├── CreateUserDTO.java
+│   │   │   ├── UpdateUserDTO.java
+│   │   │   └── UserQueryDTO.java
+│   │   └── vo/
+│   │       └── UserVO.java
+│   ├── iam-server/           # IAM 核心业务模块
+│   │   ├── controller/
+│   │   │   └── UserController.java
+│   │   ├── service/
+│   │   │   └── UserService.java
+│   │   ├── repository/
+│   │   │   └── UserRepository.java
+│   │   └── Application.java   # 启动类
+│   └── pom.xml
+└── i18n-service/              # I18N 服务模块
+    ├── i18n-sdk/             # I18N SDK 模块
+    └── i18n-server/          # I18N 核心业务模块
+```
+
+```xml
+<!-- iam-service/pom.xml -->
+<!-- ✅ 项目模块依赖 SDK 模块 -->
+<dependency>
+    <groupId>com.indigo</groupId>
+    <artifactId>iam-sdk</artifactId>
+    <version>${project.version}</version>
+</dependency>
+
+<!-- iam-server/pom.xml -->
+<!-- ✅ server 模块依赖自己对应的 SDK 模块 -->
+<dependency>
+    <groupId>com.indigo</groupId>
+    <artifactId>iam-sdk</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+##### VO 代码示例
+```java
+// ✅ 继承 BaseVO 使用通用字段
+// 位置：foundation-module/iam-service/iam-sdk/src/main/java/com/indigo/iam/vo/UserVO.java
+@Data
+@VoMapping
+public class UserVO extends BaseVO {
+    
+    // ✅ 使用 @FieldMapping 映射数据库字段
+    @FieldMapping(value = "user_name", ignore = false)
+    private String username;
+    
+    @FieldMapping(value = "email_address")
+    private String email;
+    
+    @FieldMapping(value = "is_active")
+    private Boolean isActive;
+    
+    // ✅ 忽略敏感字段
+    @FieldMapping(ignore = true)
+    private String password;
+    
+    // 自动映射的字段（从 BaseVO 继承）
+    // createTime, modifyTime, createUser, modifyUser
+}
+
+// ✅ DTO 代码示例
+// 位置：foundation-module/iam-service/iam-sdk/src/main/java/com/indigo/iam/dto/CreateUserDTO.java
+@Data
+public class CreateUserDTO {
+    
+    @NotBlank(message = "用户名不能为空")
+    private String username;
+    
+    @Email(message = "邮箱格式不正确")
+    private String email;
+    
+    @Size(min = 6, max = 20, message = "密码长度必须在6-20之间")
+    private String password;
+}
+
+// ✅ server 模块使用 SDK 中的 DTO/VO
+// 位置：foundation-module/iam-service/iam-server/src/main/java/com/indigo/iam/controller/UserController.java
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+    
+    @PostMapping
+    public Result<UserVO> createUser(@RequestBody CreateUserDTO dto) {
+        // dto 和 UserVO 都来自 iam-sdk 模块
+        UserVO user = userService.createUser(dto);
+        return Result.success(user);
+    }
+}
+```
+
+#### 查询构建器使用
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private EnhancedQueryBuilder queryBuilder;
+    
+    // ✅ 使用查询构建器
+    public List<UserVO> searchUsers(UserQueryDTO queryDTO) {
+        // 自动映射 DTO 到 VO
+        return userRepository.listWithDTO(queryDTO, UserVO.class);
+    }
+    
+    // ✅ 分页查询
+    public PageResult<UserVO> getUsersPage(UserPageDTO pageDTO) {
+        return userRepository.pageWithDTO(pageDTO, UserVO.class);
+    }
+    
+    // ✅ 复杂查询
+    public List<UserVO> findActiveUsers(Date startTime) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("status", "ACTIVE")
+               .ge("create_time", startTime)
+               .orderByDesc("create_time");
+        
+        List<User> users = userRepository.list(wrapper);
+        return VoMapper.toVOList(users, UserVO.class);
+    }
+    
+    // ✅ 聚合查询
+    public Long countUsers(String status) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("status", status);
+        return userRepository.count(wrapper);
+    }
+}
+```
+
+#### 数据源路由
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    // ✅ 读操作自动路由到从库
+    public UserVO getUser(String id) {
+        // 自动从 slave 数据源读取
+        User user = userRepository.getById(id);
+        return VoMapper.toVO(user, UserVO.class);
+    }
+    
+    // ✅ 写操作自动路由到主库
+    public void createUser(CreateUserDTO dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        // 自动写到 master 数据源
+        userRepository.save(user);
+    }
+    
+    // ✅ 手动指定数据源
+    public void criticalOperation() {
+        // 切换到主库
+        DynamicDataSourceContextHolder.setDataSource("master");
+        try {
+            // 执行关键操作
+        } finally {
+            // 清理上下文
+            DynamicDataSourceContextHolder.clearDataSource();
+        }
+    }
+}
+```
+
+### 3. Synapse Cache - 缓存模块
+
+#### 二级缓存使用
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private TwoLevelCacheService cacheService;
+    
+    // ✅ 缓存查询
+    public UserVO getUser(String id) {
+        String cacheKey = "user:" + id;
+        
+        return cacheService.get(
+            cacheKey,
+            () -> {
+                User user = userRepository.getById(id);
+                return VoMapper.toVO(user, UserVO.class);
+            },
+            UserVO.class,
+            3600 // TTL: 1小时
+        );
+    }
+    
+    // ✅ 缓存更新
+    public void updateUser(String id, UpdateUserDTO dto) {
+        User user = userRepository.getById(id);
+        user.setUsername(dto.getUsername());
+        userRepository.updateById(user);
+        
+        // 删除缓存
+        cacheService.delete("user:" + id);
+    }
+    
+    // ✅ 列表缓存
+    public List<UserVO> getUsers() {
+        String cacheKey = "users:list";
+        
+        return cacheService.get(
+            cacheKey,
+            () -> {
+                List<User> users = userRepository.list();
+                return VoMapper.toVOList(users, UserVO.class);
+            },
+            new TypeReference<List<UserVO>>() {},
+            1800 // TTL: 30分钟
+        );
+    }
+}
+```
+
+#### 分布式锁使用
+```java
+@Service
+public class OrderService {
+    
+    @Autowired
+    private LockManager lockManager;
+    
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    // ✅ 使用分布式锁
+    public void createOrder(CreateOrderDTO dto) {
+        String lockKey = "order:create:" + dto.getUserId();
+        
+        lockManager.lock(lockKey, 30, () -> {
+            // 检查库存
+            checkInventory(dto);
+            
+            // 创建订单
+            Order order = new Order();
+            order.setUserId(dto.getUserId());
+            orderRepository.save(order);
+            
+            // 扣减库存
+            inventoryService.decrease(dto.getProductId(), dto.getQuantity());
+        });
+    }
+    
+    // ✅ 尝试获取锁
+    public void updateOrder(String orderId, UpdateOrderDTO dto) {
+        String lockKey = "order:update:" + orderId;
+        
+        boolean acquired = lockManager.tryLock(lockKey, 30);
+        if (!acquired) {
+            throw new SynapseException(StandardErrorCode.OPERATION_FAILED, 
+                "订单正在被处理中，请稍后重试");
+        }
+        
+        try {
+            Order order = orderRepository.getById(orderId);
+            order.setStatus(dto.getStatus());
+            orderRepository.updateById(order);
+        } finally {
+            lockManager.unlock(lockKey);
+        }
+    }
+}
+```
+
+#### 会话管理
+```java
+@Service
+public class AuthService {
+    
+    @Autowired
+    private UserSessionService sessionService;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    // ✅ 创建会话
+    public void login(LoginDTO dto) {
+        User user = userRepository.findByUsername(dto.getUsername());
+        
+        // 创建会话
+        sessionService.createSession(
+            user.getId(), 
+            3600 // TTL: 1小时
+        );
+        
+        // 存储Token
+        String token = generateToken(user);
+        sessionService.storeToken(
+            token, 
+            user.getId(), 
+            3600
+        );
+    }
+    
+    // ✅ 检查会话
+    public boolean isLogin(String token) {
+        return sessionService.isLogin(token);
+    }
+    
+    // ✅ 获取会话信息
+    public UserSession getUserSession(String token) {
+        return sessionService.getUserSession(token);
+    }
+    
+    // ✅ 续期会话
+    public void renewSession(String token) {
+        sessionService.renewSession(token, 3600);
+    }
+    
+    // ✅ 登出
+    public void logout(String token) {
+        sessionService.logout(token);
+    }
+}
+```
+
+### 4. Synapse Security - 安全模块
+
+#### 认证使用
+```java
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+    
+    // ✅ 登录认证
+    @PostMapping("/login")
+    public Result<LoginResponse> login(@RequestBody LoginDTO dto) {
+        String token = authService.login(dto);
+        return Result.success(new LoginResponse(token));
+    }
+    
+    // ✅ 需要认证的接口（框架自动处理）
+    @GetMapping("/profile")
+    public Result<UserVO> getProfile() {
+        String userId = UserContext.getCurrentUserId();
+        UserVO user = userService.getUser(userId);
+        return Result.success(user);
+    }
+    
+    // ✅ 需要特定权限
+    @PostMapping
+    @PreAuthorize("hasPermission('user:create')")
+    public Result<UserVO> createUser(@RequestBody CreateUserDTO dto) {
+        UserVO user = userService.createUser(dto);
+        return Result.success(user);
+    }
+    
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasPermission('user:delete')")
+    public Result<Void> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return Result.success();
+    }
+}
+```
+
+#### 权限验证
+```java
+@Service
+public class PermissionService {
+    
+    @Autowired
+    private AuthenticationFacade authenticationFacade;
+    
+    // ✅ 检查权限
+    public void checkPermission(String permission) {
+        if (!authenticationFacade.hasPermission(permission)) {
+            throw new SynapseException(StandardErrorCode.PERMISSION_DENIED);
+        }
+    }
+    
+    // ✅ 检查角色
+    public void checkRole(String role) {
+        if (!authenticationFacade.hasRole(role)) {
+            throw new SynapseException(StandardErrorCode.ROLE_DENIED);
+        }
+    }
+    
+    // ✅ 检查用户
+    public void checkUser(String userId) {
+        String currentUserId = UserContext.getCurrentUserId();
+        if (!userId.equals(currentUserId)) {
+            throw new SynapseException(StandardErrorCode.PERMISSION_DENIED);
+        }
+    }
+}
+```
+
+### 5. Synapse Events - 事件模块
+
+#### 事件发布
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UnifiedPublisher eventPublisher;
+    
+    // ✅ 发布同步事件
+    public void createUser(CreateUserDTO dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        userRepository.save(user);
+        
+        // 发布用户创建事件
+        UserCreatedEvent event = new UserCreatedEvent(user.getId(), user.getUsername());
+        eventPublisher.publishEvent(event);
+    }
+    
+    // ✅ 发布异步事件
+    public void updateUser(String id, UpdateUserDTO dto) {
+        User user = userRepository.getById(id);
+        user.setUsername(dto.getUsername());
+        userRepository.updateById(user);
+        
+        // 异步发布更新事件
+        eventPublisher.publishAsyncEvent(new UserUpdatedEvent(user.getId()));
+    }
+}
+```
+
+#### 事件监听
+```java
+@Component
+public class UserEventListener {
+    
+    @Autowired
+    private EmailService emailService;
+    
+    @Autowired
+    private LogService logService;
+    
+    // ✅ 监听用户创建事件
+    @EventListener
+    public void handleUserCreated(UserCreatedEvent event) {
+        // 发送欢迎邮件
+        emailService.sendWelcomeEmail(event.getUserId(), event.getUsername());
+        
+        // 记录日志
+        logService.recordUserCreated(event.getUserId());
+    }
+    
+    // ✅ 监听用户更新事件
+    @EventListener
+    public void handleUserUpdated(UserUpdatedEvent event) {
+        // 发送通知
+        notificationService.notifyUserUpdated(event.getUserId());
+    }
+}
+```
+
+## 配置最佳实践
+
+### application.yml 配置
+```yaml
+# ✅ 数据源配置
+spring:
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          type: MYSQL
+          host: localhost
+          port: 3306
+          database: synapse_db
+          username: root
+          password: ${DB_PASSWORD:password}
+          pool-type: HIKARI
+          hikari:
+            minimum-idle: 5
+            maximum-pool-size: 15
+        slave1:
+          type: MYSQL
+          host: localhost
+          port: 3306
+          database: synapse_db
+          username: readonly
+          password: ${DB_PASSWORD:password}
+
+# ✅ MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# ✅ 缓存配置
+synapse:
+  cache:
+    two-level:
+      enabled: true
+      local:
+        enabled: true
+        maximum-size: 1000
+      redis:
+        enabled: true
+        default-ttl: 3600
+
+# ✅ 安全配置
+sa-token:
+  token-name: Authorization
+  timeout: 2592000
+  activity-timeout: -1
+  is-concurrent: true
+  is-share: true
+```
+
+## 代码检查清单
+
+### 必须遵守
+- ✅ 使用框架的统一响应 Result
+- ✅ **使用 Ex 工具类处理异常**（优先使用 Ex.throwEx()）
+- ✅ **DTO & VO 放在 *-sdk 模块中**（如 `iam-sdk`）
+- ✅ **业务代码放在 *-server 模块中**（如 `iam-server`）
+- ✅ Repository 继承 BaseRepository
+- ✅ 实体类继承 AuditEntity
+- ✅ VO 继承 BaseVO
+- ✅ 使用 @FieldMapping 映射字段
+- ✅ 使用 @QueryCondition 构建查询
+- ✅ 合理使用缓存
+- ✅ 使用分布式锁保护关键操作
+- ✅ 使用事件驱动解耦业务逻辑
+
+### 避免
+- ❌ 直接使用 `throw new SynapseException()`（应使用 Ex 工具类）
+- ❌ 将 DTO/VO 放在业务模块中（应放在独立的 SDK module）
+- ❌ 直接使用 Mapper 而不是 Repository
+- ❌ 硬编码 SQL 而不是使用框架查询
+- ❌ 忽略框架的审计字段
+- ❌ 不使用缓存导致重复查询
+- ❌ 不使用分布式锁导致并发问题
+- ❌ 缺少事务管理
