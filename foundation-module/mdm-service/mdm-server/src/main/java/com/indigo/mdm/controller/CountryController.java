@@ -21,7 +21,7 @@ import java.util.List;
  * @date 2025/09/26 11:02
  **/
 @RestController
-@RequestMapping("/country")
+@RequestMapping("/geographic/country")
 @RequiredArgsConstructor
 @Validated
 public class CountryController {

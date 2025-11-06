@@ -3,9 +3,7 @@ package com.indigo.gateway.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.indigo.core.entity.Result;
-import com.indigo.core.exception.BusinessException;
-import com.indigo.core.exception.IAMException;
-import com.indigo.core.constants.ErrorCode;
+import com.indigo.core.exception.SynapseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -54,18 +52,14 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.valueOf(responseStatusException.getStatusCode().value());
             code = String.valueOf(status.value());
             message = responseStatusException.getReason();
-        } else if (ex instanceof BusinessException businessException) {
+        }  else if (ex instanceof SynapseException synapseException) {
             status = HttpStatus.BAD_REQUEST;
-            code = businessException.getCode();
-            message = businessException.getMessage();
-        } else if (ex instanceof IAMException iamException) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            code = iamException.getCode();
-            message = iamException.getMessage();
+            code = synapseException.getCode();
+            message = synapseException.getMessage();
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            code = ErrorCode.SYSTEM_ERROR.getCode();
-            message = ErrorCode.SYSTEM_ERROR.getMessage();
+            code = String.valueOf(status.value());
+            message = "Internal Server Error";
         }
 
         // Set status code

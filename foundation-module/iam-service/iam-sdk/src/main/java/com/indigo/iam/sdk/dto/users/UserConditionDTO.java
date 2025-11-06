@@ -11,8 +11,12 @@ import lombok.Data;
  * @create 2025-09-22 17:16
  */
 @Data
-public class UserConditionDTO extends QueryDTO {
+public class UserConditionDTO extends QueryDTO<String> {
 
-    @QueryCondition(field = "account", type = QueryCondition.QueryType.LIKE)
+    /**
+     * 用户名查询条件
+     * 注意：多表查询时需要使用表别名 u.account
+     */
+    @QueryCondition(field = "u.account", type = QueryCondition.QueryType.LIKE)
     private String username;
 }

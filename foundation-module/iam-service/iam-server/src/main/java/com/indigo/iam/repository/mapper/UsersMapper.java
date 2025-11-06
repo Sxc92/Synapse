@@ -11,5 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2025/07/22 16:15
  **/
 @Mapper
-public interface IamUserMapper extends BaseMapper<Users>, EnhancedVoMapper<Users, UsersVO> {
+public interface UsersMapper extends BaseMapper<Users>, EnhancedVoMapper<Users, UsersVO> {
 }

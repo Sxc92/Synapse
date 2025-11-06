@@ -5,19 +5,19 @@ spring:
   application:
     name: gateway-service
   # Redis配置
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      database: 0
-      timeout: 1000
-      lettuce:
-        shutdown-timeout: 100
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-          max-wait: -1
+#  data:
+#    redis:
+#      host: ${REDIS_HOST:localhost}
+#      port: ${REDIS_PORT:6379}
+#      database: 0
+#      timeout: 1000
+#      lettuce:
+#        shutdown-timeout: 100
+#        pool:
+#          max-active: 8
+#          max-idle: 8
+#          min-idle: 0
+#          max-wait: -1
   cloud:
     # 启用bootstrap
     bootstrap:
@@ -61,6 +61,32 @@ management:
 
 # Synapse 配置
 synapse:
+  cache:
+    enabled: true
+    default-strategy: "LOCAL_AND_REDIS"
+    redis-cache:
+      sentinel:
+        enabled: true
+        master: mymaster
+        nodes:
+          - 10.80.3.21:26379
+          - 10.80.3.22:26379
+          - 10.80.3.23:26379
+          - 10.80.3.24:26379
+          - 10.80.3.25:26379
+      #      enabled: true
+      #      connection:
+      #        host: localhost
+      #        port: 6379
+      #        database: 0
+      #        timeout: PT2S
+      connection-timeout: PT5S
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: PT-1S
+      enabled: true
   # JWT配置
   jwt:
     enabled: true

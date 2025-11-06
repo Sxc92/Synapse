@@ -2,6 +2,7 @@ package com.indigo.iam.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
+import com.indigo.iam.sdk.enums.UserTypeEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Accessors(chain = true)
 @SuperBuilder
-@TableName(value = "users")
+@TableName(value = "iam_user")
 public class Users extends AuditEntity<String> {
 
     /**
@@ -32,6 +33,12 @@ public class Users extends AuditEntity<String> {
      * 密码
      */
     private String password;
+
+    /**
+     * 用户类型
+     * {@link UserTypeEnum}
+     */
+    private String type;
 
     /**
      * 锁定状态
@@ -47,10 +54,4 @@ public class Users extends AuditEntity<String> {
      * 密码过期状态
      */
     private Boolean expired;
-
-    /**
-     * 最后登录时间
-     */
-    private LocalDateTime lastLoginTime;
-
 }
