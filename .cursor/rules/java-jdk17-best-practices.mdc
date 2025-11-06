@@ -1,0 +1,595 @@
+---
+alwaysApply: true
+description: Java 17 and Synapse Framework Coding Practices
+---
+
+# Java 17 最佳实践与 Synapse Framework 编码规范
+
+## JDK 17 特性使用
+
+### 1. 文本块 (Text Blocks) - Java 15+
+- 用于多行字符串，替代字符串拼接
+```java
+// ✅ 推荐：使用文本块
+String sql = """
+    SELECT * FROM users
+    WHERE status = 'ACTIVE'
+    ORDER BY create_time DESC
+    """;
+
+// ❌ 避免：长字符串拼接
+String sql = "SELECT * FROM users\n" +
+             "WHERE status = 'ACTIVE'\n" +
+             "ORDER BY create_time DESC";
+```
+
+### 2. Switch 表达式 - Java 14+
+```java
+// ✅ 推荐：使用 Switch 表达式
+String type = switch (status) {
+    case ACTIVE -> "active";
+    case INACTIVE -> "inactive";
+    case PENDING -> "pending";
+    default -> "unknown";
+};
+
+// 返回值
+int result = switch (operation) {
+    case "add" -> a + b;
+    case "subtract" -> a - b;
+    case "multiply" -> a * b;
+    default -> 0;
+};
+```
+
+### 3. Pattern Matching for instanceof - Java 16+
+```java
+// ✅ 推荐：使用模式匹配
+if (obj instanceof String str) {
+    return str.toUpperCase(); // 自动转换
+}
+
+if (obj instanceof User user && user.isActive()) {
+    return user.getName();
+}
+
+// ❌ 避免：旧式写法
+if (obj instanceof String) {
+    String str = (String) obj;
+    return str.toUpperCase();
+}
+```
+
+### 4. Records - Java 14+
+```java
+// ✅ 推荐：用于不可变数据传输对象
+public record UserDTO(
+    String id,
+    String username,
+    String email
+) {
+    // 自动生成 getter, equals, hashCode, toString
+}
+
+// ❌ 避免：过度使用 records（需要可变性或继承时）
+```
+
+### 5. Sealed Classes - Java 17
+```java
+// ✅ 限制继承，增强类型安全
+public sealed class Status 
+    permits ActiveStatus, InactiveStatus, PendingStatus {
+}
+
+// 子类必须是 final, sealed 或 non-sealed
+public final class ActiveStatus extends Status {
+}
+```
+
+### 6. 本地变量类型推断 (var) - Java 10+
+```java
+// ✅ 推荐：用于复杂类型
+var users = new ArrayList<User>();
+var queryBuilder = new QueryBuilder<>();
+var result = userRepository.findById(id);
+
+// ❌ 避免：过度使用，保持代码可读性
+// 不要在所有地方都用 var
+```
+
+## Java 编码规范
+
+### 1. 命名规范
+```java
+// 类名：大驼峰，清晰描述职责
+public class UserService {}
+public class DataSourceFactory {}
+
+// 方法名：小驼峰，动词开头
+public void createUser() {}
+public void processData() {}
+
+// 常量：全大写，下划线分隔
+public static final String DEFAULT_TIMEOUT = "5000";
+public static final int MAX_RETRY_COUNT = 3;
+
+// 包名：全小写，点分隔
+com.indigo.core.entity
+com.indigo.databases.repository
+```
+
+### 2. 注解使用
+```java
+// ✅ 推荐：合理使用 Lombok 注解
+@Data                    // getter, setter, equals, hashCode, toString
+@Builder                 // 建造者模式
+@AllArgsConstructor     // 全参构造函数
+@NoArgsConstructor      // 无参构造函数
+@Slf4j                  // 日志
+
+// ✅ 使用框架注解
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+}
+
+// 实体类
+@Entity
+@Table(name = "users")
+public class User {}
+```
+
+### 3. 异常处理
+```java
+// ✅ 推荐：使用 Ex 工具类处理异常
+import com.indigo.core.exception.Ex;
+import static com.indigo.core.exception.Ex.*;
+
+public void deleteUser(String id) {
+    if (id == null) {
+        Ex.throwEx(StandardErrorCode.USER_ID_REQUIRED, "用户ID不能为空");
+    }
+    // ...
+}
+
+// ✅ 带原因的异常
+public void processUser(String userId) {
+    try {
+        User user = userRepository.getById(userId);
+        // 处理逻辑
+    } catch (DataAccessException e) {
+        Ex.throwEx(StandardErrorCode.DATABASE_ERROR, e, "数据操作失败");
+    }
+}
+
+// ✅ 自定义消息
+public void transferMoney(BigDecimal amount) {
+    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+        Ex.throwEx(StandardErrorCode.INVALID_AMOUNT, "转账金额必须大于0");
+    }
+}
+
+// ❌ 避免：直接使用 new SynapseException
+public void oldStyle(String id) {
+    if (id == null) {
+        throw new SynapseException(StandardErrorCode.USER_ID_REQUIRED);  // 不推荐
+    }
+}
+```
+
+### 4. 响应结果统一
+```java
+// ✅ 使用框架的统一响应
+@RestController
+public class UserController {
+    
+    @GetMapping("/{id}")
+    public Result<UserVO> getUser(@PathVariable String id) {
+        UserVO user = userService.getUser(id);
+        return Result.success(user);
+    }
+    
+    @PostMapping
+    public Result<UserVO> createUser(@RequestBody CreateUserDTO dto) {
+        UserVO user = userService.createUser(dto);
+        return Result.success(user, "创建成功");
+    }
+    
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return Result.success();
+    }
+}
+```
+
+### 5. Stream API 使用
+```java
+// ✅ 推荐：合理的 Stream 使用
+List<String> activeUserNames = users.stream()
+    .filter(User::isActive)
+    .map(User::getUsername)
+    .collect(Collectors.toList());
+
+// ✅ 分组和聚合
+Map<String, Long> countByStatus = users.stream()
+    .collect(Collectors.groupingBy(
+        User::getStatus,
+        Collectors.counting()
+    ));
+
+// ❌ 避免：过度复杂的 Stream
+// 简单操作直接用循环
+for (User user : users) {
+    if (user.isActive()) {
+        processUser(user);
+    }
+}
+```
+
+## Synapse Framework 特定实践
+
+### 1. Repository 层设计
+```java
+// ✅ 继承 BaseRepository
+@Repository
+public interface UserRepository extends BaseRepository<User> {
+    
+    // 使用 @QueryCondition 自动构建查询条件
+    @QueryCondition
+    List<User> findByUsername(String username);
+    
+    @QueryCondition
+    List<User> findByStatusAndCreateTime(String status, Date startTime);
+    
+    // 自定义 SQL 查询
+    @Select("SELECT * FROM users WHERE status = #{status}")
+    List<User> findActiveUsers(@Param("status") String status);
+    
+    // 使用 VO 映射
+    List<UserVO> listWithDTO(UserQueryDTO query, Class<UserVO> voClass);
+    
+    PageResult<UserVO> pageWithDTO(UserPageDTO pageDTO, Class<UserVO> voClass);
+}
+
+// ✅ 实体类继承
+@Data
+@TableName("users")
+public class User extends AuditEntity<Long> {
+    
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
+    
+    private String username;
+    private String email;
+    private String status;
+}
+```
+
+### 2. Service 层设计
+```java
+@Slf4j
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private UserContextHolder userContextHolder;
+    
+    // 分页查询
+    public PageResult<UserVO> getUsers(UserPageDTO pageDTO) {
+        return userRepository.pageWithDTO(pageDTO, UserVO.class);
+    }
+    
+    // 条件查询
+    public List<UserVO> searchUsers(UserQueryDTO query) {
+        return userRepository.listWithDTO(query, UserVO.class);
+    }
+    
+    // 创建用户
+    public UserVO createUser(CreateUserDTO dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        userRepository.save(user);
+        return VoMapper.toVO(user, UserVO.class);
+    }
+    
+    // 更新用户
+    public UserVO updateUser(String id, UpdateUserDTO dto) {
+        User user = userRepository.getById(id);
+        if (user == null) {
+            throw new SynapseException(StandardErrorCode.USER_NOT_FOUND);
+        }
+        user.setUsername(dto.getUsername());
+        userRepository.updateById(user);
+        return VoMapper.toVO(user, UserVO.class);
+    }
+    
+    // 删除用户（逻辑删除）
+    public void deleteUser(String id) {
+        userRepository.removeById(id);
+    }
+}
+```
+
+### 3. Controller 层设计
+```java
+@Slf4j
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+    
+    @GetMapping("/{id}")
+    public Result<UserVO> getUser(@PathVariable String id) {
+        UserVO user = userService.getUser(id);
+        return Result.success(user);
+    }
+    
+    @PostMapping
+    public Result<UserVO> createUser(@RequestBody @Valid CreateUserDTO dto) {
+        UserVO user = userService.createUser(dto);
+        return Result.success(user);
+    }
+    
+    @PutMapping("/{id}")
+    public Result<UserVO> updateUser(
+            @PathVariable String id,
+            @RequestBody @Valid UpdateUserDTO dto) {
+        UserVO user = userService.updateUser(id, dto);
+        return Result.success(user);
+    }
+    
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return Result.success();
+    }
+    
+    @GetMapping("/page")
+    public Result<PageResult<UserVO>> getUsersPage(UserPageDTO pageDTO) {
+        PageResult<UserVO> result = userService.getUsers(pageDTO);
+        return Result.success(result);
+    }
+}
+```
+
+### 4. VO/DTO 设计
+```java
+// ✅ VO 继承 BaseVO
+@Data
+@VoMapping
+public class UserVO extends BaseVO {
+    
+    @FieldMapping("user_name")
+    private String username;
+    
+    @FieldMapping("email_address")
+    private String email;
+    
+    @FieldMapping("is_active")
+    private Boolean isActive;
+    
+    // 忽略敏感字段
+    @FieldMapping(ignore = true)
+    private String password;
+}
+
+// ✅ DTO 设计
+@Data
+public class CreateUserDTO {
+    
+    @NotBlank(message = "用户名不能为空")
+    private String username;
+    
+    @Email(message = "邮箱格式不正确")
+    private String email;
+    
+    @Size(min = 6, max = 20, message = "密码长度必须在6-20之间")
+    private String password;
+}
+
+// ✅ 查询 DTO
+@Data
+public class UserQueryDTO extends QueryDTO {
+    
+    @QueryCondition
+    private String username;
+    
+    @QueryCondition
+    private String status;
+    
+    @QueryCondition(condition = ">=")
+    private Date startTime;
+    
+    @QueryCondition(condition = "<=")
+    private Date endTime;
+}
+
+// ✅ 分页 DTO
+@Data
+public class UserPageDTO extends PageDTO {
+    
+    @QueryCondition
+    private String username;
+    
+    @QueryCondition
+    private String status;
+}
+```
+
+### 5. 缓存使用
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private TwoLevelCacheService cacheService;
+    
+    // 缓存查询
+    public UserVO getUser(String id) {
+        String cacheKey = "user:" + id;
+        
+        // 先从缓存获取
+        return cacheService.get(
+            cacheKey,
+            () -> {
+                User user = userRepository.getById(id);
+                return VoMapper.toVO(user, UserVO.class);
+            },
+            UserVO.class,
+            3600 // TTL: 1小时
+        );
+    }
+    
+    // 更新缓存
+    public void updateUser(String id, UpdateUserDTO dto) {
+        User user = userRepository.getById(id);
+        userRepository.updateById(user);
+        
+        // 删除缓存
+        cacheService.delete("user:" + id);
+    }
+}
+```
+
+### 6. 数据源路由
+```java
+@Service
+public class UserService {
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    // 写操作自动路由到主库
+    public void createUser(CreateUserDTO dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        userRepository.save(user); // 自动使用 master 数据源
+    }
+    
+    // 读操作自动路由到从库
+    public UserVO getUser(String id) {
+        User user = userRepository.getById(id); // 自动使用 slave 数据源
+        return VoMapper.toVO(user, UserVO.class);
+    }
+    
+    // 指定数据源
+    public void processWithMaster() {
+        // 切换到 master
+        DynamicDataSourceContextHolder.setDataSource("master");
+        try {
+            // 执行操作
+        } finally {
+            // 清理上下文
+            DynamicDataSourceContextHolder.clearDataSource();
+        }
+    }
+}
+```
+
+## 通用最佳实践
+
+### 1. 代码注释
+```java
+/**
+ * 用户服务类
+ * 提供用户相关的业务逻辑处理
+ * 
+ * @author 史偕成
+ * @date 2025/01/01
+ */
+@Slf4j
+@Service
+public class UserService {
+    
+    /**
+     * 根据ID获取用户
+     * 
+     * @param id 用户ID
+     * @return 用户VO
+     * @throws SynapseException 用户不存在时抛出
+     */
+    public UserVO getUser(String id) {
+        // 实现逻辑
+    }
+}
+```
+
+### 2. 日志使用
+```java
+@Slf4j
+@Service
+public class UserService {
+    
+    public void createUser(CreateUserDTO dto) {
+        log.info("开始创建用户，用户名：{}", dto.getUsername());
+        try {
+            // 创建逻辑
+            log.debug("用户创建成功，用户ID：{}", user.getId());
+        } catch (Exception e) {
+            log.error("创建用户失败，用户名：{}", dto.getUsername(), e);
+            throw new SynapseException(StandardErrorCode.USER_CREATE_FAILED);
+        }
+    }
+}
+```
+
+### 3. 常量定义
+```java
+// ✅ 使用枚举定义常量
+public enum UserStatus {
+    ACTIVE("active", "激活"),
+    INACTIVE("inactive", "禁用"),
+    PENDING("pending", "待激活");
+    
+    private final String code;
+    private final String desc;
+}
+
+// ✅ 接口常量
+public interface CacheKeys {
+    String USER_PREFIX = "user:";
+    String USER_LIST = USER_PREFIX + "list:";
+}
+```
+
+## 代码检查清单
+
+### 必须遵守
+- ✅ 使用 JDK 17+ 特性
+- ✅ 统一使用 Lombok 注解
+- ✅ 使用框架的统一响应 Result
+- ✅ **使用 Ex 工具类处理异常**（Ex.throwEx()）
+- ✅ **DTO & VO 放在 *-sdk 模块中**（如 `iam-sdk`）
+- ✅ **业务代码放在 *-server 模块中**（如 `iam-server`）
+- ✅ 实体类继承 AuditEntity
+- ✅ Repository 继承 BaseRepository
+- ✅ VO/DTO 使用 @FieldMapping 注解
+- ✅ 统一日志使用 @Slf4j
+- ✅ 合理的代码注释
+- ✅ 使用 Stream API 简化集合操作
+
+### 避免
+- ❌ 直接使用 `throw new SynapseException()`（应使用 Ex 工具类）
+- ❌ 将 DTO/VO 放在 `*-server` 模块中（应放在对应的 `*-sdk` 模块）
+- ❌ 将业务代码放在 `*-sdk` 模块中
+- ❌ 硬编码字符串和魔法数字
+- ❌ 过深的嵌套（>3层）
+- ❌ 过长的方法（>50行）
+- ❌ 过大的类（>500行）
+- ❌ 不捕获的空异常
+- ❌ 不使用 var 推断复杂类型
+- ❌ 不使用 pattern matching
+- ❌ 不使用 text blocks

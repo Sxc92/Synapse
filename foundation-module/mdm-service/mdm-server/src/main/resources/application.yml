@@ -18,16 +18,33 @@ synapse:
     field-conversion:
       enabled: true
       strategy: CAMEL_TO_UNDERLINE
+    failover:
+      enabled: true
+      strategy: HEALTHY_FIRST  # 主数据源优先
+      max-retry-times: 3
+      retry-interval: 1000
+      detection-interval: 5000
+      recovery-interval: 10000
+    # 健康检查配置
+    health-check:
+      enabled: true
+      interval: 30000  # 30秒检查一次
+      timeout: 5000    # 5秒超时
+      check-on-startup: true
+      max-retries: 4   # 最大重试4次
+      recovery-interval: 10000
     # 数据源配置
     datasources:
       master1:
         type: MYSQL
-        host: localhost
-        port: 3306
+        host: 10.80.3.24
+        port: 6450
         database: synapse_mdm
-        username: root
-        password: mamnan920130.
+        username: xmom
+        password: 123456
         pool-type: HIKARI
+        role: READ_WRITE  # 读写数据源
+        weight: 100       # 权重
         params:
           useUnicode: "true"
           characterEncoding: "utf8"
@@ -44,22 +61,64 @@ synapse:
           idle-timeout: 30000
           max-lifetime: 1800000
           connection-timeout: 30000
+          # 添加连接验证
+          connection-test-query: "SELECT 1"
+          validation-timeout: 5000
+      master2:
+        type: MYSQL
+        host: 10.80.3.25
+        port: 6450
+        database: synapse_mdm
+        username: xmom
+        password: 123456
+        pool-type: HIKARI
+        role: READ_WRITE  # 读写数据源
+        weight: 100       # 权重
+        params:
+          useUnicode: "true"
+          characterEncoding: "utf8"
+          useSSL: "false"
+          allowPublicKeyRetrieval: "true"
+          serverTimezone: "Asia/Shanghai"
+          autoReconnect: "true"
+          failOverReadOnly: "false"
+          maxReconnects: "3"
+          initialTimeout: "2"
+        hikari:
+          minimum-idle: 5
+          maximum-pool-size: 15
+          idle-timeout: 30000
+          max-lifetime: 1800000
+          connection-timeout: 30000
+          # 添加连接验证
+          connection-test-query: "SELECT 1"
+          validation-timeout: 5000
   cache:
     enabled: true
     default-strategy: "LOCAL_AND_REDIS"
     redis-cache:
-      enabled: true
-      connection:
-        host: localhost
-        port: 6379
-        database: 0
-        timeout: PT2S
+      sentinel:
+        enabled: true
+        master: mymaster
+        nodes:
+          - 10.80.3.21:26379
+          - 10.80.3.22:26379
+          - 10.80.3.23:26379
+          - 10.80.3.24:26379
+          - 10.80.3.25:26379
+      #      enabled: true
+#      connection:
+#        host: localhost
+#        port: 6379
+#        database: 0
+#        timeout: PT2S
       connection-timeout: PT5S
       pool:
         max-active: 8
         max-idle: 8
         min-idle: 0
         max-wait: PT-1S
+      enabled: true
   security:
     satoken:
       print: false
@@ -74,8 +133,10 @@ synapse:
 logging:
   level:
     root: error
+    com.indigo.databases: INFO  # 开启数据源相关的调试日志
+    com.indigo.databases.health: INFO  # 健康检查日志
+    com.indigo.databases.routing: INFO  # 路由决策日志
 #    com.indigo: INFO
-#    com.indigo.databases: INFO
 #    com.indigo.security: INFO  # 开启安全相关的调试日志
 
 # 系统属性配置 - 用于logback-spring.xml
