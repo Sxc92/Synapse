@@ -32,6 +32,12 @@ Synapse Databases 是 SynapseMOM 平台的数据库操作框架，提供无 Serv
 - 编译时类型检查
 - 避免运行时错误
 
+### 🔄 DTO 到 Entity 自动映射
+- **自动映射**：支持从 DTO 自动创建和更新实体
+- **智能判断**：自动识别新增或更新场景
+- **Builder 支持**：优先使用 Lombok Builder 模式创建实体
+- **类型安全**：编译时类型检查，避免运行时错误
+
 ## 快速开始
 
 ### 1. 添加依赖
@@ -578,6 +584,10 @@ Synapse Databases 的核心是 `SqlMethodInterceptor` 动态代理，它实现�
 - ✅ `checkKeyUniqueness(BaseDTO<?> dto, String... keyFields)`  
 - ✅ `pageWithCondition(PageDTO<?> queryDTO)`
 - ✅ `listWithCondition(QueryDTO<?> queryDTO)`
+- ✅ `saveOrUpdateFromDTO(BaseDTO<?> dto, Class<T> entityClass)` - DTO 自动保存或更新
+- ✅ `saveFromDTO(BaseDTO<?> dto, Class<T> entityClass)` - DTO 自动保存（新增）
+- ✅ `saveFromDTO(BaseDTO<?> dto, T entity)` - DTO 自动保存（使用已有实体）
+- ✅ `updateFromDTO(BaseDTO<?> dto)` - DTO 自动更新
 - ✅ 所有 MyBatis-Plus IService 方法
 
 ### 🚀 高级特性
@@ -608,7 +618,171 @@ countryService.checkKeyUniqueness(param, "code")
 3. **反射安全检查**：确保字段访问的类型正确性
 4. **异常容错处理**：详细的调试日志和错误处理
 
+## DTO 到 Entity 自动映射
+
+### 概述
+
+框架提供了便捷的 DTO 到 Entity 映射方法，支持自动创建实体实例、属性映射和数据库操作。这些方法由 `SqlMethodInterceptor` 动态代理处理，底层使用 `EntityMapper` 工具类和 `ReflectionUtils` 工具类。
+
+### 核心方法
+
+#### 1. saveOrUpdateFromDTO - 智能保存或更新
+
+自动判断是新增还是更新：
+- 如果 DTO 的 `id` 为空，执行新增
+- 如果 DTO 的 `id` 不为空，先查询实体，再执行更新
+
+```java
+@Service
+public class SystemService {
+    
+    @Autowired
+    private ISystemService iSystemService;
+    
+    public Boolean addOrModifySystem(AddOrModifySystemDTO dto) {
+        // 自动判断新增或更新
+        return iSystemService.saveOrUpdateFromDTO(dto, IamSystem.class);
+    }
+}
+```
+
+#### 2. saveFromDTO - 新增实体
+
+**方式1：使用实体 Class（推荐）**
+
+```java
+@Service
+public class MenuService {
+    
+    @Autowired
+    private IMenuService iMenuService;
+    
+    public Boolean addMenu(AddOrModifyMenuDTO dto) {
+        // 框架自动创建实体实例并映射属性
+        return iMenuService.saveFromDTO(dto, Menu.class);
+    }
+}
+```
+
+**方式2：使用已有实体实例**
+
+```java
+@Service
+public class MenuService {
+    
+    @Autowired
+    private IMenuService iMenuService;
+    
+    public Boolean addMenu(AddOrModifyMenuDTO dto) {
+        // 使用 Builder 模式创建实体
+        Menu menu = Menu.builder().build();
+        // 框架自动映射属性并保存
+        return iMenuService.saveFromDTO(dto, menu);
+    }
+}
+```
+
+#### 3. updateFromDTO - 更新实体
+
+```java
+@Service
+public class MenuService {
+    
+    @Autowired
+    private IMenuService iMenuService;
+    
+    public Boolean updateMenu(AddOrModifyMenuDTO dto) {
+        try {
+            // 框架自动查询实体、映射属性并更新
+            return iMenuService.updateFromDTO(dto);
+        } catch (IllegalArgumentException e) {
+            // 实体不存在时抛出异常
+            Ex.throwEx(MENU_NOT_EXIST);
+            return false;
+        }
+    }
+}
+```
+
+### 完整示例
+
+```java
+@Service
+@Slf4j
+public class ResourceService {
+    
+    @Autowired
+    private IMenuService iMenuService;
+    
+    public Boolean addOrModifyMenu(AddOrModifyMenuDTO dto) {
+        // 1. 检查唯一性
+        if (iMenuService.checkKeyUniqueness(dto, "code")) {
+            Ex.throwEx(MENU_EXIST);
+        }
+        
+        // 2. 根据 id 是否存在选择不同的处理方式
+        if (StrUtil.isBlank(dto.getId())) {
+            // 新增场景：使用 saveFromDTO
+            Menu menu = Menu.builder().build();
+            return iMenuService.saveFromDTO(dto, menu);
+        } else {
+            // 更新场景：使用 updateFromDTO
+            try {
+                return iMenuService.updateFromDTO(dto);
+            } catch (IllegalArgumentException e) {
+                Ex.throwEx(MENU_NOT_EXIST);
+                return false;
+            }
+        }
+    }
+}
+```
+
+### 实现原理
+
+1. **动态代理处理**：`SqlMethodInterceptor` 拦截这些方法调用
+2. **实体创建**：使用 `ReflectionUtils.createEntityInstance()` 创建实体实例
+   - 优先尝试 Lombok `@SuperBuilder` 模式
+   - 失败则使用无参构造函数
+3. **属性映射**：使用 `EntityMapper` 工具类进行属性映射
+   - `copyFromDTO()` - 新增模式映射
+   - `copyFromDTOForUpdate()` - 更新模式映射
+4. **数据库操作**：使用 MyBatis-Plus `IService` 方法执行保存或更新
+
+### 注意事项
+
+1. **实体类要求**：
+   - 必须有无参构造函数，或
+   - 必须有 `builder()` 静态方法（Lombok `@SuperBuilder`）
+
+2. **DTO 要求**：
+   - 必须继承 `BaseDTO<?>`
+   - 更新操作时，DTO 必须包含 `id` 字段
+
+3. **异常处理**：
+   - `updateFromDTO` 在实体不存在时会抛出 `IllegalArgumentException`
+   - 建议在 Service 层捕获并转换为业务异常
+
+4. **实际实现位置**：
+   - 实际执行逻辑在 `SqlMethodInterceptor` 中
+   - `BaseRepository` 中的 default 方法仅作为接口定义和备用实现
+
+### 工具类说明
+
+- **ReflectionUtils**（`synapse-core` 模块）：提供实体实例创建功能
+- **EntityMapper**（`synapse-databases` 模块）：提供 DTO 到 Entity 的属性映射功能
+
 ## 更新日志
+
+### 2025-11-10
+- 🔧 **重构代码结构**
+  - ✅ 提取 `ReflectionUtils` 工具类到 `synapse-core` 模块
+  - ✅ 简化 `BaseRepository` 中的 default 方法实现
+  - ✅ 优化 `SqlMethodInterceptor` 中的 DTO 映射方法实现
+  - ✅ 消除代码重复，提升可维护性
+- 📚 **完善文档**
+  - ✅ 添加 DTO 到 Entity 自动映射使用指南
+  - ✅ 更新 BaseRepository 默认方法支持说明
 
 ### 2025-09-29
 - 🔧 **修复 SqlMethodInterceptor 核心问题**
@@ -644,6 +818,6 @@ countryService.checkKeyUniqueness(param, "code")
 
 ---
 
-**最后更新**: 2025-09-29  
+**最后更新**: 2025-11-10  
 **版本**: 0.0.1  
 **维护者**: 史偕成

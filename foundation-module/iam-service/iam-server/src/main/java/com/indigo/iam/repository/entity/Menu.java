@@ -4,36 +4,43 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
 /**
  * @author 史偕成
- * @date 2025/11/06 16:34
+ * @date 2025/11/08 17:10
  **/
+@TableName("iam_menu")
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
 @SuperBuilder
-@TableName(value = "iam_role")
-public class Roles extends AuditEntity<String> {
+public class Menu extends AuditEntity<String> {
 
-    /**
-     * 角色编码
-     */
+    private String systemId;
+
+    private String parentId;
+
     private String code;
 
-    /**
-     * 角色描述
-     */
-    private String description;
+    private String name;
 
-    /**
-     * 状态
-     */
+    private String router;
+
+    private String component;
+
+    private String icon;
+
     @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NOT_NULL)
     private Boolean status;
+
+    @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NOT_NULL)
+    private Boolean visible;
 }

@@ -1,16 +1,17 @@
 package com.indigo.iam.repository.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
 /**
  * @author 史偕成
- * @date 2025/11/06 16:34
+ * @date 2025/11/08 15:36
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,22 +19,26 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Accessors(chain = true)
 @SuperBuilder
-@TableName(value = "iam_role")
-public class Roles extends AuditEntity<String> {
+@TableName(value = "iam_system")
+public class IamSystem extends AuditEntity<String> {
 
     /**
-     * 角色编码
+     * 系统编码
      */
     private String code;
 
     /**
-     * 角色描述
+     * 系统名称
      */
-    private String description;
+    private String name;
 
     /**
-     * 状态
+     * 系统状态
      */
-    @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NOT_NULL)
     private Boolean status;
+
+    /**
+     * 排序
+     */
+    private Integer sorted;
 }

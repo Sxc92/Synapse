@@ -3,14 +3,15 @@ package com.indigo.iam.repository.service;
 import com.indigo.databases.annotation.AutoRepository;
 import com.indigo.databases.annotation.IdeFriendlyRepository;
 import com.indigo.databases.repository.BaseRepository;
-import com.indigo.iam.repository.entity.Roles;
-import com.indigo.iam.repository.mapper.RoleMapper;
+import com.indigo.iam.repository.entity.IamResource;
+import com.indigo.iam.repository.mapper.ResourceMapper;
 
 /**
  * @author 史偕成
- * @date 2025/11/06 16:37
+ * @date 2025/11/10
  **/
 @AutoRepository
-@IdeFriendlyRepository("IRoleService")
-public interface IRoleService extends BaseRepository<Roles, RoleMapper> {
+@IdeFriendlyRepository("iResourceService")
+public interface IResourceService extends BaseRepository<IamResource, ResourceMapper> {
 }
+

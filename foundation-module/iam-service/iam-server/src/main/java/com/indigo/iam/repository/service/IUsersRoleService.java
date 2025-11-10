@@ -1,9 +1,10 @@
 package com.indigo.iam.repository.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.indigo.databases.annotation.AutoRepository;
 import com.indigo.databases.annotation.IdeFriendlyRepository;
+import com.indigo.databases.repository.BaseRepository;
 import com.indigo.iam.repository.entity.UsersRole;
+import com.indigo.iam.repository.mapper.UsersRoleMapper;
 
 /**
  * @author 史偕成
@@ -11,5 +12,5 @@ import com.indigo.iam.repository.entity.UsersRole;
  **/
 @AutoRepository
 @IdeFriendlyRepository("iUsersRoleService")
-public interface IUsersRoleService extends IService<UsersRole> {
+public interface IUsersRoleService extends BaseRepository<UsersRole, UsersRoleMapper> {
 }
