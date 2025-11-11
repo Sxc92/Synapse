@@ -1,16 +1,25 @@
 package com.indigo.iam.service;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.indigo.core.exception.Ex;
-import com.indigo.iam.repository.entity.Menu;
-import com.indigo.iam.repository.service.IMenuService;
-import com.indigo.iam.sdk.dto.resource.AddOrModifyMenuDTO;
+import com.indigo.databases.utils.VoMapper;
+import com.indigo.iam.repository.entity.IamResource;
+import com.indigo.iam.repository.entity.RoleResource;
+import com.indigo.iam.repository.service.IResourceService;
+import com.indigo.iam.repository.service.IRoleResourceService;
+import com.indigo.iam.sdk.dto.opera.AddOrModifyResourceDTO;
+import com.indigo.iam.sdk.vo.resource.ResourceVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.indigo.iam.sdk.enums.IamError.MENU_EXIST;
-import static com.indigo.iam.sdk.enums.IamError.MENU_NOT_EXIST;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.indigo.iam.sdk.enums.IamError.RESOURCE_EXIST;
+import static com.indigo.iam.sdk.enums.IamError.RESOURCE_NOT_EXIST;
 
 /**
  * @author 史偕成
@@ -18,20 +27,21 @@ import static com.indigo.iam.sdk.enums.IamError.MENU_NOT_EXIST;
  **/
 public interface ResourceService {
     /**
-     * 删除菜单
+     * 添加或修改资源
      *
-     * @param param
-     * @return
+     * @param param 资源参数
+     * @return 操作结果
      */
-    Boolean addOrModifyMenu(AddOrModifyMenuDTO param);
+    Boolean addOrModifyResource(AddOrModifyResourceDTO param);
 
     /**
-     * 删除菜单
+     * 删除资源
      *
-     * @param id
-     * @return
+     * @param id 资源ID
+     * @return 删除结果
      */
-    Boolean deleteMenu(String id);
+    Boolean deleteResource(String id);
+
 }
 
 @Slf4j
@@ -39,37 +49,25 @@ public interface ResourceService {
 @RequiredArgsConstructor
 class ResourceServiceImpl implements ResourceService {
 
-    private final IMenuService iMenuService;
+    private final IResourceService iResourceService;
+
+    private final IRoleResourceService iRoleResourceService;
 
     @Override
-    public Boolean addOrModifyMenu(AddOrModifyMenuDTO param) {
-        if (iMenuService.checkKeyUniqueness(param, "code")) {
-            Ex.throwEx(MENU_EXIST);
+    public Boolean addOrModifyResource(AddOrModifyResourceDTO param) {
+        if (iResourceService.checkKeyUniqueness(param, "code")) {
+            Ex.throwEx(RESOURCE_EXIST);
         }
-        
-        if (StrUtil.isBlank(param.getId())) {
-            // 新增场景：使用 EntityMapper 自动映射
-            Menu menu = Menu.builder().build();
-            return iMenuService.saveFromDTO(param, menu);
-        } else {
-            // 更新场景：使用 updateFromDTO 自动映射
-            try {
-                return iMenuService.updateFromDTO(param);
-            } catch (IllegalArgumentException e) {
-                // 实体不存在时抛出业务异常
-                Ex.throwEx(MENU_NOT_EXIST);
-                return false;
-            }
-        }
+        return iResourceService.saveOrUpdateFromDTO(param, IamResource.class);
     }
 
     @Override
-    public Boolean deleteMenu(String id) {
-        Menu menu = iMenuService.getById(id);
-        if (menu == null) {
-            Ex.throwEx(MENU_NOT_EXIST);
+    public Boolean deleteResource(String id) {
+        IamResource resource = iResourceService.getById(id);
+        if (resource == null) {
+            Ex.throwEx(RESOURCE_NOT_EXIST);
         }
-        iMenuService.removeById(id);
-        return true;
+        return iResourceService.removeById(id);
     }
+
 }

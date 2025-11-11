@@ -1,4 +1,4 @@
-package com.indigo.iam.sdk.dto.users;
+package com.indigo.iam.sdk.dto.opera;
 
 import com.indigo.core.entity.dto.BaseDTO;
 import lombok.AllArgsConstructor;
@@ -8,25 +8,21 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-
 /**
- * 角色菜单关联DTO
- * 
  * @author 史偕成
- * @date 2025/11/10
+ * @date 2025/11/07 15:37
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-@AllArgsConstructor
-public class RoleMenuDTO extends BaseDTO<String> {
+public class AddOrModifyRoleDTO extends BaseDTO<String> {
 
-    /**
-     * 菜单ID集合
-     */
-    private List<String> menuIds;
+    private String code;
+
+    private String description;
+
+    private Boolean status;
 }
-

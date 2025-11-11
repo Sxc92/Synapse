@@ -1,4 +1,4 @@
-package com.indigo.iam.sdk.dto.users;
+package com.indigo.iam.sdk.dto.query;
 
 import com.indigo.core.annotation.QueryCondition;
 import com.indigo.core.entity.dto.PageDTO;

@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
                 DataSourceAutoConfiguration.class,
                 DruidDataSourceAutoConfigure.class,
                 JacksonAutoConfiguration.class
+                // 注意：RedisAutoConfiguration 已在框架层面排除（synapse-cache 模块的 AutoConfiguration.imports）
         },
         scanBasePackages = {"com.indigo.iam", "com.indigo.databases", "com.indigo.core"}
 )

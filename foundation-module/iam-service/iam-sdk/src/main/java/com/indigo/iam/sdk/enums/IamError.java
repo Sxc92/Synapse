@@ -16,11 +16,18 @@ public enum IamError implements ErrorCode {
 
     USER_ACCOUNT_EXIST("IAM002"),
 
+    USER_PASSWORD_ERROR("IAM014"),
+
+    USER_LOCKED("IAM015"),
+
+    USER_DISABLED("IAM016"),
+
     ROLE_NOT_EXIST("IAM003"),
 
     ROLE_EXIST("IAM004"),
 
     SYSTEM_NOT_EXIST("IAM005"),
+
 
     SYSTEM_EXIST("IAM006"),
 
@@ -31,8 +38,23 @@ public enum IamError implements ErrorCode {
     RESOURCE_NOT_EXIST("IAM009"),
 
     RESOURCE_EXIST("IAM010"),
-    ;
 
+    /**
+     * 角色绑定菜单
+     */
+    ROLE_BIND_MENU("IAM011"),
+
+    /**
+     * 菜单绑定资源
+     */
+    RESOURCE_BIND_MENU("IAM012"),
+
+    /**
+     * 系统绑定菜单
+     */
+    SYSTEM_BIND_MENU("IAM013"),
+
+    ;
     private final String code;
 
     @Override

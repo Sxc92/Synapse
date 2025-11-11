@@ -1,4 +1,4 @@
-package com.indigo.iam.sdk.dto.resource;
+package com.indigo.iam.sdk.dto.associated;
 
 import com.indigo.core.entity.dto.BaseDTO;
 import lombok.AllArgsConstructor;
@@ -8,23 +8,25 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 /**
+ * 角色资源关联DTO
+ * 
  * @author 史偕成
- * @date 2025/11/08 15:57
+ * @date 2025/11/10
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class AddOrModifySystemDTO extends BaseDTO<String> {
+@AllArgsConstructor
+public class RoleResourceDTO extends BaseDTO<String> {
 
-    private String code;
-
-    private String name;
-
-    private Boolean status;
-
-    private Integer sorted;
+    /**
+     * 资源ID集合
+     */
+    private List<String> resourceIds;
 }
+

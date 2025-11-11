@@ -1,4 +1,4 @@
-package com.indigo.iam.sdk.dto.resource;
+package com.indigo.iam.sdk.dto.query;
 
 import com.indigo.core.annotation.QueryCondition;
 import com.indigo.core.entity.dto.PageDTO;
@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * @author 史偕成
- * @date 2025/11/08 17:14
+ * @date 2025/11/10
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @Accessors(chain = true)
-public class MenuDTO extends PageDTO<String> {
+public class ResourceDTO extends PageDTO<String> {
 
     @QueryCondition(field = "code", type = QueryCondition.QueryType.LIKE)
     private String code;
@@ -27,9 +27,16 @@ public class MenuDTO extends PageDTO<String> {
     @QueryCondition(field = "name", type = QueryCondition.QueryType.LIKE)
     private String name;
 
-    @QueryCondition(field = "parent_id", type = QueryCondition.QueryType.EQ)
-    private String parentId;
-
     @QueryCondition(field = "system_id", type = QueryCondition.QueryType.EQ)
     private String systemId;
+
+    @QueryCondition(field = "menu_id", type = QueryCondition.QueryType.EQ)
+    private String menuId;
+
+    @QueryCondition(field = "type", type = QueryCondition.QueryType.EQ)
+    private String type;
+
+    @QueryCondition(field = "permissions", type = QueryCondition.QueryType.LIKE)
+    private String permissions;
 }
+

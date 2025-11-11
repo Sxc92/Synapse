@@ -1,15 +1,17 @@
 package com.indigo.iam.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.indigo.core.exception.Ex;
 import com.indigo.iam.repository.entity.IamSystem;
+import com.indigo.iam.repository.entity.Menu;
+import com.indigo.iam.repository.service.IMenuService;
 import com.indigo.iam.repository.service.ISystemService;
-import com.indigo.iam.sdk.dto.resource.AddOrModifySystemDTO;
+import com.indigo.iam.sdk.dto.opera.AddOrModifySystemDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.indigo.iam.sdk.enums.IamError.SYSTEM_EXIST;
-import static com.indigo.iam.sdk.enums.IamError.SYSTEM_NOT_EXIST;
+import static com.indigo.iam.sdk.enums.IamError.*;
 
 /**
  * @author 史偕成
@@ -39,6 +41,8 @@ public interface SystemService {
 class SystemServiceImpl implements SystemService {
     private final ISystemService iSystemService;
 
+    private final IMenuService iMenuService;
+
     @Override
     public Boolean addOrModifySystem(AddOrModifySystemDTO param) {
         if (iSystemService.checkKeyUniqueness(param, "code")) {
@@ -52,6 +56,10 @@ class SystemServiceImpl implements SystemService {
         IamSystem system = iSystemService.getById(id);
         if (system == null) {
             Ex.throwEx(SYSTEM_NOT_EXIST);
+        }
+        if (!iMenuService.exists(new LambdaQueryWrapper<Menu>()
+                .eq(Menu::getSystemId, id))) {
+            Ex.throwEx(SYSTEM_BIND_MENU);
         }
         iSystemService.removeById(id);
         return true;

@@ -3,9 +3,9 @@ package com.indigo.iam.controller;
 import com.indigo.core.entity.Result;
 import com.indigo.core.entity.result.PageResult;
 import com.indigo.iam.repository.service.IUsersService;
-import com.indigo.iam.sdk.dto.users.AddOrModifyUserDTO;
-import com.indigo.iam.sdk.dto.users.EmpowerDTO;
-import com.indigo.iam.sdk.dto.users.UsersDTO;
+import com.indigo.iam.sdk.dto.opera.AddOrModifyUserDTO;
+import com.indigo.iam.sdk.dto.associated.EmpowerDTO;
+import com.indigo.iam.sdk.dto.query.UsersDTO;
 import com.indigo.iam.sdk.vo.users.UserVO;
 import com.indigo.iam.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/detail")
-    public Result<UserVO> detailByKey(@RequestBody UsersDTO params) {
+    public Result<UserVO> detail(@RequestBody UsersDTO params) {
         return Result.success(iUsersService.getOneWithDTO(params, UserVO.class));
     }
 

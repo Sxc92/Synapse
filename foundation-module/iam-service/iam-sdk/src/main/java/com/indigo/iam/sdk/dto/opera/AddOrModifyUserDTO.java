@@ -1,4 +1,4 @@
-package com.indigo.iam.sdk.dto.users;
+package com.indigo.iam.sdk.dto.opera;
 
 import com.indigo.core.entity.dto.BaseDTO;
 import lombok.*;

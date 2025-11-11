@@ -3,8 +3,10 @@ package com.indigo.iam.controller;
 import com.indigo.core.entity.Result;
 import com.indigo.core.entity.result.PageResult;
 import com.indigo.iam.repository.service.IRoleService;
-import com.indigo.iam.sdk.dto.users.AddOrModifyRoleDTO;
-import com.indigo.iam.sdk.dto.users.RoleDTO;
+import com.indigo.iam.sdk.dto.opera.AddOrModifyRoleDTO;
+import com.indigo.iam.sdk.dto.query.RoleDTO;
+import com.indigo.iam.sdk.dto.associated.RoleMenuDTO;
+import com.indigo.iam.sdk.dto.associated.RoleResourceDTO;
 import com.indigo.iam.sdk.vo.users.RoleVO;
 import com.indigo.iam.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
@@ -79,5 +81,28 @@ public class RoleController {
     @PostMapping("/list")
     public Result<List<RoleVO>> getUserList(@RequestBody RoleDTO param) {
         return Result.success(iRoleService.listWithDTO(param, RoleVO.class));
+    }
+
+
+    /**
+     * 角色分配菜单
+     *
+     * @param param 角色菜单关联参数
+     * @return 操作结果
+     */
+    @PostMapping("/assignMenusToRole")
+    public Result<Boolean> assignMenusToRole(@RequestBody RoleMenuDTO param) {
+        return Result.success(userRoleService.assignMenusToRole(param));
+    }
+
+    /**
+     * 角色分配资源
+     *
+     * @param param 角色资源关联参数
+     * @return 操作结果
+     */
+    @PostMapping("/assignResourcesToRole")
+    public Result<Boolean> assignResourcesToRole(RoleResourceDTO param) {
+        return Result.success(userRoleService.assignResourcesToRole(param));
     }
 }

@@ -3,10 +3,10 @@ package com.indigo.iam.controller;
 import com.indigo.core.entity.Result;
 import com.indigo.core.entity.result.PageResult;
 import com.indigo.iam.repository.service.IResourceService;
-import com.indigo.iam.sdk.dto.resource.AddOrModifyResourceDTO;
-import com.indigo.iam.sdk.dto.resource.ResourceDTO;
+import com.indigo.iam.sdk.dto.opera.AddOrModifyResourceDTO;
+import com.indigo.iam.sdk.dto.query.ResourceDTO;
 import com.indigo.iam.sdk.vo.resource.ResourceVO;
-import com.indigo.iam.service.IamResourceService;
+import com.indigo.iam.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +21,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/resource")
-public class IamResourceController {
+public class ResourceController {
 
     private final IResourceService iResourceService;
 
-    private final IamResourceService iamResourceService;
+    private final ResourceService iamResourceService;
 
     /**
      * 添加或修改资源

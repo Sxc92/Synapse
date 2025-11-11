@@ -1,4 +1,4 @@
-package com.indigo.iam.sdk.dto.users;
+package com.indigo.iam.sdk.dto.opera;
 
 import com.indigo.core.entity.dto.BaseDTO;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * @author 史偕成
- * @date 2025/11/07 15:37
+ * @date 2025/11/08 15:57
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,11 +18,13 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class AddOrModifyRoleDTO extends BaseDTO<String> {
+public class AddOrModifySystemDTO extends BaseDTO<String> {
 
     private String code;
 
-    private String description;
+    private String name;
 
     private Boolean status;
+
+    private Integer sorted;
 }
