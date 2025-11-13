@@ -1,8 +1,8 @@
 package com.indigo.iam.repository.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
+import com.indigo.iam.sdk.enums.ResourceTypeEnums;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * 资源实体类
- * 
+ *
  * @author 史偕成
  * @date 2025/11/10
  **/
@@ -46,7 +46,8 @@ public class IamResource extends AuditEntity<String> {
     private String name;
 
     /**
-     * 类型：API、DATA、FUNCTION（前端按钮）
+     * 类型：API、FUNCTION（前端按钮）
+     * {@link ResourceTypeEnums }
      */
     private String type;
 

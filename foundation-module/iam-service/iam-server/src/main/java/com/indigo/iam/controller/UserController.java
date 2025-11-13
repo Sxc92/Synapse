@@ -1,13 +1,15 @@
 package com.indigo.iam.controller;
 
+import com.indigo.core.context.UserContext;
 import com.indigo.core.entity.Result;
 import com.indigo.core.entity.result.PageResult;
 import com.indigo.iam.repository.service.IUsersService;
-import com.indigo.iam.sdk.dto.opera.AddOrModifyUserDTO;
 import com.indigo.iam.sdk.dto.associated.EmpowerDTO;
+import com.indigo.iam.sdk.dto.opera.AddOrModifyUserDTO;
 import com.indigo.iam.sdk.dto.query.UsersDTO;
 import com.indigo.iam.sdk.vo.users.UserVO;
 import com.indigo.iam.service.UserRoleService;
+import com.indigo.security.annotation.RequireLogin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +28,6 @@ public class UserController {
     private final UserRoleService userRoleService;
 
     private final IUsersService iUsersService;
-
     /**
      * 保存/修改用户
      *
@@ -93,4 +94,11 @@ public class UserController {
     public Result<Boolean> empower(@RequestBody EmpowerDTO param) {
         return Result.success(userRoleService.empower(param));
     }
+
+    @GetMapping("/info")
+    @RequireLogin
+    public Result<UserContext> getUserInfo() {
+        return Result.success(UserContext.getCurrentUser());
+    }
+
 }

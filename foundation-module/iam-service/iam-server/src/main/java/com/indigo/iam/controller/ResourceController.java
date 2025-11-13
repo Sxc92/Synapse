@@ -1,5 +1,6 @@
 package com.indigo.iam.controller;
 
+import com.indigo.core.context.UserContext;
 import com.indigo.core.entity.Result;
 import com.indigo.core.entity.result.PageResult;
 import com.indigo.iam.repository.service.IResourceService;
@@ -26,6 +27,7 @@ public class ResourceController {
     private final IResourceService iResourceService;
 
     private final ResourceService iamResourceService;
+
 
     /**
      * 添加或修改资源
@@ -80,6 +82,11 @@ public class ResourceController {
     @PostMapping("/detail")
     public Result<ResourceVO> detail(@RequestBody ResourceDTO param) {
         return Result.success(iResourceService.getOneWithDTO(param, ResourceVO.class));
+    }
+
+    @GetMapping("/code")
+    public Result<List<String>> getCurrentResourceCode() {
+        return Result.success(UserContext.getCurrentPermissions());
     }
 }
 

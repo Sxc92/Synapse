@@ -52,6 +52,7 @@ public interface LoginService {
     LoginResponseVO login(LoginDTO dto);
 
 }
+
 /**
  * 登录服务
  * 负责用户登录认证和权限数据存储
@@ -62,12 +63,13 @@ public interface LoginService {
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class LoginServiceImpl implements LoginService{
+class LoginServiceImpl implements LoginService {
 
     private final IUsersService iUsersService;
     private final AuthenticationService authenticationService;
     private final IUsersRoleService iUsersRoleService;
     private final ISystemService iSystemService;
+
     /**
      * 用户登录
      *
@@ -104,6 +106,9 @@ class LoginServiceImpl implements LoginService{
                         .username(dto.getUsername())
                         .password(dto.getPassword())
                         .build())
+                .email(user.getEmail())
+                .mobile(user.getMobile())
+                .avatar(user.getAvatar())
                 .userId(user.getId())
                 .roles(roles)
                 .permissions(permissions)
@@ -165,7 +170,6 @@ class LoginServiceImpl implements LoginService{
 
         return user;
     }
-
 
 
     /**

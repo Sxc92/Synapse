@@ -97,7 +97,7 @@ synapse:
       enabled: true
       # 白名单路径列表（支持 Ant 风格路径匹配）
       paths:
-        - "/api/iam/auth/**"  # IAM 认证接口
+        - "/api/iam/auth/login"  # IAM 认证接口
         - "/api/public/**"     # 公开接口
     # Token 配置
     token:

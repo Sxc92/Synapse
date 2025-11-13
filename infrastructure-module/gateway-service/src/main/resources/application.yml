@@ -34,6 +34,12 @@ spring:
             - Path=/api/iam/**
           filters:
             - StripPrefix=2
+        - id: mdm-service
+          uri: lb://mdm-service
+          predicates:
+            - Path=/api/mdm/**
+          filters:
+            - StripPrefix=2
 
         # Add more route configurations as needed
     
@@ -99,7 +105,7 @@ synapse:
       enabled: true
       # 白名单路径列表（支持 Ant 风格路径匹配）
       paths:
-        - /api/iam/auth/**   # 认证相关接口（原始路径，用于直接访问）
+        - /api/iam/auth/login   # 认证相关接口（原始路径，用于直接访问）
         - /oauth2/**         # OAuth2相关接口
         - /actuator/**       # 监控端点
         - /swagger-ui/**     # Swagger UI
