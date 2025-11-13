@@ -82,17 +82,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
-        </dependency>
-
-        <!-- Sa-Token OAuth2.0 -->
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-oauth2</artifactId>
-        </dependency>
-
         <!-- Synapse Framework Dependencies -->
         <dependency>
             <groupId>com.indigo</groupId>

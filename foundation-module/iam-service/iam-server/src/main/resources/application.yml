@@ -19,6 +19,13 @@ synapse:
     field-conversion:
       enabled: true
       strategy: CAMEL_TO_UNDERLINE
+    failover:
+      enabled: true
+      strategy: HEALTHY_FIRST  # 主数据源优先
+      max-retry-times: 3
+      retry-interval: 1000
+      detection-interval: 5000
+      recovery-interval: 10000
     # 数据源配置
     datasources:
       master1:
@@ -29,7 +36,6 @@ synapse:
         username: xmom
         password: 123456
         pool-type: HIKARI
-        role: READ_WRITE  # 读写数据源
         weight: 100       # 权重
         params:
           useUnicode: "true"
@@ -58,7 +64,6 @@ synapse:
         username: xmom
         password: 123456
         pool-type: HIKARI
-        role: READ_WRITE  # 读写数据源
         weight: 100       # 权重
         params:
           useUnicode: "true"
@@ -82,12 +87,53 @@ synapse:
     seata:
       enabled: false
   security:
+    # 是否启用安全模块
     enabled: true
-    jwt:
+    # 安全模式：STRICT（严格模式，所有请求都需要认证）、PERMISSIVE（宽松模式，部分请求可以匿名访问）、DISABLED（关闭模式，不进行安全控制）
+    mode: PERMISSIVE
+    # 白名单配置
+    white-list:
+      # 是否启用白名单
       enabled: true
-      secret: SynapseMOM@2024!SecureJWTKey#256
-      expiration: 1800
-      prefix: Bearer
+      # 白名单路径列表（支持 Ant 风格路径匹配）
+      paths:
+        - "/api/iam/auth/**"  # IAM 认证接口
+        - "/api/public/**"     # 公开接口
+    # Token 配置
+    token:
+      # Token 前缀（用于 Authorization 请求头）
+      prefix: "Bearer "
+      # Token 查询参数名
+      query-param: "token"
+      # Authorization 请求头名称
+      header-name: "Authorization"
+      # X-Auth-Token 请求头名称（备用 token 传递方式）
+      x-auth-token-header: "X-Auth-Token"
+    # Gateway 签名配置（用于 Gateway 和微服务之间的签名验证）
+    gateway-signature:
+      # 是否启用 Gateway 签名验证
+      enabled: true
+      # Gateway 签名密钥（生产环境必须修改为强密钥）
+      secret: "synapse-gateway-secret-key-change-in-production"
+      # 签名有效期窗口（毫秒），默认 5 分钟，防止重放攻击
+      validity-window: 300000
+      # 是否启用用户上下文传递（启用后，Gateway 会将用户上下文编码到请求头，减少微服务的 Redis 查询）
+      enable-context-passing: true
+    # 内部服务调用配置（用于服务间调用的签名验证）
+    internal-service:
+      # 是否启用内部服务调用签名验证
+      enabled: true
+      # 当前服务名称（用于标识调用来源）
+      service-name: "iam-service"
+      # 当前服务密钥（用于生成签名，生产环境必须修改为强密钥）
+      secret: "iam-service-secret-key-change-in-production"
+      # 签名有效期窗口（毫秒），默认 5 分钟，防止重放攻击
+      validity-window: 300000
+      # 允许调用的服务白名单（key: 服务名称, value: 服务密钥）
+      # 如果需要配置，取消注释并填写服务名称和密钥
+      # allowed-services:
+      #   gateway-service: "gateway-service-secret-key"
+      #   mdm-service: "mdm-service-secret-key"
   cache:
     enabled: true
     default-strategy: "LOCAL_AND_REDIS"
@@ -120,14 +166,15 @@ synapse:
 logging:
   level:
     root: INFO
-    com.indigo: INFO
+#    com.indigo: INFO
     com.indigo.databases: INFO
-    com.indigo.security: INFO
+#    com.indigo.security: INFO
 
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
-  ## 管理端点
-  global-config:
-    banner: false
+
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    map-underscore-to-camel-case: true
+#  ## 管理端点
+#  global-config:
+#    banner: false

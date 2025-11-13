@@ -7,6 +7,8 @@ import com.indigo.iam.sdk.dto.opera.AddOrModifySystemDTO;
 import com.indigo.iam.sdk.dto.query.SystemDTO;
 import com.indigo.iam.sdk.vo.resource.SystemVO;
 import com.indigo.iam.service.SystemService;
+import com.indigo.security.annotation.Logical;
+import com.indigo.security.annotation.RequirePermission;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +67,7 @@ public class SystemController {
      *
      * @return 系统列表
      */
+    @RequirePermission(value = {"system:page"},logical = Logical.OR)
     @PostMapping("/page")
     public Result<PageResult<SystemVO>> page(@RequestBody SystemDTO param) {
         return Result.success(iSystemService.pageWithCondition(param, SystemVO.class));

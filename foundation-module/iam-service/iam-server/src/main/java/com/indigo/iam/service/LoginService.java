@@ -128,8 +128,6 @@ class LoginServiceImpl implements LoginService{
         return LoginResponseVO.builder()
                 .token(token)
                 .expiresIn(expiration)
-                .userId(user.getId())
-                .username(user.getAccount())
                 .build();
 //        return Result.success(response);
     }

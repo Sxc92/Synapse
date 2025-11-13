@@ -27,14 +27,5 @@ public class LoginResponseVO {
      */
     private Long expiresIn;
 
-    /**
-     * 用户ID
-     */
-    private String userId;
-
-    /**
-     * 用户名
-     */
-    private String username;
 }
 

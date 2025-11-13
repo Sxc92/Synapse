@@ -50,14 +50,14 @@ logging:
     reactor.netty: INFO
 
 # Management endpoints
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
 
 # Synapse 配置
 synapse:
@@ -87,20 +87,47 @@ synapse:
         min-idle: 0
         max-wait: PT-1S
       enabled: true
-  # JWT配置
-  jwt:
-    enabled: true
-    secret: SynapseMOM@2024!SecureJWTKey#256
-    expiration: 1800
   # Security配置
   security:
-    # Token续期相关配置
+    # 是否启用安全模块
+    enabled: true
+    # 安全模式：STRICT（严格模式，所有请求都需要认证）、PERMISSIVE（宽松模式，部分请求可以匿名访问）、DISABLED（关闭模式，不进行安全控制）
+    mode: PERMISSIVE
+    # 白名单路径配置
+    white-list:
+      # 是否启用白名单
+      enabled: true
+      # 白名单路径列表（支持 Ant 风格路径匹配）
+      paths:
+        - /api/iam/auth/**   # 认证相关接口（原始路径，用于直接访问）
+        - /oauth2/**         # OAuth2相关接口
+        - /actuator/**       # 监控端点
+        - /swagger-ui/**     # Swagger UI
+        - /v3/api-docs/**    # API文档
+        - /webjars/**        # 静态资源
+        - /favicon.ico       # 网站图标
+        - /error             # 错误页面
+    # Token 配置
     token:
-      renewal:
-        # 续期阈值（秒），当token剩余时间小于此值时自动续期，默认30分钟
-        threshold: 1800
-        # 续期时间（秒），续期后token的有效期，默认2小时
-        duration: 7200
+      # Token 前缀（用于 Authorization 请求头）
+      prefix: "Bearer "
+      # Token 查询参数名
+      query-param: "token"
+      # Authorization 请求头名称
+      header-name: "Authorization"
+      # X-Auth-Token 请求头名称（备用 token 传递方式）
+      x-auth-token-header: "X-Auth-Token"
+    # Gateway 签名配置（用于 Gateway 和微服务之间的签名验证）
+    gateway-signature:
+      # 是否启用 Gateway 签名验证
+      enabled: true
+      # Gateway 签名密钥（生产环境必须修改为强密钥）
+      secret: "synapse-gateway-secret-key-change-in-production"
+      # 签名有效期窗口（毫秒），默认 5 分钟，防止重放攻击
+      validity-window: 300000
+      # 是否启用用户上下文传递（启用后，Gateway 会将用户上下文编码到请求头，减少微服务的 Redis 查询）
+      enable-context-passing: true
+    # OAuth2配置（保留原有配置）
     oauth2:
       enabled: true
       clients:
@@ -117,18 +144,6 @@ synapse:
           description: "用户基本信息资源"
   # Gateway配置
   gateway:
-    # 白名单路径配置
-    white-list:
-      - /auth/**           # 认证相关接口（经过StripPrefix后的路径）
-      - /api/iam/auth/**   # 认证相关接口（原始路径，用于直接访问）
-      - /oauth2/**         # OAuth2相关接口
-      - /actuator/**       # 监控端点
-      - /swagger-ui/**     # Swagger UI
-      - /v3/api-docs/**    # API文档
-      - /webjars/**        # 静态资源
-      - /favicon.ico       # 网站图标
-      - /error             # 错误页面
-      - /test/**           # 测试接口
     # 语言环境配置
     locale:
       enabled: true                    # 是否启用语言环境处理
@@ -137,4 +152,4 @@ synapse:
       log-locale: false               # 是否记录语言环境日志
       header-name: X-Locale           # 语言环境请求头名称
       strict-validation: true          # 是否严格验证语言环境格式
-      allow-unknown-locales: true      # 是否允许未知语言环境 
+      allow-unknown-locales: true      # 是否允许未知语言环境

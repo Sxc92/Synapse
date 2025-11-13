@@ -1,8 +1,10 @@
 package com.indigo.gateway.config;
 
+import com.indigo.security.config.SecurityProperties;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -27,33 +29,25 @@ import java.util.List;
 @Slf4j
 @Configuration
 @ConfigurationProperties(prefix = "synapse.gateway")
+@EnableConfigurationProperties(SecurityProperties.class)
 public class GatewayConfig {
 
     /**
-     * 白名单路径配置
-     * 从配置文件中读取，如果没有配置则使用默认值
+     * 提供 SecurityProperties Bean（如果未自动配置）
+     * 确保 Gateway 可以使用 SecurityProperties 的白名单配置
      */
-    private List<String> whiteList = List.of(
-        "/auth/**",           // 认证相关接口（经过StripPrefix后的路径）
-        "/api/iam/auth/**",   // 认证相关接口（原始路径，用于直接访问）
-        "/oauth2/**",         // OAuth2相关接口
-        "/actuator/**",       // 监控端点
-        "/swagger-ui/**",     // Swagger UI
-        "/v3/api-docs/**",    // API文档
-        "/webjars/**",        // 静态资源
-        "/favicon.ico",       // 网站图标
-        "/error"              // 错误页面
-    );
+//    @Bean
+//    @ConditionalOnMissingBean(SecurityProperties.class)
+//    public SecurityProperties securityProperties() {
+//        log.info("SecurityProperties 未自动配置，创建默认实例");
+//        return new SecurityProperties();
+//    }
+
 
     /**
      * 第三方平台配置
      */
     private ThirdPartyConfig thirdParty = new ThirdPartyConfig();
-
-    /**
-     * Token续期配置
-     */
-    private TokenRenewalConfig tokenRenewal = new TokenRenewalConfig();
 
     /**
      * 限流配置
@@ -64,6 +58,7 @@ public class GatewayConfig {
      * 语言环境配置
      */
     private LocaleConfig locale = new LocaleConfig();
+
 
     @Data
     public static class ThirdPartyConfig {
@@ -86,24 +81,6 @@ public class GatewayConfig {
          * 第三方平台认证超时时间（秒）
          */
         private int timeout = 30;
-    }
-
-    @Data
-    public static class TokenRenewalConfig {
-        /**
-         * 是否启用Token自动续期
-         */
-        private boolean enabled = true;
-        
-        /**
-         * Token续期阈值（秒）
-         */
-        private long thresholdSeconds = 1800; // 30分钟
-        
-        /**
-         * Token续期时间（秒）
-         */
-        private long renewalSeconds = 3600; // 1小时
     }
 
     @Data
@@ -211,4 +188,5 @@ public class GatewayConfig {
          */
         private boolean allowUnknownLocales = true;
     }
+
 } 

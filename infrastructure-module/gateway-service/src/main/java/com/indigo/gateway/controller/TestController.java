@@ -1,6 +1,7 @@
 package com.indigo.gateway.controller;
 
 import com.indigo.gateway.config.GatewayConfig;
+import com.indigo.security.config.SecurityProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,9 +25,11 @@ import java.util.Map;
 public class TestController {
 
     private final GatewayConfig gatewayConfig;
+    private final SecurityProperties securityProperties;
 
-    public TestController(GatewayConfig gatewayConfig) {
+    public TestController(GatewayConfig gatewayConfig, SecurityProperties securityProperties) {
         this.gatewayConfig = gatewayConfig;
+        this.securityProperties = securityProperties;
     }
 
     /**
@@ -35,13 +38,24 @@ public class TestController {
     @GetMapping("/whitelist")
     public Map<String, Object> getWhitelist() {
         Map<String, Object> result = new HashMap<>();
-        result.put("whiteList", gatewayConfig.getWhiteList());
+        
+        // 从 SecurityProperties 获取白名单
+        if (securityProperties != null && securityProperties.getWhiteList() != null) {
+            SecurityProperties.WhiteListConfig whiteListConfig = securityProperties.getWhiteList();
+            result.put("whiteList", Map.of(
+                "enabled", whiteListConfig.isEnabled(),
+                "paths", whiteListConfig.getAllPaths()
+            ));
+        } else {
+            result.put("whiteList", Map.of("enabled", false, "paths", java.util.List.of()));
+        }
+        
         result.put("thirdParty", gatewayConfig.getThirdParty());
-        result.put("tokenRenewal", gatewayConfig.getTokenRenewal());
         result.put("rateLimit", gatewayConfig.getRateLimit());
         result.put("locale", gatewayConfig.getLocale());
         
-        log.info("白名单配置: {}", gatewayConfig.getWhiteList());
+        log.info("白名单配置: {}", securityProperties != null && securityProperties.getWhiteList() != null 
+                ? securityProperties.getWhiteList().getAllPaths() : "未配置");
         return result;
     }
 

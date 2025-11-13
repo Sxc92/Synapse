@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.indigo.databases.mapper.EnhancedVoMapper;
 import com.indigo.iam.repository.entity.Roles;
 import com.indigo.iam.sdk.vo.users.RoleVO;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 角色Mapper
@@ -13,6 +12,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @author 史偕成
  * @date 2025/11/06 16:36
  **/
-@Mapper
 public interface RoleMapper extends EnhancedVoMapper<Roles, RoleVO> {
 }

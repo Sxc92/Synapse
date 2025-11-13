@@ -1,6 +1,5 @@
 package com.indigo.iam;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -18,7 +17,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
         scanBasePackages = {"com.indigo.iam", "com.indigo.databases", "com.indigo.core"}
 )
 @EnableDiscoveryClient
-@MapperScan("com.indigo.iam.repository.mapper")
+// 注意：@MapperScan 已移除，因为框架级别的 MybatisPlusConfig 已经配置了全局扫描
+// @MapperScan("com.indigo.**.repository.mapper") 在 MybatisPlusConfig 中统一配置
 public class IAMApplication {
     public static void main(String[] args) {
         SpringApplication.run(IAMApplication.class, args);

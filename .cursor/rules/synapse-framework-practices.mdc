@@ -123,15 +123,34 @@ public class UserService {
     public void updateProfile(UpdateProfileDTO dto) {
         // 从上下文获取当前用户
         String userId = UserContext.getCurrentUserId();
+        String account = UserContext.getCurrentAccount();
+        String realName = UserContext.getCurrentRealName();
+        String email = UserContext.getCurrentEmail();
+        String mobile = UserContext.getCurrentMobile();
+        String avatar = UserContext.getCurrentAvatar();
         
+        // 获取角色和权限
+        List<String> roles = UserContext.getCurrentRoles();
+        List<String> permissions = UserContext.getCurrentPermissions();
+        
+        // 权限和角色检查
+        if (UserContext.hasRole("admin")) {
+            // 管理员逻辑
+        }
+        
+        if (UserContext.hasPermission("user:read")) {
+            // 有读取权限
+        }
+        
+        // 或者获取完整用户上下文
         UserContext userContext = UserContext.getCurrentUser();
         if (userContext == null) {
             throw new SynapseException(StandardErrorCode.USER_NOT_LOGIN);
         }
         
         // 使用用户信息
-        String tenantId = userContext.getTenantId();
-        String deptId = userContext.getDeptId();
+        String userEmail = userContext.getEmail();
+        String userMobile = userContext.getMobile();
     }
 }
 ```
