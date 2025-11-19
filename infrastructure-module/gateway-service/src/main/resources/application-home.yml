@@ -1,0 +1,17 @@
+synapse:
+  cache:
+    enabled: true
+    default-strategy: "LOCAL_AND_REDIS"
+    redis-cache:
+      connection:
+        host: localhost
+        port: 6379
+        database: 0
+        timeout: PT2S
+      connection-timeout: PT5S
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: PT-1S
+      enabled: true

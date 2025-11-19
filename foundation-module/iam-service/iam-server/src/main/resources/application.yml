@@ -14,7 +14,6 @@ synapse:
         map-underscore-to-camel-case: true
       global-config:
         banner: false
-    primary: master1
     # 字段转换配置
     field-conversion:
       enabled: true
@@ -26,71 +25,13 @@ synapse:
       retry-interval: 1000
       detection-interval: 5000
       recovery-interval: 10000
-    # 数据源配置
-    datasources:
-      master1:
-        type: MYSQL
-        host: 10.80.3.24
-        port: 6450
-        database: synapse_iam
-        username: xmom
-        password: 123456
-        pool-type: HIKARI
-        weight: 100       # 权重
-        params:
-          useUnicode: "true"
-          characterEncoding: "utf8"
-          useSSL: "false"
-          allowPublicKeyRetrieval: "true"
-          serverTimezone: "Asia/Shanghai"
-          autoReconnect: "true"
-          failOverReadOnly: "false"
-          maxReconnects: "3"
-          initialTimeout: "2"
-        hikari:
-          minimum-idle: 5
-          maximum-pool-size: 15
-          idle-timeout: 30000
-          max-lifetime: 1800000
-          connection-timeout: 30000
-          # 添加连接验证
-          connection-test-query: "SELECT 1"
-          validation-timeout: 5000
-      master2:
-        type: MYSQL
-        host: 10.80.3.25
-        port: 6450
-        database: synapse_iam
-        username: xmom
-        password: 123456
-        pool-type: HIKARI
-        weight: 100       # 权重
-        params:
-          useUnicode: "true"
-          characterEncoding: "utf8"
-          useSSL: "false"
-          allowPublicKeyRetrieval: "true"
-          serverTimezone: "Asia/Shanghai"
-          autoReconnect: "true"
-          failOverReadOnly: "false"
-          maxReconnects: "3"
-          initialTimeout: "2"
-        hikari:
-          minimum-idle: 5
-          maximum-pool-size: 15
-          idle-timeout: 30000
-          max-lifetime: 1800000
-          connection-timeout: 30000
-          # 添加连接验证
-          connection-test-query: "SELECT 1"
-          validation-timeout: 5000
     seata:
       enabled: false
   security:
     # 是否启用安全模块
     enabled: true
     # 安全模式：STRICT（严格模式，所有请求都需要认证）、PERMISSIVE（宽松模式，部分请求可以匿名访问）、DISABLED（关闭模式，不进行安全控制）
-    mode: PERMISSIVE
+    mode: DISABLED
     # 白名单配置
     white-list:
       # 是否启用白名单
@@ -109,6 +50,17 @@ synapse:
       header-name: "Authorization"
       # X-Auth-Token 请求头名称（备用 token 传递方式）
       x-auth-token-header: "X-Auth-Token"
+      # 是否启用滑动过期（自动刷新）
+      # 启用后，每次用户请求时，如果 token 剩余时间少于刷新阈值，会自动刷新 token 过期时间
+      enable-sliding-expiration: true
+      # 刷新阈值（秒）
+      # 当 token 剩余时间少于此值时，自动刷新 token
+      # 设置为 10 分钟（600 秒），即当 token 剩余时间少于 10 分钟时自动续期
+      refresh-threshold: 600
+      # 续期时长（秒）
+      # 刷新 token 时，将过期时间延长到此值
+      # 设置为 2 小时（7200 秒）
+      renewal-duration: 7200
     # Gateway 签名配置（用于 Gateway 和微服务之间的签名验证）
     gateway-signature:
       # 是否启用 Gateway 签名验证
@@ -134,31 +86,6 @@ synapse:
       # allowed-services:
       #   gateway-service: "gateway-service-secret-key"
       #   mdm-service: "mdm-service-secret-key"
-  cache:
-    enabled: true
-    default-strategy: "LOCAL_AND_REDIS"
-    redis-cache:
-      # 连接配置（哨兵模式也需要，用于设置 database 和主节点密码）
-      connection:
-        database: 0  # 数据库索引，默认 0
-        password:    # 主节点密码（如果有）
-      sentinel:
-        enabled: true
-        master: mymaster
-        nodes:
-          - 10.80.3.21:26379
-          - 10.80.3.22:26379
-          - 10.80.3.23:26379
-          - 10.80.3.24:26379
-          - 10.80.3.25:26379
-        password:    # 哨兵密码（如果有，与主节点密码可能不同）
-      connection-timeout: PT5S
-      pool:
-        max-active: 8
-        max-idle: 8
-        min-idle: 0
-        max-wait: PT-1S
-      enabled: true
   events:
     enabled: false
 
@@ -166,15 +93,6 @@ synapse:
 logging:
   level:
     root: INFO
-#    com.indigo: INFO
     com.indigo.databases: INFO
-#    com.indigo.security: INFO
-
-
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-#    map-underscore-to-camel-case: true
-#  ## 管理端点
-#  global-config:
-#    banner: false
+    com.indigo.security: INFO  # 开启安全模块调试日志，便于排查 token 续期问题
+    com.indigo.cache: INFO     # 开启缓存模块调试日志，便于排查 token 续期问题

@@ -3,6 +3,7 @@ package com.indigo.iam.sdk.vo.resource;
 import com.indigo.core.entity.vo.BaseVO;
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author 史偕成
@@ -10,7 +11,7 @@ import lombok.experimental.Accessors;
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)

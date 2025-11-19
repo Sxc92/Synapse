@@ -57,7 +57,8 @@ class SystemServiceImpl implements SystemService {
         if (system == null) {
             Ex.throwEx(SYSTEM_NOT_EXIST);
         }
-        if (!iMenuService.exists(new LambdaQueryWrapper<Menu>()
+        // 检查是否存在关联的菜单，如果存在则不允许删除
+        if (iMenuService.exists(new LambdaQueryWrapper<Menu>()
                 .eq(Menu::getSystemId, id))) {
             Ex.throwEx(SYSTEM_BIND_MENU);
         }

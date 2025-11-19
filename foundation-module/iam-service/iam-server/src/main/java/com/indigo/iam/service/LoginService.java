@@ -106,10 +106,11 @@ class LoginServiceImpl implements LoginService {
                         .username(dto.getUsername())
                         .password(dto.getPassword())
                         .build())
+                .userId(user.getId())
+                .realName(user.getRealName())
                 .email(user.getEmail())
                 .mobile(user.getMobile())
                 .avatar(user.getAvatar())
-                .userId(user.getId())
                 .roles(roles)
                 .permissions(permissions)
                 .build();

@@ -2,38 +2,62 @@
 
 ## 📖 平台概述
 
-SynapseMOM 是一个基于 Spring Boot 3.2.3 的现代化制造运营管理平台，提供完整的微服务架构解决方案。平台集成了身份认证、数据管理、事件驱动、缓存、安全等核心功能模块，为企业级应用提供开箱即用的技术能力。
+SynapseMOM 是一个基于 Spring Boot 3.x 的现代化制造运营管理平台，提供完整的微服务架构解决方案。平台集成了身份认证、数据管理、事件驱动、缓存、安全、国际化等核心功能模块，为企业级应用提供开箱即用的技术能力。
+
+**核心优势**：
+- 🚀 **模块化架构**：清晰的模块划分，按需引入
+- 🔐 **统一认证**：基于自研 TokenService 的认证机制，支持滑动过期、自动续期
+- 🗄️ **数据访问**：强大的 BaseRepository，支持 VO 映射、多表关联查询
+- ⚡ **二级缓存**：Caffeine 本地缓存 + Redis 分布式缓存，自动降级
+- 🌍 **国际化**：完整的 i18n 支持，错误消息多语言
+- 🛡️ **权限控制**：基于注解的细粒度权限管理
 
 ## 🏗️ 平台架构
 
 ```
 SynapseMOM Platform
 ├── Business Modules (业务模块)
-│   ├── User Service (用户服务)
-│   ├── Order Service (订单服务)
-│   ├── Product Service (产品服务)
-│   └── ... (其他业务服务)
+│   └── (待开发业务服务)
+│
 ├── Foundation Modules (基础模块)
-│   ├── IAM Service (身份认证服务)
-│   ├── Meta Data Service (元数据服务)
-│   └── ... (其他基础服务)
+│   ├── IAM Service (身份认证服务) ✅
+│   │   ├── 用户管理、角色权限、菜单资源
+│   │   ├── RBAC 权限模型、Token 认证
+│   │   └── [文档](../foundation-module/iam-service/README.md)
+│   ├── MDM Service (元数据服务) ✅
+│   │   ├── 国家管理、语言管理
+│   │   ├── 国际化内容管理
+│   │   └── 基础数据维护
+│   └── I18N Service (国际化服务) ✅
+│       ├── 多语言支持
+│       ├── 消息资源管理
+│       └── 动态语言切换
+│
 ├── Infrastructure Modules (基础设施模块)
-│   ├── Gateway Service (网关服务)
-│   ├── Monitor Service (监控服务)
-│   ├── Audit Service (审计服务)
-│   ├── Notification Service (通知服务)
-│   ├── Schedule Service (调度服务)
-│   ├── Workflow Service (工作流服务)
-│   ├── Integration Service (集成服务)
-│   └── License Service (许可证服务)
+│   ├── Gateway Service (网关服务) ✅
+│   │   ├── Token 认证、用户上下文传递
+│   │   ├── 网络限流、国际化支持
+│   │   └── [文档](../infrastructure-module/gateway-service/README.md)
+│   ├── Audit Service (审计服务) 🚧
+│   ├── Notification Service (通知服务) 🚧
+│   ├── Schedule Service (调度服务) 🚧
+│   ├── Workflow Service (工作流服务) 🚧
+│   ├── Integration Service (集成服务) 🚧
+│   └── License Service (许可证服务) 🚧
+│
 └── Synapse Framework (框架集合)
     ├── synapse-core (核心框架)
     ├── synapse-cache (缓存框架)
     ├── synapse-security (安全框架)
     ├── synapse-events (事件框架)
     ├── synapse-databases (数据库框架)
+    ├── synapse-i18n (国际化框架)
     └── synapse-bom (依赖管理)
 ```
+
+**图例说明**：
+- ✅ 已实现并可用
+- 🚧 规划中或开发中
 
 ## 🚀 快速开始
 
@@ -47,75 +71,96 @@ SynapseMOM Platform
 
 ### ⚡ 最速体验 (3分钟)
 
-**🔥 推荐**: 直接使用 `synapse-databases` 框架，体验无 ServiceImpl 的强大功能！
+**🔥 推荐**: 直接使用 `synapse-databases` 框架，体验强大的 BaseRepository 功能！
 
 ```xml
 <!-- 1. 在你的项目中添加依赖 -->
-<dependency>
-    <groupId>com.indigo</groupId>
-    <artifactId>synapse-databases</artifactId>
-    <version>1.1.0</version>
-</dependency>
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.indigo</groupId>
+            <artifactId>synapse-bom</artifactId>
+            <version>1.0.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>com.indigo</groupId>
+        <artifactId>synapse-databases</artifactId>
+    </dependency>
+</dependencies>
 ```
 
 ```yaml
 # 2. 最少配置 (application.yml)
 synapse:
   datasource:
-    primary: master1
-    datasources:
-      master1:
-        type: MYSQL
-        host: localhost
-        port: 3306
-        database: your_database
-        username: root
-        password: your_password
+    dynamic-data-source:
+      primary: master
+      datasource:
+        master:
+          type: MYSQL
+          host: localhost
+          port: 3306
+          database: your_database
+          username: root
+          password: your_password
+          pool-type: HIKARI
 ```
 
 ```java
-// 3. 定义 Repository (零ServiceImpl!)
-@AutoRepository
-public interface ICountryService extends BaseRepository<Country, CountryMapper> {
-    // ✅ 自动获得 checkKeyUniqueness、enhancedQuery、分页查询等所有功能
+// 3. 定义 Repository
+@Repository
+public interface CountryRepository extends BaseRepository<Country> {
+    // ✅ 使用 @QueryCondition 自动构建查询条件
+    @QueryCondition
+    List<CountryVO> findByCode(String code);
+    
+    // ✅ 分页查询，自动映射到 VO
+    PageResult<CountryVO> pageCountries(CountryPageDTO pageDTO);
 }
 
 // 4. 立即使用强大功能
 @Service
 public class CountryService {
-    @Autowired private ICountryService countryRepo;
+    @Autowired private CountryRepository countryRepository;
     
-    // ✅ 唯一性验证 (最新功能)
+    // ✅ 唯一性验证
     public boolean isUnique(Country country) { 
-        return !countryRepo.checkKeyUniqueness(country, "code"); 
+        return !countryRepository.exists(new LambdaQueryWrapper<Country>()
+            .eq(Country::getCode, country.getCode())
+            .ne(country.getId() != null, Country::getId, country.getId())); 
     }
     
-    // ✅ 增强查询
-    public List<Country> findActive() {
-        return countryRepo.enhancedQuery(Country.class)
-            .eq(Country::getStatus, 1).list();
+    // ✅ 条件查询，自动映射到 VO
+    public List<CountryVO> findActive() {
+        CountryQueryDTO query = CountryQueryDTO.builder()
+            .status(1)
+            .build();
+        return countryRepository.listWithDTO(query, CountryVO.class);
     }
     
-    // ✅ 多表关联查询
-    public PageResult<CountryVO> getWithRegion(PageDTO<Country> dto) {
-        return countryRepo.enhancedQuery(Country.class)
-            .leftJoin("region r", "c.region_id = r.id")
-            .select("c.*", "r.name as region_name")
-            .page(dto, CountryVO.class);
+    // ✅ 分页查询，自动映射到 VO
+    public PageResult<CountryVO> getCountries(CountryPageDTO pageDTO) {
+        return countryRepository.pageWithDTO(pageDTO, CountryVO.class);
     }
 }
 ```
 
-### 🌟 Synapse Framework v1.1.0 新特性
+### 🌟 Synapse Framework v1.0.0 特性
 
 | 模块 | 版本 | 亮点特性 | 状态 |
 |------|------|----------|------|
-| **synapse-databases** | v1.1.0 | ✅ **checkKeyUniqueness**、EnhancedQueryBuilder、SqlMethodInterceptor | 🚀 生产可用 |
-| **synapse-cache** | v1.1.0 | ✅ 二级缓存、分布式锁、智能死锁检测 | 🚀 生产可用 |
-| **synapse-security** | v1.1.0 | ✅ Sa-Token集成、认证门面模式、多策略支持 | 🚀 生产可用 |
-| **synapse-events** | v1.1.0 | ✅ 异步事件处理、事务事件、可靠性投递 | 🚀 生产可用 |
-| **synapse-i18n** | v1.1.0 | 🆕 国际化支持、多语言环境、动态切换 | ⚡ 测试可用 |
-| **synapse-core** | v1.1.0 | ✅ 增强工具类、异常处理、断言工具 | 🚀 生产可用 |
+| **synapse-databases** | v1.0.0 | ✅ BaseRepository、VO 映射、动态数据源、查询构建器 | 🚀 生产可用 |
+| **synapse-cache** | v1.0.0 | ✅ 二级缓存（Caffeine + Redis）、分布式锁、会话管理 | 🚀 生产可用 |
+| **synapse-security** | v1.0.0 | ✅ 自研 TokenService、权限控制、滑动过期、自动续期 | 🚀 生产可用 |
+| **synapse-events** | v1.0.0 | ✅ 异步事件处理、事务事件、可靠性投递 | 🚀 生产可用 |
+| **synapse-i18n** | v1.0.0 | ✅ 国际化支持、多语言环境、动态切换、错误消息国际化 | 🚀 生产可用 |
+| **synapse-core** | v1.0.0 | ✅ 统一响应、异常处理（Ex.throwEx）、工具类 | 🚀 生产可用 |
 
 ### 🔧 完整平台部署
 
@@ -179,12 +224,33 @@ public class CountryService {
 
 ## 🛠️ 核心模块
 
-### 🔐 [身份认证 (IAM)](./iam/README.md)
-- 用户管理
-- 角色权限
-- 组织架构
-- 认证授权
-- 单点登录
+### 🔐 [身份认证 (IAM)](../foundation-module/iam-service/README.md)
+- ✅ 用户管理：用户新增、修改、删除、查询
+- ✅ 角色管理：角色配置、角色权限分配
+- ✅ 菜单管理：菜单树形结构、菜单权限控制
+- ✅ 资源管理：资源权限编码、细粒度权限控制
+- ✅ 系统管理：多系统支持、系统权限隔离
+- ✅ RBAC 权限模型：基于角色的访问控制
+- ✅ Token 认证：基于自研 TokenService 的认证机制
+- ✅ 权限缓存：Redis 缓存用户会话和权限数据
+
+### 🌍 [元数据服务 (MDM)](../foundation-module/mdm-service/)
+- ✅ 国家管理：国家信息维护
+- ✅ 语言管理：语言信息维护
+- ✅ 国际化内容：多语言内容管理
+- ✅ 基础数据：系统基础数据维护
+
+### 🌐 [国际化服务 (I18N)](../foundation-module/i18n-service/)
+- ✅ 多语言支持：动态语言切换
+- ✅ 消息资源管理：国际化消息资源
+- ✅ 错误消息国际化：异常消息多语言
+
+### 🚪 [网关服务 (Gateway)](../infrastructure-module/gateway-service/README.md)
+- ✅ Token 认证：统一 Token 验证
+- ✅ 用户上下文传递：将用户信息传递给下游服务
+- ✅ 网络限流：IP、用户、API 等多维度限流
+- ✅ 国际化支持：多语言请求头处理
+- ✅ Gateway 签名：防止请求被篡改
 
 ### 🗄️ [数据库框架](./databases/README.md)
 - 无 ServiceImpl 设计
@@ -237,25 +303,19 @@ public class CountryService {
 
 #### 1. 数据库配置
 ```yaml
-spring:
+synapse:
   datasource:
-    dynamic:
-      primary: master1
-      strict: false
+    dynamic-data-source:
+      primary: master
       datasource:
-        master1:
+        master:
           type: MYSQL
           host: localhost
           port: 3306
           database: your_database
           username: your_username
           password: your_password
-          hikari:
-            minimumIdle: 5
-            maximumPoolSize: 15
-            idleTimeout: 30000
-            maxLifetime: 1800000
-            connectionTimeout: 30000
+          pool-type: HIKARI
 ```
 
 #### 2. 缓存配置
@@ -265,6 +325,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password: your_password
       database: 0
       timeout: 2000ms
       lettuce:
@@ -272,21 +333,37 @@ spring:
           max-active: 8
           max-idle: 8
           min-idle: 0
-          max-wait: -1
+
+synapse:
+  cache:
+    enabled: true
+    default-strategy: "LOCAL_AND_REDIS"
+    two-level:
+      enabled: true
+      local:
+        enabled: true
+        maximum-size: 1000
+      redis:
+        enabled: true
+        default-ttl: 3600
 ```
 
 #### 3. 安全配置
 ```yaml
 synapse:
   security:
-    auth:
-      default-strategy: satoken
-      allow-concurrent-login: true
-      share-token: false
+    enabled: true
+    mode: STRICT  # STRICT(严格)、PERMISSIVE(宽松)、DISABLED(关闭)
     token:
-      name: user_token
-      timeout: 7200
-      active-timeout: 1800
+      timeout: 7200  # Token 过期时间（秒），默认 2 小时
+      enable-sliding-expiration: true  # 启用滑动过期（自动刷新）
+      refresh-threshold: 600  # 刷新阈值（秒），当 token 剩余时间少于 10 分钟时自动续期
+      renewal-duration: 7200  # 续期时长（秒），刷新时将过期时间延长到 2 小时
+    white-list:
+      enabled: true
+      paths:
+        - /api/auth/login
+        - /actuator/**
 ```
 
 ### 测试指南
@@ -389,13 +466,21 @@ src/main/java/com/indigo/
 
 ### 3. 异常处理
 ```java
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+@Service
+public class UserService {
     
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-        return ResponseEntity.badRequest()
-            .body(new ErrorResponse(e.getCode(), e.getMessage()));
+    public UserVO getUser(String id) {
+        if (id == null || id.isEmpty()) {
+            // 使用 Ex.throwEx() 统一异常处理
+            Ex.throwEx(StandardErrorCode.USER_ID_REQUIRED, "用户ID不能为空");
+        }
+        
+        User user = userRepository.getById(id);
+        if (user == null) {
+            Ex.throwEx(StandardErrorCode.USER_NOT_FOUND, id);
+        }
+        
+        return VoMapper.toVO(user, UserVO.class);
     }
 }
 ```
@@ -418,14 +503,30 @@ public class UserController {
 @Service
 public class UserService {
     
-    @Cacheable(value = "users", key = "#id")
-    public User getUserById(Long id) {
-        return userRepository.getById(id);
+    @Autowired
+    private TwoLevelCacheService cacheService;
+    
+    public UserVO getUser(String id) {
+        String cacheKey = "user:" + id;
+        
+        return cacheService.get(
+            cacheKey,
+            () -> {
+                User user = userRepository.getById(id);
+                return VoMapper.toVO(user, UserVO.class);
+            },
+            UserVO.class,
+            3600 // TTL: 1小时
+        );
     }
     
-    @CacheEvict(value = "users", key = "#user.id")
-    public void updateUser(User user) {
+    public void updateUser(String id, UpdateUserDTO dto) {
+        User user = userRepository.getById(id);
+        user.setUsername(dto.getUsername());
         userRepository.updateById(user);
+        
+        // 删除缓存
+        cacheService.delete("user:" + id);
     }
 }
 ```
@@ -472,10 +573,11 @@ chore: 构建过程或辅助工具的变动
 
 ---
 
-**🎉 最新更新**: 2025-09-29 v1.1.0  
+**🎉 最新更新**: 2025-01-14 v1.0.0  
 **🚀 Synapse Framework** - 让制造运营管理更简单、更高效、更智能！  
-**🔧 SqlMethodInterceptor** - 完美解决 checkKeyUniqueness，零 ServiceImpl 架构！  
-**⚡ EnhancedQueryBuilder** - 支持聚合查询、多表关联、异步查询！
+**🔧 BaseRepository** - 强大的 Repository 接口，支持 VO 映射、多表关联查询！  
+**⚡ TokenService** - 自研 Token 认证，支持滑动过期、自动续期！  
+**🌍 I18N** - 完整的国际化支持，错误消息多语言！
 
 ---
 
