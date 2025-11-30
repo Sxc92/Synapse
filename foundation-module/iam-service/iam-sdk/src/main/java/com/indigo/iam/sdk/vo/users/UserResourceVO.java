@@ -41,7 +41,6 @@ import lombok.EqualsAndHashCode;
 
                 // 资源字段
                 @VoMapping.Field(source = "res.id", target = "resourceId"),
-                @VoMapping.Field(source = "res.system_id", target = "systemId"),
                 @VoMapping.Field(source = "res.menu_id", target = "menuId"),
                 @VoMapping.Field(source = "res.code", target = "code"),
                 @VoMapping.Field(source = "res.name", target = "name"),
@@ -64,12 +63,7 @@ public class UserResourceVO extends BaseVO<String> {
     private String resourceId;
 
     /**
-     * 系统ID
-     */
-    private String systemId;
-
-    /**
-     * 菜单ID（只有FUNCTION类型存在）
+     * 菜单ID（必填，资源必须关联菜单）
      */
     private String menuId;
 

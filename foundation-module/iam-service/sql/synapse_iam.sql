@@ -37,7 +37,7 @@ CREATE TABLE `iam_menu` (
   `modify_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '修改用户',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
   `revision` int NOT NULL DEFAULT '1' COMMENT '版本号',
-  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 0:未删除、1:已删除',
+  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 1:未删除、0:已删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='菜单表';
 
@@ -65,7 +65,7 @@ CREATE TABLE `iam_resources` (
   `modify_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '修改用户',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
   `revision` int NOT NULL DEFAULT '1' COMMENT '版本号',
-  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 0:未删除、1:已删除',
+  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 1:未删除、0:已删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='资源表';
 
@@ -89,7 +89,7 @@ CREATE TABLE `iam_role` (
   `modify_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '修改用户',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
   `revision` int NOT NULL DEFAULT '1' COMMENT '版本号',
-  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 0:未删除、1:已删除',
+  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 1:未删除、0:已删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色表';
 
@@ -141,6 +141,28 @@ BEGIN;
 COMMIT;
 
 -- ----------------------------
+-- Table structure for iam_role_system（已暂时注释）
+-- 暂时取消 iam_role_system 表，通过菜单推导系统关系
+-- 系统关系可以通过 role_menu -> menu -> system_id 推导
+-- ----------------------------
+-- DROP TABLE IF EXISTS `iam_role_system`;
+-- CREATE TABLE `iam_role_system` (
+--   `id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主键',
+--   `role_id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色Id',
+--   `system_id` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '系统Id',
+--   `create_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '创建用户',
+--   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+--   PRIMARY KEY (`id`),
+--   UNIQUE KEY `uk_role_system` (`role_id`, `system_id`) COMMENT '角色系统唯一索引'
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色系统关联表';
+--
+-- -- ----------------------------
+-- -- Records of iam_role_system
+-- -- ----------------------------
+-- BEGIN;
+-- COMMIT;
+
+-- ----------------------------
 -- Table structure for iam_system
 -- ----------------------------
 DROP TABLE IF EXISTS `iam_system`;
@@ -155,7 +177,7 @@ CREATE TABLE `iam_system` (
   `modify_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '修改用户',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
   `revision` int NOT NULL DEFAULT '1' COMMENT '版本号',
-  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 0:未删除、1:已删除',
+  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 1:未删除、0:已删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统表';
 
@@ -186,7 +208,7 @@ CREATE TABLE `iam_user` (
   `modify_user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '修改用户',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
   `revision` int NOT NULL DEFAULT '1' COMMENT '版本号',
-  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 0:未删除、1:已删除',
+  `deleted` tinyint NOT NULL DEFAULT '1' COMMENT '软删标识 1:未删除、0:已删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 

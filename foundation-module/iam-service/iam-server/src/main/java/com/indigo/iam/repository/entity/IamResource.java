@@ -26,12 +26,8 @@ import lombok.experimental.SuperBuilder;
 public class IamResource extends AuditEntity<String> {
 
     /**
-     * 系统Id
-     */
-    private String systemId;
-
-    /**
-     * 菜单Id（只有FUNCTION类型存在）
+     * 菜单Id（必填，资源必须关联菜单）
+     * 系统关系通过 menu -> system_id 推导
      */
     private String menuId;
 
@@ -46,7 +42,7 @@ public class IamResource extends AuditEntity<String> {
     private String name;
 
     /**
-     * 类型：API、FUNCTION（前端按钮）
+     * 类型：API、BUTTON（前端按钮）
      * {@link ResourceTypeEnums }
      */
     private String type;

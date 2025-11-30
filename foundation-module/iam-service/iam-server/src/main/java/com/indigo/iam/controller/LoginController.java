@@ -116,6 +116,22 @@ public class LoginController {
     }
 
     /**
+     * 获取用户系统菜单树列表
+     * 根据 Token 从缓存中获取用户有权限的系统菜单树列表
+     * 也可以通过 UserContext.getCurrentSystemMenuTree() 获取
+     *
+     * @param request HTTP 请求
+     * @return 系统菜单树列表
+     */
+    @GetMapping("/systemMenuTree")
+    @RequireLogin
+    public Result<List<com.indigo.iam.sdk.vo.resource.SystemMenuTreeVO>> getSystemMenuTree(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        log.debug("获取用户系统菜单树列表: token={}", token);
+        return authenticationService.getUserSystemMenuTree(token, com.indigo.iam.sdk.vo.resource.SystemMenuTreeVO.class);
+    }
+
+    /**
      * 从请求中获取 token
      * 使用 TokenExtractor 工具类统一提取
      *

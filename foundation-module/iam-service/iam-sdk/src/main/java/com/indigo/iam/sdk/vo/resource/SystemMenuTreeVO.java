@@ -4,9 +4,11 @@ import com.indigo.core.entity.vo.BaseVO;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * @author 史偕成
- * @date 2025/11/08 15:41
+ * @date 2025/11/21 09:11
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -14,12 +16,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class SystemVO extends BaseVO<String> {
-
-    /**
-     * 系统编码
-     */
-    private String code;
+public class SystemMenuTreeVO extends BaseVO<String> {
 
     /**
      * 系统名称
@@ -27,14 +24,12 @@ public class SystemVO extends BaseVO<String> {
     private String name;
 
     /**
-     * 系统状态
+     * 系统图标
      */
-    private Boolean status;
+    private String logo;
 
     /**
-     * 排序
+     * 子菜单
      */
-    private Integer sorted;
-
-    private String logo;
+    private List<MenuTreeVO> menus;
 }

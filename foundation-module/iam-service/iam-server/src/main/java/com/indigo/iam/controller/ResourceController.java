@@ -6,6 +6,7 @@ import com.indigo.core.entity.result.PageResult;
 import com.indigo.iam.repository.service.IResourceService;
 import com.indigo.iam.sdk.dto.opera.AddOrModifyResourceDTO;
 import com.indigo.iam.sdk.dto.query.ResourceDTO;
+import com.indigo.iam.sdk.vo.resource.ResourceDetailVO;
 import com.indigo.iam.sdk.vo.resource.ResourceVO;
 import com.indigo.iam.service.ResourceService;
 import lombok.RequiredArgsConstructor;
@@ -64,13 +65,14 @@ public class ResourceController {
 
     /**
      * 获取资源分页
+     * 使用手写 SQL 进行多表联查，保证功能稳定
      *
      * @param param 查询参数
      * @return 资源分页结果
      */
     @PostMapping("/page")
-    public Result<PageResult<ResourceVO>> page(@RequestBody ResourceDTO param) {
-        return Result.success(iResourceService.pageWithCondition(param, ResourceVO.class));
+    public Result<PageResult<ResourceDetailVO>> page(@RequestBody ResourceDTO param) {
+        return Result.success(iamResourceService.pageResourceDetail(param));
     }
 
     /**

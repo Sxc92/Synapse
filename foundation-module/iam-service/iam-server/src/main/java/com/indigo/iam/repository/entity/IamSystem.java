@@ -1,5 +1,7 @@
 package com.indigo.iam.repository.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.indigo.databases.entity.AuditEntity;
 import lombok.AllArgsConstructor;
@@ -33,8 +35,14 @@ public class IamSystem extends AuditEntity<String> {
     private String name;
 
     /**
+     * 系统logo
+     */
+    private String logo;
+
+    /**
      * 系统状态
      */
+    @TableField(insertStrategy = FieldStrategy.NEVER, updateStrategy = FieldStrategy.NOT_NULL)
     private Boolean status;
 
     /**

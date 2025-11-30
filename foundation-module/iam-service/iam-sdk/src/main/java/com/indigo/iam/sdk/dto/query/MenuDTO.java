@@ -32,4 +32,10 @@ public class MenuDTO extends PageDTO<String> {
 
     @QueryCondition(field = "system_id", type = QueryCondition.QueryType.EQ)
     private String systemId;
+
+    @QueryCondition(field = "status", type = QueryCondition.QueryType.EQ)
+    private Boolean status;
+
+    @QueryCondition(field = "visible", type = QueryCondition.QueryType.EQ)
+    private Boolean visible;
 }

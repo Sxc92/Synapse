@@ -7,6 +7,7 @@ import com.indigo.iam.sdk.dto.opera.AddOrModifyMenuDTO;
 import com.indigo.iam.sdk.dto.query.MenuDTO;
 import com.indigo.iam.sdk.vo.resource.MenuTreeVO;
 import com.indigo.iam.sdk.vo.resource.MenuVO;
+import com.indigo.iam.sdk.vo.resource.SystemMenuTreeVO;
 import com.indigo.iam.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +90,7 @@ public class MenuController {
      * @param param 查询参数
      * @return 菜单树结构列表
      */
-    @PostMapping("/tree/list")
+    @PostMapping("/tree")
     public Result<List<MenuTreeVO>> listTree(@RequestBody MenuDTO param) {
         return Result.success(menuService.listTree(param));
     }
@@ -114,6 +115,17 @@ public class MenuController {
     @PostMapping("/tree/detail")
     public Result<MenuTreeVO> detailTree(@RequestBody MenuDTO param) {
         return Result.success(menuService.detailTree(param));
+    }
+
+    /**
+     * 获取系统菜单树结构列表
+     *
+     * @param systemIds 系统ID列表
+     * @return
+     */
+    @PostMapping("/system/menu/tree")
+    public Result<List<SystemMenuTreeVO>> listSystemMenuTree(@RequestBody List<String> systemIds) {
+        return Result.success(menuService.listSystemMenuTree(systemIds));
     }
 }
 

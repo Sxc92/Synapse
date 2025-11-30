@@ -54,6 +54,51 @@ public enum IamError implements ErrorCode {
      */
     SYSTEM_BIND_MENU("IAM013"),
 
+    /**
+     * 角色未拥有系统权限
+     */
+    ROLE_NOT_HAVE_SYSTEM("IAM017"),
+
+    /**
+     * 菜单不属于角色已拥有的系统
+     */
+    MENU_NOT_IN_ROLE_SYSTEM("IAM018"),
+
+    /**
+     * 资源不属于角色已拥有的系统
+     */
+    RESOURCE_NOT_IN_ROLE_SYSTEM("IAM019"),
+
+    /**
+     * 用户未分配资源权限
+     */
+    USER_NOT_HAVE_RESOURCE("IAM020"),
+
+    /**
+     * 用户未分配系统权限
+     */
+    USER_NOT_HAVE_SYSTEM("IAM021"),
+
+    /**
+     * 用户未分配菜单权限
+     */
+    USER_NOT_HAVE_MENU("IAM022"),
+
+    /**
+     * 系统ID列表为空
+     */
+    SYSTEM_IDS_EMPTY("IAM023"),
+
+    /**
+     * 菜单ID列表为空
+     */
+    MENU_IDS_EMPTY("IAM024"),
+
+    /**
+     * 资源ID列表为空
+     */
+    RESOURCE_IDS_EMPTY("IAM025"),
+
     ;
     private final String code;
 

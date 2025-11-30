@@ -21,12 +21,8 @@ import lombok.experimental.SuperBuilder;
 public class AddOrModifyResourceDTO extends BaseDTO<String> {
 
     /**
-     * 系统Id
-     */
-    private String systemId;
-
-    /**
-     * 菜单Id（只有FUNCTION类型存在）
+     * 菜单Id（必填，资源必须关联菜单）
+     * 系统关系通过 menu -> system_id 推导
      */
     private String menuId;
 

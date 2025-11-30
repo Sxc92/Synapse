@@ -3,25 +3,15 @@ package com.indigo.iam.service;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.indigo.core.constants.StandardErrorCode;
 import com.indigo.core.exception.Ex;
 import com.indigo.databases.utils.VoMapper;
-import com.indigo.iam.repository.entity.IamSystem;
 import com.indigo.iam.repository.entity.Users;
-import com.indigo.iam.repository.service.ISystemService;
-import com.indigo.iam.repository.service.IUsersRoleService;
-import com.indigo.iam.repository.service.IUsersService;
+import com.indigo.iam.repository.service.*;
 import com.indigo.iam.sdk.dto.auth.LoginDTO;
-import com.indigo.iam.sdk.dto.query.UserMenuQueryDTO;
-import com.indigo.iam.sdk.dto.query.UserPermissionQueryDTO;
-import com.indigo.iam.sdk.dto.query.UserResourceQueryDTO;
 import com.indigo.iam.sdk.dto.query.UserRoleQueryDTO;
 import com.indigo.iam.sdk.vo.auth.LoginResponseVO;
-import com.indigo.iam.sdk.vo.resource.MenuVO;
-import com.indigo.iam.sdk.vo.resource.ResourceVO;
-import com.indigo.iam.sdk.vo.resource.SystemVO;
-import com.indigo.iam.sdk.vo.users.UserMenuVO;
-import com.indigo.iam.sdk.vo.users.UserPermissionVO;
-import com.indigo.iam.sdk.vo.users.UserResourceVO;
+import com.indigo.iam.sdk.vo.resource.*;
 import com.indigo.iam.sdk.vo.users.UserRoleVO;
 import com.indigo.security.core.AuthenticationService;
 import com.indigo.security.model.AuthRequest;
@@ -35,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.indigo.iam.sdk.enums.IamError.*;
@@ -68,7 +57,9 @@ class LoginServiceImpl implements LoginService {
     private final IUsersService iUsersService;
     private final AuthenticationService authenticationService;
     private final IUsersRoleService iUsersRoleService;
+    private final IResourceService iResourceService;
     private final ISystemService iSystemService;
+    private final IMenuService iMenuService;
 
     /**
      * 用户登录
@@ -83,23 +74,31 @@ class LoginServiceImpl implements LoginService {
         // 2. 查询用户角色
         List<String> roles = getUserRoles(user.getId());
         if (CollUtil.isEmpty(roles)) {
-            // 如果用户没有角色，返回空列表而不是 null
-            roles = Collections.emptyList();
+            // 如果用户没有角色，不允许登录
+            Ex.throwEx(StandardErrorCode.OPERATION_NOT_ALLOWED, "用户未分配角色，无法登录");
         }
 
-        // 3. 查询用户权限
-        List<String> permissions = getUserPermissions(user.getId());
-        if (CollUtil.isEmpty(permissions)) {
-            // 如果用户没有权限，返回空列表而不是 null
-            permissions = Collections.emptyList();
-        }
-
-        // 4. 查询用户的 Menu、Resource、System
-        List<MenuVO> menus = getUserMenus(user.getId());
+        // 3. 查询用户的 Resource、System 和 System-Menu 树结构
+        // 注意：菜单信息已包含在 systemMenuTree 中，不需要单独查询
         List<ResourceVO> resources = getUserResources(user.getId());
-        List<SystemVO> systems = getUserSystems(user.getId());
+        List<SystemMenuTreeVO> systemMenuTree = getUserSystemMenuTree(user.getId());
 
-        // 5. 构建认证请求
+        // 4. 从资源列表中提取权限编码（避免重复查询）
+        // 注意：ResourceVO 已包含 permissions 字段，无需单独查询权限
+        List<String> permissions = resources.stream()
+                .map(ResourceVO::getPermissions)
+                .filter(StrUtil::isNotBlank)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 5. 构建权限数据（框架层会自动存储到缓存）
+        // 只缓存 resources 和 systemMenuTree，不缓存 systems 和 permissionTree
+        // 注意：菜单信息已包含在 systemMenuTree 中，不需要单独传递 menus
+        AuthRequest.PermissionData permissionData = AuthRequest.PermissionData.builder()
+                .systemMenuTree(systemMenuTree)
+                .build();
+
+        // 7. 构建认证请求（包含权限数据）
         AuthRequest authRequest = AuthRequest.builder()
                 .authType(AuthRequest.AuthType.USERNAME_PASSWORD)
                 .usernamePasswordAuth(UsernamePasswordAuth.builder()
@@ -111,26 +110,19 @@ class LoginServiceImpl implements LoginService {
                 .email(user.getEmail())
                 .mobile(user.getMobile())
                 .avatar(user.getAvatar())
-                .roles(roles)
                 .permissions(permissions)
+                .permissionData(permissionData)
                 .build();
 
-        // 6. 调用认证服务（生成 Token）
+        // 8. 调用认证服务（生成 Token，框架层会自动存储权限数据）
         AuthResponse authResponse = authenticationService.authenticate(authRequest);
 
         String token = authResponse.getAccessToken();
         long expiration = authResponse.getExpiresIn();
 
-        // 7. 存储 Menu、Resource、System 到缓存
-        authenticationService.storeUserPermissionData(
-                token,
-                menus,
-                resources,
-                systems,
-                expiration
-        );
-        log.info("用户登录成功: userId={}, username={}, token={}", user.getId(), user.getAccount(), token);
-        // 8. 构建登录响应
+        log.info("用户登录成功: userId={}, username={}, token={}, systemMenuTreeSize={}", 
+                user.getId(), user.getAccount(), token, systemMenuTree.size());
+        // 9. 构建登录响应
         return LoginResponseVO.builder()
                 .token(token)
                 .expiresIn(expiration)
@@ -175,19 +167,14 @@ class LoginServiceImpl implements LoginService {
 
     /**
      * 查询用户角色列表（返回角色编码）
-     * 使用多表查询，一次查询完成用户角色关联查询
+     * 使用手写 SQL 进行多表联查，保证功能稳定
      *
      * @param userId 用户ID
      * @return 角色编码列表
      */
     private List<String> getUserRoles(String userId) {
-        // 构建查询条件
-        UserRoleQueryDTO queryDTO = UserRoleQueryDTO.builder()
-                .userId(userId)
-                .build();
-
-        // 使用多表查询，一次查询完成
-        List<UserRoleVO> roleList = iUsersRoleService.listWithVoMapping(queryDTO, UserRoleVO.class);
+        // 使用手写 SQL 查询用户角色
+        List<UserRoleVO> roleList = iUsersRoleService.getMapper().selectUserRoles(userId);
 
         if (CollUtil.isEmpty(roleList)) {
             return Collections.emptyList();
@@ -202,160 +189,131 @@ class LoginServiceImpl implements LoginService {
     }
 
     /**
-     * 查询用户权限列表（返回权限编码）
-     * 使用多表查询，一次查询完成用户-角色-资源关联查询
-     *
-     * @param userId 用户ID
-     * @return 权限编码列表
-     */
-    private List<String> getUserPermissions(String userId) {
-        // 构建查询条件
-        UserPermissionQueryDTO queryDTO = UserPermissionQueryDTO.builder()
-                .userId(userId)
-                .build();
-
-        // 使用多表查询，一次查询完成
-        List<UserPermissionVO> permissionList = iUsersRoleService.listWithVoMapping(queryDTO, UserPermissionVO.class);
-
-        if (CollUtil.isEmpty(permissionList)) {
-            return Collections.emptyList();
-        }
-
-        // 返回权限编码列表（去重）
-        return permissionList.stream()
-                .map(UserPermissionVO::getPermissions)
-                .filter(StrUtil::isNotBlank)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    /**
      * 查询用户菜单列表
-     * 使用多表查询，一次查询完成用户-角色-菜单关联查询
+     * 使用 Mapper 层的 @Select SQL 查询，通过用户-角色-菜单关联查询
      *
      * @param userId 用户ID
      * @return 菜单VO列表
      */
     private List<MenuVO> getUserMenus(String userId) {
-        // 构建查询条件
-        UserMenuQueryDTO queryDTO = UserMenuQueryDTO.builder()
-                .userId(userId)
-                .build();
+        // 使用 Mapper 层的 SQL 查询（已过滤状态和可见性）
+        List<MenuVO> menus = iMenuService.getMapper().selectUserMenus(userId);
 
-        // 使用多表查询，一次查询完成
-        List<UserMenuVO> menuList = iUsersRoleService.listWithVoMapping(queryDTO, UserMenuVO.class);
-
-        if (CollUtil.isEmpty(menuList)) {
-            return Collections.emptyList();
+        if (CollUtil.isEmpty(menus)) {
+            Ex.throwEx(USER_NOT_HAVE_MENU, "用户未分配菜单权限，无法登录");
         }
-
-        // 过滤：只返回启用且可见的菜单，并去重
-        List<MenuVO> result = menuList.stream()
-                .filter(menu -> menu.getMenuId() != null
-                        && Boolean.TRUE.equals(menu.getStatus())
-                        && Boolean.TRUE.equals(menu.getVisible()))
-                .map(menu -> {
-                    // 转换为 MenuVO
-                    MenuVO menuVO = new MenuVO();
-                    menuVO.setId(menu.getMenuId());
-                    menuVO.setSystemId(menu.getSystemId());
-                    menuVO.setParentId(menu.getParentId());
-                    menuVO.setCode(menu.getCode());
-                    menuVO.setName(menu.getName());
-                    menuVO.setRouter(menu.getRouter());
-                    menuVO.setComponent(menu.getComponent());
-                    menuVO.setIcon(menu.getIcon());
-                    menuVO.setStatus(menu.getStatus());
-                    menuVO.setVisible(menu.getVisible());
-                    menuVO.setCreateTime(menu.getCreateTime());
-                    menuVO.setModifyTime(menu.getModifyTime());
-                    return menuVO;
-                })
-                .distinct()
-                .collect(Collectors.toList());
-
-        return result;
+        
+        return menus;
     }
 
     /**
      * 查询用户资源列表
-     * 使用多表查询，一次查询完成用户-角色-资源关联查询
+     * 使用 Mapper 层的 @Select SQL 查询，通过用户-角色-资源关联查询
      *
      * @param userId 用户ID
      * @return 资源VO列表
      */
     private List<ResourceVO> getUserResources(String userId) {
-        // 构建查询条件
-        UserResourceQueryDTO queryDTO = UserResourceQueryDTO.builder()
-                .userId(userId)
-                .build();
+        // 使用 Mapper 层的 SQL 查询
+        List<ResourceVO> resources = iResourceService.getMapper().selectUserResources(userId);
 
-        // 使用多表查询，一次查询完成
-        List<UserResourceVO> resourceList = iUsersRoleService.listWithVoMapping(queryDTO, UserResourceVO.class);
-
-        if (CollUtil.isEmpty(resourceList)) {
-            return Collections.emptyList();
+        if (CollUtil.isEmpty(resources)) {
+            Ex.throwEx(USER_NOT_HAVE_RESOURCE, "用户未分配资源权限，无法登录");
         }
-
-        // 转换为 ResourceVO 并去重
-        return resourceList.stream()
-                .filter(resource -> resource.getResourceId() != null)
-                .map(resource -> {
-                    ResourceVO resourceVO = new ResourceVO();
-                    resourceVO.setId(resource.getResourceId());
-                    resourceVO.setSystemId(resource.getSystemId());
-                    resourceVO.setMenuId(resource.getMenuId());
-                    resourceVO.setCode(resource.getCode());
-                    resourceVO.setName(resource.getName());
-                    resourceVO.setType(resource.getType());
-                    resourceVO.setDescription(resource.getDescription());
-                    resourceVO.setPermissions(resource.getPermissions());
-                    resourceVO.setCreateTime(resource.getCreateTime());
-                    resourceVO.setModifyTime(resource.getModifyTime());
-                    return resourceVO;
-                })
-                .distinct()
-                .collect(Collectors.toList());
+        
+        return resources;
     }
 
     /**
      * 查询用户系统列表
-     * 通过用户的菜单和资源获取系统列表
+     * 使用 Mapper 层的 @Select SQL 查询，通过用户-角色-菜单-系统关联查询
      *
      * @param userId 用户ID
      * @return 系统VO列表
      */
     private List<SystemVO> getUserSystems(String userId) {
-        // 1. 查询用户菜单
+        // 使用 Mapper 层的 SQL 查询
+        List<SystemVO> systems = iSystemService.getMapper().selectUserSystems(userId);
+
+        if (CollUtil.isEmpty(systems)) {
+            Ex.throwEx(USER_NOT_HAVE_SYSTEM, "用户未分配系统权限，无法登录");
+        }
+        
+        return systems;
+    }
+
+    /**
+     * 查询用户的 System-Menu 树结构
+     * 以 System 为根节点，Menu 为子节点的树结构
+     *
+     * @param userId 用户ID
+     * @return SystemMenuTreeVO 列表
+     */
+    private List<SystemMenuTreeVO> getUserSystemMenuTree(String userId) {
+        // 1. 查询用户拥有的系统（如果查不到会抛出异常）
+        List<SystemVO> systems = getUserSystems(userId);
+        
+        // 2. 查询用户拥有的菜单（已过滤状态和可见性，如果查不到会抛出异常）
         List<MenuVO> menus = getUserMenus(userId);
-        // 2. 查询用户资源
-        List<ResourceVO> resources = getUserResources(userId);
+        
+        // 3. 构建菜单树结构
+        List<MenuTreeVO> menuTreeList = buildMenuTree(menus);
+        
+        // 4. 构建 System-Menu 树结构
+        List<SystemMenuTreeVO> systemMenuTreeList = new ArrayList<>();
+        for (SystemVO system : systems) {
+            SystemMenuTreeVO systemMenuTree = new SystemMenuTreeVO();
+            systemMenuTree.setId(system.getId());
+            systemMenuTree.setName(system.getName());
+            systemMenuTree.setLogo(system.getLogo());
+            systemMenuTree.setCreateTime(system.getCreateTime());
+            systemMenuTree.setModifyTime(system.getModifyTime());
+            
+            // 过滤出属于当前系统的菜单树
+            List<MenuTreeVO> systemMenus = menuTreeList.stream()
+                    .filter(menu -> system.getId().equals(menu.getSystemId()))
+                    .collect(Collectors.toList());
+            
+            systemMenuTree.setMenus(systemMenus);
+            systemMenuTreeList.add(systemMenuTree);
+        }
+        
+        return systemMenuTreeList;
+    }
 
-        // 3. 收集系统ID
-        Set<String> systemIds = menus.stream()
-                .map(MenuVO::getSystemId)
-                .filter(StrUtil::isNotBlank)
-                .collect(Collectors.toSet());
-
-        resources.stream()
-                .map(ResourceVO::getSystemId)
-                .filter(StrUtil::isNotBlank)
-                .forEach(systemIds::add);
-
-        if (CollUtil.isEmpty(systemIds)) {
+    /**
+     * 构建菜单树结构
+     * 支持多棵树的情况：多个根节点会生成多棵树，每个根节点及其子节点构成一棵独立的树
+     *
+     * @param menuList 平铺的菜单列表
+     * @return 树结构的菜单列表（可能包含多棵树，每个根节点是一棵树的根）
+     */
+    private List<MenuTreeVO> buildMenuTree(List<MenuVO> menuList) {
+        if (CollUtil.isEmpty(menuList)) {
             return Collections.emptyList();
         }
 
-        // 4. 查询系统信息
-        List<IamSystem> systems = iSystemService.listByIds(new ArrayList<>(systemIds));
+        // 1. 转换为 MenuTreeVO 并构建 ID 映射
+        var menuMap = menuList.stream()
+                .map(menu -> VoMapper.mapToVo(menu, MenuTreeVO.class))
+                .collect(Collectors.toMap(MenuTreeVO::getId, menu -> menu));
 
-        // 5. 过滤：只返回启用的系统
-        systems = systems.stream()
-                .filter(system -> Boolean.TRUE.equals(system.getStatus()))
-                .collect(Collectors.toList());
+        // 2. 构建树结构并分离根节点
+        var rootNodes = new ArrayList<MenuTreeVO>();
+        menuMap.values().forEach(menu -> {
+            var parentId = menu.getParentId();
+            var parent = StrUtil.isNotBlank(parentId) ? menuMap.get(parentId) : null;
+            if (parent != null) {
+                // 有父节点，添加到父节点的 children
+                parent.addChild(menu);
+            } else {
+                // 没有父节点或父节点不存在，作为根节点
+                rootNodes.add(menu);
+            }
+        });
 
-        // 6. 转换为VO
-        return VoMapper.mapToVoList(systems, SystemVO.class);
+        return rootNodes;
     }
+
 }
 
