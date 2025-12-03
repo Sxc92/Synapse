@@ -127,5 +127,15 @@ public class MenuController {
     public Result<List<SystemMenuTreeVO>> listSystemMenuTree(@RequestBody List<String> systemIds) {
         return Result.success(menuService.listSystemMenuTree(systemIds));
     }
+
+    /**
+     * 只是修改 状态 or 可见性
+     * @param params
+     * @return
+     */
+    @PostMapping("/modify")
+    public Result<Boolean> modify(@RequestBody AddOrModifyMenuDTO params) {
+        return Result.success(menuService.modify(params));
+    }
 }
 

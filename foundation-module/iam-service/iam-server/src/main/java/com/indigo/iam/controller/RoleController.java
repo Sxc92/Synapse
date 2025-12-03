@@ -11,7 +11,6 @@ import com.indigo.iam.sdk.dto.query.RoleDTO;
 import com.indigo.iam.sdk.vo.resource.RolePermissionVO;
 import com.indigo.iam.sdk.vo.users.RoleVO;
 import com.indigo.iam.service.RoleService;
-import com.indigo.iam.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleController {
 
-
-    private final UserRoleService userRoleService;
     private final IRoleService iRoleService;
     private final RoleService roleService;
 
@@ -39,7 +36,18 @@ public class RoleController {
      */
     @PostMapping("/addOrModify")
     public Result<Boolean> save(@RequestBody AddOrModifyRoleDTO param) {
-        return Result.success(userRoleService.addOrModifyRole(param));
+        return Result.success(roleService.addOrModifyRole(param));
+    }
+
+    /**
+     * 保存/修改用户
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping("/modify")
+    public Result<Boolean> modify(@RequestBody AddOrModifyRoleDTO param) {
+        return Result.success(roleService.modify(param));
     }
 
     /**
@@ -72,7 +80,7 @@ public class RoleController {
      */
     @DeleteMapping("/delete/{id}")
     public Result<Boolean> deleteUser(@PathVariable String id) {
-        return Result.success(userRoleService.deleteRole(id));
+        return Result.success(roleService.deleteRole(id));
     }
 
     /**
@@ -95,7 +103,7 @@ public class RoleController {
      */
     @PostMapping("/assignMenusToRole")
     public Result<Boolean> assignMenusToRole(@RequestBody RoleMenuDTO param) {
-        return Result.success(userRoleService.assignMenusToRole(param));
+        return Result.success(roleService.assignMenusToRole(param));
     }
 
     /**
@@ -106,7 +114,7 @@ public class RoleController {
      */
     @PostMapping("/assignResourcesToRole")
     public Result<Boolean> assignResourcesToRole(@RequestBody RoleResourceDTO param) {
-        return Result.success(userRoleService.assignResourcesToRole(param));
+        return Result.success(roleService.assignResourcesToRole(param));
     }
 
     /**

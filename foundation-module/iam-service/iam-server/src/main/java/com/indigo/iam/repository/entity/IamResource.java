@@ -25,6 +25,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class IamResource extends AuditEntity<String> {
 
+    private String systemId;
+
     /**
      * 菜单Id（必填，资源必须关联菜单）
      * 系统关系通过 menu -> system_id 推导

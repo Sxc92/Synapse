@@ -1,5 +1,6 @@
 package com.indigo.iam.sdk.vo.resource;
 
+import com.indigo.core.annotation.FieldMapping;
 import com.indigo.core.entity.vo.BaseVO;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -15,6 +16,11 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class ResourceVO extends BaseVO<String> {
+
+    /**
+     * 系统Id（通过菜单关联推导）
+     */
+    private String systemId;
 
     /**
      * 菜单Id（必填，资源必须关联菜单）

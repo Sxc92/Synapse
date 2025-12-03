@@ -1,15 +1,18 @@
 package com.indigo.iam.controller;
 
-import com.indigo.core.context.UserContext;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.indigo.core.entity.Result;
 import com.indigo.core.entity.result.PageResult;
+import com.indigo.iam.repository.entity.UsersRole;
+import com.indigo.iam.repository.service.IUsersRoleService;
 import com.indigo.iam.repository.service.IUsersService;
 import com.indigo.iam.sdk.dto.associated.EmpowerDTO;
 import com.indigo.iam.sdk.dto.opera.AddOrModifyUserDTO;
 import com.indigo.iam.sdk.dto.query.UsersDTO;
+import com.indigo.iam.sdk.vo.resource.SystemMenuTreeVO;
 import com.indigo.iam.sdk.vo.users.UserInfoVO;
 import com.indigo.iam.sdk.vo.users.UserVO;
-import com.indigo.iam.service.UserRoleService;
+import com.indigo.iam.service.UserService;
 import com.indigo.security.annotation.RequireLogin;
 import com.indigo.security.core.AuthenticationService;
 import com.indigo.security.utils.TokenExtractor;
@@ -33,10 +36,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRoleService userRoleService;
+    private final UserService userService;
     private final IUsersService iUsersService;
     private final AuthenticationService authenticationService;
     private final TokenExtractor tokenExtractor;
+    private final IUsersRoleService iUsersRoleService;
+
     /**
      * 保存/修改用户
      *
@@ -45,7 +50,7 @@ public class UserController {
      */
     @PostMapping("/addOrModify")
     public Result<Boolean> save(@RequestBody AddOrModifyUserDTO param) {
-        return Result.success(userRoleService.addOrModifyUser(param));
+        return Result.success(userService.addOrModifyUser(param));
     }
 
     /**
@@ -78,7 +83,7 @@ public class UserController {
      */
     @DeleteMapping("/delete/{id}")
     public Result<Boolean> deleteUser(@PathVariable String id) {
-        return Result.success(userRoleService.deleteUser(id));
+        return Result.success(userService.deleteUser(id));
     }
 
     /**
@@ -101,7 +106,7 @@ public class UserController {
      */
     @PostMapping("/empower")
     public Result<Boolean> empower(@RequestBody EmpowerDTO param) {
-        return Result.success(userRoleService.empower(param));
+        return Result.success(userService.empower(param));
     }
 
     /**
@@ -124,11 +129,11 @@ public class UserController {
         return authenticationService.getUserInfo(token, (userContext, permissions, systemMenuTree) -> {
             // 安全地转换系统菜单树类型
             @SuppressWarnings("unchecked")
-            List<com.indigo.iam.sdk.vo.resource.SystemMenuTreeVO> menuTree = 
-                    systemMenuTree != null ? (List<com.indigo.iam.sdk.vo.resource.SystemMenuTreeVO>) systemMenuTree : Collections.emptyList();
-            
+            List<SystemMenuTreeVO> menuTree =
+                    systemMenuTree != null ? (List<SystemMenuTreeVO>) systemMenuTree : Collections.emptyList();
+
             // 构建 UserInfoVO
-            UserInfoVO userInfo = UserInfoVO.builder()
+            return UserInfoVO.builder()
                     .id(userContext.getUserId())
                     .account(userContext.getAccount())
                     .realName(userContext.getRealName())
@@ -138,8 +143,24 @@ public class UserController {
                     .permissions(permissions)
                     .systemMenuTree(menuTree)
                     .build();
-            return userInfo;
         });
     }
 
+
+    @GetMapping("/roleIds/{userId}")
+    public Result<List<String>> getRoleIds(@PathVariable String userId) {
+        // 调用 AuthenticationService 获取用户信息
+        return Result.success(iUsersRoleService.list(new LambdaQueryWrapper<UsersRole>()
+                .eq(UsersRole::getUserId, userId)).stream().map(UsersRole::getRoleId).toList());
+    }
+
+    /**
+     * 只是修改 状态 or 可见性
+     * @param params
+     * @return
+     */
+    @PostMapping("/modify")
+    public Result<Boolean> modify(@RequestBody AddOrModifyUserDTO params) {
+        return Result.success(userService.modify(params));
+    }
 }

@@ -8,12 +8,13 @@ import com.indigo.cache.infrastructure.RedisService;
 import com.indigo.cache.manager.CacheKeyGenerator;
 import com.indigo.cache.session.UserSessionService;
 import com.indigo.core.context.UserContext;
-import com.indigo.iam.repository.entity.RoleMenu;
-import com.indigo.iam.repository.entity.RoleResource;
-import com.indigo.iam.repository.entity.RoleSystem;
-import com.indigo.iam.repository.entity.UsersRole;
+import com.indigo.core.exception.Ex;
+import com.indigo.iam.repository.entity.*;
 import com.indigo.iam.repository.service.*;
+import com.indigo.iam.sdk.dto.associated.RoleMenuDTO;
 import com.indigo.iam.sdk.dto.associated.RolePermissionDTO;
+import com.indigo.iam.sdk.dto.associated.RoleResourceDTO;
+import com.indigo.iam.sdk.dto.opera.AddOrModifyRoleDTO;
 import com.indigo.iam.sdk.vo.resource.*;
 import com.indigo.security.core.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.indigo.iam.sdk.enums.IamError.*;
+import static com.indigo.iam.sdk.enums.IamError.RESOURCE_NOT_IN_ROLE_SYSTEM;
+
 /**
  * 角色服务接口
  * 提供角色相关的业务逻辑
@@ -35,6 +39,29 @@ import java.util.stream.Collectors;
  */
 public interface RoleService {
 
+
+    /**
+     * 添加或修改用户
+     *
+     * @param param 参数
+     * @return
+     */
+    Boolean addOrModifyRole(AddOrModifyRoleDTO param);
+
+    /**
+     * 删除用户
+     *
+     * @param id
+     * @return
+     */
+    Boolean deleteRole(String id);
+
+    /**
+     * 修改状态
+     * @param param
+     * @return
+     */
+    Boolean modify(AddOrModifyRoleDTO param);
     /**
      * 根据角色ID获取权限树形结构（系统-菜单-资源）
      *
@@ -51,6 +78,23 @@ public interface RoleService {
      * @return
      */
     Boolean assignPermissions(String roleId, RolePermissionDTO param);
+
+
+    /**
+     * 角色分配菜单
+     *
+     * @param param 角色菜单关联参数
+     * @return 操作结果
+     */
+    boolean assignMenusToRole(RoleMenuDTO param);
+
+    /**
+     * 角色分配资源
+     *
+     * @param param 角色资源关联参数
+     * @return 操作结果
+     */
+    boolean assignResourcesToRole(RoleResourceDTO param);
 }
 
 @Slf4j
@@ -69,7 +113,7 @@ class RoleServiceImpl implements RoleService {
     private final UserSessionService userSessionService;
     private final RedisService redisService;
     private final CacheKeyGenerator cacheKeyGenerator;
-
+    private final IRoleService iRoleService;
     @Override
     public RolePermissionVO getRolePermissionTree(String roleId) {
         return RolePermissionVO.builder()
@@ -77,6 +121,40 @@ class RoleServiceImpl implements RoleService {
                 .menuIds(iRoleMenuService.getMapper().listRoleMenu(roleId))
                 .resourceIds(iRoleResourceService.getMapper().listRoleResources(roleId))
                 .build();
+    }
+
+    @Override
+    public Boolean deleteRole(String id) {
+        Roles roles = iRoleService.getById(id);
+        if (roles == null) {
+            Ex.throwEx(ROLE_NOT_EXIST);
+        }
+        // 删除用户角色关联
+        iUsersRoleService.remove(new LambdaQueryWrapper<UsersRole>()
+                .eq(UsersRole::getRoleId, id));
+        // 删除角色系统关联（已注释：暂时取消 iam_role_system 表，通过菜单推导系统）
+        // iRoleSystemService.remove(new LambdaQueryWrapper<RoleSystem>()
+        //         .eq(RoleSystem::getRoleId, id));
+        // 删除角色菜单关联
+        iRoleMenuService.remove(new LambdaQueryWrapper<RoleMenu>()
+                .eq(RoleMenu::getRoleId, id));
+        // 删除角色资源关联
+        iRoleResourceService.remove(new LambdaQueryWrapper<RoleResource>()
+                .eq(RoleResource::getRoleId, id));
+        // 删除角色
+        return iRoleService.removeById(id);
+    }
+
+    @Override
+    public Boolean modify(AddOrModifyRoleDTO param) {
+        Roles roles = iRoleService.getById(param.getId());
+        if (roles == null) {
+            Ex.throwEx(ROLE_NOT_EXIST);
+        }
+        if (param.getStatus() != null) {
+            roles.setStatus(!roles.getStatus());
+        }
+        return iRoleService.updateById(roles);
     }
 
     @Override
@@ -91,6 +169,14 @@ class RoleServiceImpl implements RoleService {
         updateUsersPermissionCache(roleId);
         
         return true;
+    }
+
+    @Override
+    public Boolean addOrModifyRole(AddOrModifyRoleDTO param) {
+        if (iRoleService.checkKeyUniqueness(param, "code")) {
+            Ex.throwEx(ROLE_EXIST);
+        }
+        return iRoleService.saveOrUpdateFromDTO(param, Roles.class);
     }
 
     /**
@@ -164,7 +250,7 @@ class RoleServiceImpl implements RoleService {
         List<String> userIds = usersRoles.stream()
                 .map(UsersRole::getUserId)
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         log.info("开始更新角色 {} 的 {} 个用户的权限缓存", roleId, userIds.size());
 
@@ -451,5 +537,95 @@ class RoleServiceImpl implements RoleService {
         });
 
         return rootNodes;
+    }
+
+    @Override
+    public boolean assignMenusToRole(RoleMenuDTO param) {
+        Roles role = iRoleService.getById(param.getId());
+        if (role == null) {
+            Ex.throwEx(ROLE_NOT_EXIST);
+        }
+        // 删除原有菜单关联
+        iRoleMenuService.remove(new LambdaQueryWrapper<RoleMenu>()
+                .eq(RoleMenu::getRoleId, param.getId()));
+        // 如果菜单列表为空，直接返回
+        if (CollUtil.isEmpty(param.getMenuIds())) {
+            return true;
+        }
+        // 批量保存新的菜单关联
+        List<RoleMenu> roleMenus = new ArrayList<>();
+        param.getMenuIds().forEach(menuId -> {
+            roleMenus.add(RoleMenu.builder()
+                    .roleId(param.getId())
+                    .menuId(menuId)
+                    .build());
+        });
+        return iRoleMenuService.saveBatch(roleMenus);
+    }
+
+    @Override
+    public boolean assignResourcesToRole(RoleResourceDTO param) {
+        Roles role = iRoleService.getById(param.getId());
+        if (role == null) {
+            Ex.throwEx(ROLE_NOT_EXIST);
+        }
+
+        // 已注释：暂时取消 iam_role_system 表，通过菜单推导系统关系
+        // 不再需要校验角色是否拥有资源所属的系统权限，改为通过角色菜单推导系统
+        if (CollUtil.isNotEmpty(param.getResourceIds())) {
+            // 1. 通过角色菜单推导角色拥有的系统ID列表
+            List<RoleMenu> roleMenus = iRoleMenuService.list(
+                    new LambdaQueryWrapper<RoleMenu>()
+                            .eq(RoleMenu::getRoleId, param.getId()));
+            if (CollUtil.isEmpty(roleMenus)) {
+                Ex.throwEx(ROLE_NOT_HAVE_SYSTEM);
+            }
+            List<String> menuIds = roleMenus.stream()
+                    .map(RoleMenu::getMenuId)
+                    .distinct()
+                    .toList();
+            List<Menu> menus = iMenuService.listByIds(menuIds);
+            List<String> roleSystemIds = menus.stream()
+                    .map(Menu::getSystemId)
+                    .filter(StrUtil::isNotBlank)
+                    .distinct()
+                    .toList();
+
+            // 2. 查询所有资源，通过资源关联的菜单推导系统，校验资源所属的系统是否在角色已拥有的系统列表中
+            List<IamResource> resources = iResourceService.listByIds(param.getResourceIds());
+            for (IamResource resource : resources) {
+                if (StrUtil.isBlank(resource.getMenuId())) {
+                    Ex.throwEx(RESOURCE_NOT_IN_ROLE_SYSTEM,
+                            "资源[" + resource.getName() + "]未关联菜单");
+                }
+                // 通过菜单查询系统ID
+                Menu menu = iMenuService.getById(resource.getMenuId());
+                if (menu == null || StrUtil.isBlank(menu.getSystemId())) {
+                    Ex.throwEx(RESOURCE_NOT_IN_ROLE_SYSTEM,
+                            "资源[" + resource.getName() + "]关联的菜单不存在或未关联系统");
+                }
+                if (!roleSystemIds.contains(menu.getSystemId())) {
+                    Ex.throwEx(RESOURCE_NOT_IN_ROLE_SYSTEM,
+                            "资源[" + resource.getName() + "]不属于角色已拥有的系统");
+                }
+            }
+        }
+
+        // 删除原有资源关联
+        iRoleResourceService.remove(new LambdaQueryWrapper<RoleResource>()
+                .eq(RoleResource::getRoleId, param.getId()));
+        // 如果资源列表为空，直接返回
+        if (CollUtil.isEmpty(param.getResourceIds())) {
+            return true;
+        }
+        // 批量保存新的资源关联
+        List<RoleResource> roleResources = new ArrayList<>();
+        param.getResourceIds().forEach(resourceId -> {
+            roleResources.add(RoleResource.builder()
+                    .roleId(param.getId())
+                    .resourceId(resourceId)
+                    .build());
+        });
+        return iRoleResourceService.saveBatch(roleResources);
     }
 }

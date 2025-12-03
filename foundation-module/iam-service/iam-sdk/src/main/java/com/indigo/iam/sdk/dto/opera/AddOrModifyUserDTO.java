@@ -29,4 +29,5 @@ public class AddOrModifyUserDTO extends BaseDTO<String> {
 
     private String avatar;
 
+    private Boolean enabled;
 }

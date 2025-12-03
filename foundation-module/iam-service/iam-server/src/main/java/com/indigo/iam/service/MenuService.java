@@ -82,6 +82,14 @@ public interface MenuService {
      * @return
      */
     List<SystemMenuTreeVO> listSystemMenuTree(List<String> systemIds);
+
+    /**
+     * 修改状态和可见性
+     *
+     * @param param
+     * @return
+     */
+    boolean modify(AddOrModifyMenuDTO param);
 }
 
 @Slf4j
@@ -207,6 +215,21 @@ class MenuServiceImpl implements MenuService {
             systemMenuTreeVO1.setMenus(list1);
         }
         return systemMenuTreeVO;
+    }
+
+    @Override
+    public boolean modify(AddOrModifyMenuDTO param) {
+        Menu menu = iMenuService.getById(param);
+        if (menu == null) {
+            Ex.throwEx(MENU_NOT_EXIST);
+        }
+        if (param.getStatus() != null) {
+            menu.setStatus(!menu.getStatus());
+        }
+        if (param.getVisible() != null) {
+            menu.setVisible(!menu.getVisible());
+        }
+        return iMenuService.updateById(menu);
     }
 
     /**
